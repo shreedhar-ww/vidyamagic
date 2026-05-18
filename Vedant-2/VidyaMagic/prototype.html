@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#9B5DE5"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="stylesheet" href="css/themes.css"/>
+  <title>VidyaMagic — Pick Your Adventure</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Nunito',sans-serif;background:var(--vm-bg-gradient);min-height:100vh;overflow-x:hidden;}
+
+    /* ── THEME PICKER OVERLAY ── */
+    .picker-overlay{
+      position:fixed;inset:0;z-index:1000;
+      background:linear-gradient(180deg,#FFE0EF 0%,#E8D5FF 100%);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:30px 20px;overflow-y:auto;
+    }
+    .picker-overlay.hide{display:none;}
+    .picker-title{
+      font-size:2.2rem;font-weight:900;text-align:center;margin-bottom:8px;
+      background:linear-gradient(135deg,#9B5DE5,#F15BB5,#FF6B35);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .picker-sub{font-size:1rem;font-weight:700;color:#666;text-align:center;margin-bottom:32px;max-width:420px;}
+    .theme-grid{display:grid;grid-template-columns:1fr;gap:18px;width:100%;max-width:880px;}
+    @media(min-width:760px){.theme-grid{grid-template-columns:1fr 1fr 1fr;}}
+    .theme-card{
+      border-radius:28px;padding:30px 24px;text-align:center;cursor:pointer;
+      color:#fff;position:relative;overflow:hidden;
+      box-shadow:0 8px 0 rgba(0,0,0,.12);
+      transition:transform .2s,box-shadow .2s;
+    }
+    .theme-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 14px 0 rgba(0,0,0,.1);}
+    .theme-card:active{transform:translateY(0) scale(.97);}
+    .theme-card.tc-jungle{background:linear-gradient(135deg,#2C7A3F 0%,#6FB76A 60%,#FFB347 100%);}
+    .theme-card.tc-space{background:linear-gradient(135deg,#1A237E 0%,#3D5AFE 60%,#FF4081 100%);}
+    .theme-card.tc-magic{background:linear-gradient(135deg,#9B5DE5 0%,#F15BB5 60%,#FF6B35 100%);}
+    .tc-emoji{font-size:64px;display:block;margin-bottom:8px;}
+    .tc-name{font-size:1.4rem;font-weight:900;text-shadow:1px 2px 0 rgba(0,0,0,.2);}
+    .tc-desc{font-size:.9rem;font-weight:700;opacity:.92;margin-top:4px;}
+    .tc-mascot{font-size:24px;background:rgba(255,255,255,.25);display:inline-block;padding:4px 14px;border-radius:20px;margin-top:10px;}
+    .vm-logo-mini{font-size:1.1rem;font-weight:900;color:#9B5DE5;letter-spacing:1px;margin-bottom:14px;}
+
+    /* ── HUD ── */
+    .hud{
+      position:sticky;top:0;z-index:100;
+      background:rgba(255,255,255,.96);backdrop-filter:blur(12px);
+      padding:10px 20px;display:flex;align-items:center;gap:12px;
+      box-shadow:0 4px 20px rgba(0,0,0,.1);
+    }
+    .hud-logo{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#9B5DE5,#F15BB5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .hud-stars{background:var(--vm-yellow);padding:5px 14px;border-radius:20px;font-size:.95rem;font-weight:900;color:#333;}
+    .hud-bar-wrap{flex:1;max-width:220px;height:13px;background:#eee;border-radius:10px;overflow:hidden;}
+    .hud-bar{height:100%;background:linear-gradient(90deg,var(--vm-green),var(--vm-blue));border-radius:10px;}
+    .hud-label{font-size:.78rem;font-weight:700;color:#aaa;white-space:nowrap;}
+    .theme-btn{
+      background:rgba(155,93,229,.12);color:var(--vm-purple);border:none;
+      padding:6px 12px;border-radius:14px;font-size:.78rem;font-weight:900;cursor:pointer;
+      font-family:'Nunito',sans-serif;
+    }
+
+    /* ── MAP ── */
+    .map-wrap{position:relative;max-width:480px;margin:0 auto;padding:18px 20px 80px;}
+    #pathSvg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:visible;}
+
+    .mascot-box{text-align:center;padding:20px 0 10px;position:relative;z-index:2;}
+    .mascot-emoji{font-size:64px;display:block;animation:bob 2.2s ease-in-out infinite;}
+    @keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(4deg)}}
+    .speech{
+      display:inline-block;background:#fff;border-radius:20px;padding:10px 22px;
+      font-size:.95rem;font-weight:700;color:#555;margin-top:10px;
+      box-shadow:0 4px 16px rgba(0,0,0,.1);position:relative;
+    }
+    .speech::before{content:'';position:absolute;top:-11px;left:50%;transform:translateX(-50%);border:8px solid transparent;border-bottom-color:#fff;}
+
+    .term-banner{display:flex;align-items:center;justify-content:center;gap:10px;margin:30px 0 22px;position:relative;z-index:2;}
+    .term-banner::before{content:'';position:absolute;left:0;right:0;top:50%;height:3px;background:rgba(255,255,255,.4);border-radius:2px;z-index:-1;}
+    .term-pill{padding:9px 26px;border-radius:30px;font-size:.92rem;font-weight:900;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.15);white-space:nowrap;}
+    .term1{background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));}
+    .term2{background:linear-gradient(135deg,var(--vm-pink),var(--vm-orange));}
+    .term3{background:linear-gradient(135deg,var(--vm-blue),var(--vm-purple));}
+
+    .step{display:flex;margin-bottom:50px;position:relative;z-index:2;}
+    .step.left  {justify-content:flex-start;padding-left:18px;}
+    .step.center{justify-content:center;}
+    .step.right {justify-content:flex-end;padding-right:18px;}
+
+    .node{
+      width:104px;height:104px;border-radius:50%;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      cursor:pointer;position:relative;color:#fff;
+      border:5px solid rgba(255,255,255,.55);
+      box-shadow:0 8px 0 rgba(0,0,0,.15),0 0 0 3px rgba(255,255,255,.25);
+      transition:transform .2s,box-shadow .2s;user-select:none;text-align:center;
+    }
+    .node:not(.locked):hover{transform:translateY(-8px) scale(1.08);box-shadow:0 16px 0 rgba(0,0,0,.12),0 0 28px rgba(255,255,255,.5);}
+    .node:not(.locked):active{transform:translateY(0) scale(.96);}
+    .node.done{box-shadow:0 8px 0 rgba(0,0,0,.15),0 0 22px rgba(255,215,80,.55),0 0 50px rgba(255,215,80,.2);}
+    .node.locked{opacity:.55;cursor:not-allowed;filter:grayscale(.4);}
+    .node-emoji{font-size:36px;line-height:1;margin-bottom:3px;}
+    .node-label{font-size:.62rem;font-weight:900;text-shadow:1px 1px 0 rgba(0,0,0,.2);line-height:1.2;padding:0 6px;max-width:88px;}
+    .node-progress{
+      position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+      background:#fff;color:#666;font-size:.62rem;font-weight:900;
+      padding:2px 8px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.12);white-space:nowrap;
+    }
+    .star-badge{
+      position:absolute;top:-9px;right:-9px;width:30px;height:30px;
+      background:var(--vm-yellow);border-radius:50%;
+      display:flex;align-items:center;justify-content:center;font-size:14px;
+      border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);
+      animation:pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+
+    .n1{background:linear-gradient(135deg,var(--vm-orange),var(--vm-yellow));}
+    .n2{background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));}
+    .n3{background:linear-gradient(135deg,var(--vm-blue),var(--vm-purple));}
+    .n4{background:linear-gradient(135deg,var(--vm-green),var(--vm-blue));}
+    .n5{background:linear-gradient(135deg,var(--vm-pink),var(--vm-orange));}
+    .n6{background:linear-gradient(135deg,var(--vm-yellow),var(--vm-green));}
+    .n7{background:linear-gradient(135deg,var(--vm-purple),var(--vm-blue));}
+    .n8{background:linear-gradient(135deg,var(--vm-orange),var(--vm-pink));}
+    .n9{background:linear-gradient(135deg,var(--vm-green),var(--vm-purple));}
+    .n10{background:linear-gradient(135deg,var(--vm-yellow),var(--vm-orange));}
+    .n11{background:linear-gradient(135deg,var(--vm-blue),var(--vm-pink));}
+    .n12{background:linear-gradient(135deg,var(--vm-pink),var(--vm-purple));}
+
+    .deco{position:absolute;pointer-events:none;user-select:none;z-index:0;}
+    .deco.sway{animation:sway 4s ease-in-out infinite;}
+    @keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+
+    .finish{text-align:center;padding:14px 0 30px;position:relative;z-index:2;}
+    .finish-icon{font-size:60px;animation:bob 1.4s ease-in-out infinite;}
+    .finish-badge{
+      display:inline-block;margin-top:14px;padding:12px 28px;
+      background:linear-gradient(135deg,var(--vm-yellow),var(--vm-orange));
+      color:#fff;border-radius:40px;font-size:1rem;font-weight:900;
+      box-shadow:0 6px 0 rgba(0,0,0,.15);text-shadow:1px 1px 0 rgba(0,0,0,.15);
+    }
+
+    footer{text-align:center;padding:20px;color:rgba(255,255,255,.85);font-size:.85rem;font-weight:700;}
+  </style>
+</head>
+<body>
+
+<!-- ── THEME PICKER (shows on first visit) ── -->
+<div class="picker-overlay" id="picker">
+  <div class="vm-logo-mini">✨ VidyaMagic ✨</div>
+  <h1 class="picker-title">Pick Your Adventure!</h1>
+  <p class="picker-sub">Every adventure has the same lessons — just different worlds. Choose the one that excites you!</p>
+  <div class="theme-grid">
+    <div class="theme-card tc-jungle" onclick="chooseTheme('jungle')">
+      <span class="tc-emoji">🌴</span>
+      <div class="tc-name">Jungle Explorer</div>
+      <div class="tc-desc">Find treasures in the wild forest</div>
+      <div class="tc-mascot">🐵 Banu the Monkey</div>
+    </div>
+    <div class="theme-card tc-space" onclick="chooseTheme('space')">
+      <span class="tc-emoji">🚀</span>
+      <div class="tc-name">Space Mission</div>
+      <div class="tc-desc">Visit every planet in the galaxy</div>
+      <div class="tc-mascot">👨‍🚀 Captain Vega</div>
+    </div>
+    <div class="theme-card tc-magic" onclick="chooseTheme('magic')">
+      <span class="tc-emoji">🏰</span>
+      <div class="tc-name">Magic Kingdom</div>
+      <div class="tc-desc">Master spells in the enchanted land</div>
+      <div class="tc-mascot">🦉 Hooty the Owl</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HUD ── -->
+<div class="hud" id="hud" style="display:none;">
+  <span class="hud-logo">✨ VidyaMagic</span>
+  <div class="hud-stars" id="hudStars">⭐ 0</div>
+  <div class="hud-bar-wrap"><div class="hud-bar" id="hudBar" style="width:0%"></div></div>
+  <span class="hud-label" id="hudLabel">0 / 12</span>
+  <button class="theme-btn" onclick="changeTheme()">🎨 Theme</button>
+  <button class="theme-btn" style="background:rgba(255,100,100,.12);color:#e17055;" onclick="confirmReset()">🔄 Reset</button>
+</div>
+
+<!-- ── ADVENTURE MAP ── -->
+<div class="map-wrap" id="mapWrap" style="display:none;">
+  <svg id="pathSvg"></svg>
+
+  <div class="mascot-box">
+    <span class="mascot-emoji" id="mascotEmoji">🦉</span>
+    <div class="speech" id="speechBubble">Welcome back, Math Hero!</div>
+  </div>
+
+  <div class="term-banner">
+    <span style="font-size:1.4rem">🏁</span>
+    <div class="term-pill term1">Term 1 — Numbers &amp; Operations</div>
+    <span style="font-size:1.4rem">🏁</span>
+  </div>
+  <div id="term1Nodes"></div>
+
+  <div class="term-banner">
+    <span style="font-size:1.4rem">🏁</span>
+    <div class="term-pill term2">Term 2 — Time, Shapes &amp; Measurement</div>
+    <span style="font-size:1.4rem">🏁</span>
+  </div>
+  <div id="term2Nodes"></div>
+
+  <div class="term-banner">
+    <span style="font-size:1.4rem">🏁</span>
+    <div class="term-pill term3">Term 3 — Logic &amp; Advanced</div>
+    <span style="font-size:1.4rem">🏁</span>
+  </div>
+  <div id="term3Nodes"></div>
+
+  <!-- Bharat Discover Section -->
+  <div class="term-banner" style="margin-top:10px;">
+    <span style="font-size:1.4rem">🇮🇳</span>
+    <div class="term-pill" style="background:linear-gradient(135deg,#FF6B35,#FF6B9D);">Bharat Discover — Know Your Country!</div>
+    <span style="font-size:1.4rem">🇮🇳</span>
+  </div>
+  <div class="step center" style="z-index:2;">
+    <div class="node" style="background:linear-gradient(135deg,#FF6B35,#FF6B9D);width:120px;height:120px;cursor:pointer;border:5px solid rgba(255,255,255,.55);box-shadow:0 8px 0 rgba(0,0,0,.15),0 0 28px rgba(255,107,53,.4);"
+      onclick="goTopic('bharat-discover.html')">
+      <span style="font-size:44px;line-height:1;margin-bottom:4px;display:block;">🗺️</span>
+      <span style="font-size:.65rem;font-weight:900;color:#fff;text-align:center;text-shadow:1px 1px 0 rgba(0,0,0,.2);line-height:1.2;padding:0 6px;">Bharat Discover</span>
+    </div>
+  </div>
+
+  <div class="finish">
+    <div class="finish-icon">🏆</div>
+    <div class="finish-badge" id="finishBadge">All Topics Conquered! 🎉</div>
+  </div>
+</div>
+
+<footer>Made with ♥ in India for young learners ✨</footer>
+
+<script type="module">
+import { THEMES, getTheme, setTheme, applyTheme, ensureTheme } from './js/theme.js';
+import { load } from './js/progress.js';
+
+// ── TOPIC LIST ──
+const TOPICS = [
+  // Term 1
+  { id:'addition',         emoji:'➕',  label:'Addition',          term:1, side:'left',   color:'n1', file:'topic-addition.html',    enabled:true,  unlockedBy:null },
+  { id:'subtraction',      emoji:'➖',  label:'Subtraction',       term:1, side:'center', color:'n2', file:'topic-subtraction.html', enabled:true,  unlockedBy:'addition' },
+  { id:'multiplication',   emoji:'✖️', label:'Multiplication',    term:1, side:'right',  color:'n3', file:'#', enabled:false },
+  { id:'place_value',      emoji:'🔢', label:'Place Value',       term:1, side:'center', color:'n4', file:'#', enabled:false },
+  // Term 2
+  { id:'clock',            emoji:'🕒', label:'Clock & Time',      term:2, side:'right',  color:'n5', file:'#', enabled:false },
+  { id:'division',         emoji:'➗',  label:'Division',          term:2, side:'center', color:'n6', file:'#', enabled:false },
+  { id:'geometry',         emoji:'🔷', label:'Geometry',          term:2, side:'left',   color:'n7', file:'#', enabled:false },
+  { id:'measurement',      emoji:'📏', label:'Measurement',       term:2, side:'center', color:'n8', file:'#', enabled:false },
+  { id:'money',            emoji:'💰', label:'Money',             term:2, side:'right',  color:'n9', file:'#', enabled:false },
+  // Term 3
+  { id:'fractions',        emoji:'🍕', label:'Fractions',         term:3, side:'center', color:'n10', file:'#', enabled:false },
+  { id:'patterns',         emoji:'🔁', label:'Patterns',          term:3, side:'left',   color:'n11', file:'#', enabled:false },
+  { id:'data_handling',    emoji:'📊', label:'Data Handling',     term:3, side:'right',  color:'n12', file:'#', enabled:false }
+];
+
+window.chooseTheme = function(id) {
+  setTheme(id);
+  document.getElementById('picker').classList.add('hide');
+  document.getElementById('hud').style.display = 'flex';
+  document.getElementById('mapWrap').style.display = 'block';
+  bootMap();
+};
+
+window.changeTheme = function() {
+  document.getElementById('picker').classList.remove('hide');
+};
+
+window.confirmReset = function() {
+  if (confirm('Reset all progress and start from scratch?\n\nThis clears all stars, levels and topic progress.')) {
+    localStorage.clear();
+    location.reload();
+  }
+};
+
+function bootMap() {
+  const theme = getTheme();
+  if (theme) {
+    applyTheme(theme);
+    document.getElementById('mascotEmoji').textContent = theme.mascot;
+    document.getElementById('speechBubble').textContent = theme.labels.welcomeMsg;
+    document.getElementById('finishBadge').textContent = theme.labels.finishWord;
+  }
+
+  const progress = load();
+  document.getElementById('hudStars').textContent = '⭐ ' + (progress.totalStars || 0);
+
+  const completedCount = TOPICS.filter(t => {
+    const k = `math.${t.id}`;
+    return progress.topics[k]?.sections?.quiz === true;
+  }).length;
+  document.getElementById('hudBar').style.width = (completedCount / TOPICS.length * 100) + '%';
+  document.getElementById('hudLabel').textContent = `${completedCount} / ${TOPICS.length}`;
+
+  // Render nodes per term
+  for (const term of [1, 2, 3]) {
+    const container = document.getElementById(`term${term}Nodes`);
+    container.innerHTML = '';
+    TOPICS.filter(t => t.term === term).forEach(t => {
+      const k = `math.${t.id}`;
+      const tp = progress.topics[k];
+      const sections   = tp?.sections || {};
+      const learnDone  = sections.learn === true;
+      const storiesDone= sections.stories === true;
+      const quizDone   = sections.quiz === true;
+      const completed  = quizDone;
+
+      // Check unlock condition
+      const unlockedByDone = !t.unlockedBy ||
+        progress.topics[`math.${t.unlockedBy}`]?.sections?.quiz === true;
+      const locked = !t.enabled || !unlockedByDone;
+
+      // Section progress stars (Learn · Stories · Quiz)
+      const starStyle = (done) => `font-size:1.1rem;opacity:${done?'1':'0.25'};filter:${done?'drop-shadow(0 0 4px #FFD93D)':'grayscale(1)'};transition:all .3s;`;
+      const stars = locked ? '' : `
+        <div style="display:flex;flex-direction:column;gap:2px;justify-content:center;position:absolute;right:-28px;top:50%;transform:translateY(-50%);z-index:5;">
+          <span style="${starStyle(learnDone)}">⭐</span>
+          <span style="${starStyle(storiesDone)}">⭐</span>
+          <span style="${starStyle(quizDone)}">⭐</span>
+        </div>`;
+
+      // Unlock hint below locked node
+      const unlockHint = locked && t.unlockedBy ? `
+        <div style="font-size:.6rem;font-weight:900;color:rgba(255,255,255,.7);margin-top:6px;text-align:center;max-width:90px;line-height:1.3;">
+          Complete ${t.unlockedBy} first!
+        </div>` : '';
+
+      const step = document.createElement('div');
+      step.className = `step ${t.side}`;
+      step.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div style="position:relative;display:inline-block;">
+            <div class="node ${t.color}${completed ? ' done' : ''}${locked ? ' locked' : ''}"
+                 ${locked ? '' : `onclick="goTopic('${t.file}')"`}>
+              <span class="node-emoji">${locked ? '🔒' : t.emoji}</span>
+              <span class="node-label">${t.label}</span>
+              ${completed ? '<div class="star-badge">🏆</div>' : ''}
+            </div>
+            ${stars}
+          </div>
+          ${unlockHint}
+        </div>`;
+      container.appendChild(step);
+    });
+  }
+
+  setTimeout(() => { drawPath(); addDecorations(); }, 50);
+}
+
+window.goTopic = (file) => { if (file && file !== '#') window.location.href = file; };
+
+function drawPath() {
+  const wrap = document.getElementById('mapWrap');
+  const svg  = document.getElementById('pathSvg');
+  const nodes = Array.from(wrap.querySelectorAll('.node'));
+  if (nodes.length < 2) return;
+
+  const wrapRect = wrap.getBoundingClientRect();
+  const pts = nodes.map(n => {
+    const r = n.getBoundingClientRect();
+    return {
+      x: r.left - wrapRect.left + r.width / 2,
+      y: r.top  - wrapRect.top  + r.height / 2
+    };
+  });
+  const maxY = Math.max(...pts.map(p => p.y)) + 60;
+  svg.setAttribute('viewBox', `0 0 ${wrapRect.width} ${maxY}`);
+  svg.style.height = maxY + 'px';
+
+  let d = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i-1], b = pts[i];
+    const midY = (a.y + b.y) / 2;
+    d += ` C ${a.x} ${midY}, ${b.x} ${midY}, ${b.x} ${b.y}`;
+  }
+
+  svg.innerHTML = '';
+  svg.appendChild(makePath(d, 'var(--vm-glow-color)', 24, 'none'));
+  svg.appendChild(makePath(d, 'rgba(0,0,0,0.08)', 14, 'none'));
+  svg.appendChild(makePath(d, 'var(--vm-path-color)', 9, '18 13'));
+}
+
+function makePath(d, stroke, width, dash) {
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  p.setAttribute('d', d);
+  p.setAttribute('fill', 'none');
+  p.setAttribute('stroke', stroke);
+  p.setAttribute('stroke-width', width);
+  p.setAttribute('stroke-linecap', 'round');
+  if (dash !== 'none') p.setAttribute('stroke-dasharray', dash);
+  return p;
+}
+
+function addDecorations() {
+  const theme = getTheme(); if (!theme) return;
+  const wrap = document.getElementById('mapWrap');
+  const h = wrap.offsetHeight;
+  // remove old decorations
+  wrap.querySelectorAll('.deco').forEach(el => el.remove());
+  const decos = theme.decoEmojis;
+  for (let i = 0; i < 14; i++) {
+    const el = document.createElement('span');
+    el.className = 'deco sway';
+    const onLeft = Math.random() < 0.5;
+    el.style.cssText = `left:${onLeft ? 1+Math.random()*9 : 88+Math.random()*8}%;top:${80 + (i/14)*(h-160)}px;font-size:${28+Math.random()*16}px;animation-duration:${3+Math.random()*3}s;animation-delay:${Math.random()*3}s;`;
+    el.textContent = decos[i % decos.length];
+    wrap.appendChild(el);
+  }
+}
+
+// ── BOOT ──
+const existing = ensureTheme();
+if (existing) {
+  document.getElementById('picker').classList.add('hide');
+  document.getElementById('hud').style.display = 'flex';
+  document.getElementById('mapWrap').style.display = 'block';
+  bootMap();
+}
+
+window.addEventListener('resize', drawPath);
+
+// ── REGISTER PWA SERVICE WORKER ──
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+}
+</script>
+</body>
+</html>

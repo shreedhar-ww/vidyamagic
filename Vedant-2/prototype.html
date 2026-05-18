@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Math Magic — Class 2</title>
+  <title>Math Magic — Adventure Map</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 
@@ -12,409 +12,455 @@
     :root {
       --yellow: #FFD93D;
       --orange: #FF6B35;
-      --pink:   #FF6B9D;
+      --pink:   #F15BB5;
       --purple: #9B5DE5;
       --blue:   #00BBF9;
       --green:  #00F5D4;
-      --red:    #F15BB5;
-      --bg:     #FFF9F0;
     }
 
     body {
       font-family: 'Nunito', sans-serif;
-      background: var(--bg);
+      background: linear-gradient(180deg, #6EC6F5 0%, #A8E6CF 35%, #7BC47A 70%, #5AA85A 100%);
+      min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* ── floating stars in bg ── */
-    .star {
-      position: fixed;
-      width: 8px; height: 8px;
-      background: var(--yellow);
-      clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-      animation: floatStar 6s infinite ease-in-out;
-      opacity: 0.5;
-      z-index: 0;
-    }
-    @keyframes floatStar {
-      0%,100% { transform: translateY(0) rotate(0deg); }
-      50%      { transform: translateY(-20px) rotate(180deg); }
-    }
-
-    /* ── HEADER ── */
-    header {
-      background: linear-gradient(135deg, #9B5DE5, #F15BB5, #FF6B35);
-      padding: 20px 30px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    header::after {
-      content: '';
-      position: absolute; bottom: -20px; left: 0; right: 0;
-      height: 40px;
-      background: var(--bg);
-      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-    }
-
-    .header-emoji {
-      font-size: 60px;
-      display: block;
-      animation: bounce 1.5s infinite;
-    }
-    @keyframes bounce {
-      0%,100% { transform: translateY(0); }
-      50%      { transform: translateY(-12px); }
-    }
-
-    header h1 {
-      color: #fff;
-      font-size: 2.8rem;
-      font-weight: 900;
-      text-shadow: 3px 3px 0 rgba(0,0,0,0.15);
-      margin: 8px 0 4px;
-    }
-    header p {
-      color: rgba(255,255,255,0.9);
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    /* ── STARS BAR ── */
-    .stars-bar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      padding: 18px;
-      background: #fff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    /* ── HUD ── */
+    .hud {
       position: sticky;
       top: 0;
       z-index: 100;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(12px);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
-    .stars-bar span { font-size: 1rem; font-weight: 700; color: #555; }
-    .star-count {
-      font-size: 1.3rem;
-      font-weight: 900;
-      color: var(--orange);
-      background: var(--yellow);
-      padding: 4px 14px;
-      border-radius: 20px;
-    }
-    .progress-wrap {
-      flex: 1; max-width: 300px;
-      height: 14px;
-      background: #eee;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .progress-bar {
-      height: 100%;
-      width: 100%;
-      background: linear-gradient(90deg, var(--green), var(--blue));
-      border-radius: 10px;
-      animation: growBar 1.5s ease-out;
-    }
-    @keyframes growBar { from { width: 0; } }
+    .hud-logo { font-size: 1.5rem; font-weight: 900; background: linear-gradient(135deg,#9B5DE5,#F15BB5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hud-stars { background: var(--yellow); padding: 5px 14px; border-radius: 20px; font-size: 1rem; font-weight: 900; color: #333; }
+    .hud-bar-wrap { flex: 1; max-width: 220px; height: 13px; background: #eee; border-radius: 10px; overflow: hidden; }
+    .hud-bar { height: 100%; width: 100%; background: linear-gradient(90deg, var(--green), var(--blue)); border-radius: 10px; }
+    .hud-label { font-size: 0.82rem; font-weight: 700; color: #aaa; white-space: nowrap; }
 
-    /* ── TERM LABEL ── */
-    .term-label {
-      text-align: center;
-      margin: 30px 20px 10px;
-      font-size: 1.4rem;
-      font-weight: 900;
-      color: var(--purple);
-      letter-spacing: 1px;
+    /* ── MAP WRAPPER ── */
+    .map-wrap {
       position: relative;
-      z-index: 1;
-    }
-    .term-label::before, .term-label::after {
-      content: '✦';
-      margin: 0 10px;
-      color: var(--yellow);
-    }
-
-    /* ── GRID ── */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-      padding: 10px 30px 30px;
-      max-width: 1100px;
+      max-width: 480px;
       margin: 0 auto;
-      position: relative;
-      z-index: 1;
+      padding: 20px 20px 80px;
     }
 
-    /* ── TOPIC CARD ── */
-    .card {
-      border-radius: 24px;
-      padding: 24px 16px 20px;
-      text-align: center;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 6px 0 rgba(0,0,0,0.12);
-    }
-    .card:hover {
-      transform: translateY(-6px) scale(1.03);
-      box-shadow: 0 14px 0 rgba(0,0,0,0.10);
-    }
-    .card:active { transform: translateY(0) scale(0.97); }
-
-    .card-emoji {
-      font-size: 52px;
-      display: block;
-      margin-bottom: 10px;
-      animation: wobble 3s infinite ease-in-out;
-    }
-    @keyframes wobble {
-      0%,100% { transform: rotate(-5deg); }
-      50%      { transform: rotate(5deg); }
-    }
-
-    .card h3 {
-      font-size: 1.1rem;
-      font-weight: 900;
-      color: #fff;
-      text-shadow: 1px 2px 0 rgba(0,0,0,0.15);
-      margin-bottom: 8px;
-    }
-    .card .badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.35);
-      color: #fff;
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 12px;
-    }
-
-    /* card colors */
-    .c1 { background: linear-gradient(135deg,#FF6B35,#FFD93D); }
-    .c2 { background: linear-gradient(135deg,#9B5DE5,#F15BB5); }
-    .c3 { background: linear-gradient(135deg,#00BBF9,#9B5DE5); }
-    .c4 { background: linear-gradient(135deg,#00F5D4,#00BBF9); }
-    .c5 { background: linear-gradient(135deg,#F15BB5,#FF6B35); }
-    .c6 { background: linear-gradient(135deg,#FFD93D,#00F5D4); }
-    .c7 { background: linear-gradient(135deg,#9B5DE5,#00BBF9); }
-    .c8 { background: linear-gradient(135deg,#FF6B35,#F15BB5); }
-    .c9 { background: linear-gradient(135deg,#00F5D4,#9B5DE5); }
-    .c10{ background: linear-gradient(135deg,#FFD93D,#FF6B35); }
-    .c11{ background: linear-gradient(135deg,#00BBF9,#F15BB5); }
-    .c12{ background: linear-gradient(135deg,#F15BB5,#9B5DE5); }
-
-    /* lock overlay */
-    .card.locked::after {
-      content: '🔒';
+    /* Clouds */
+    .cloud {
       position: absolute;
-      inset: 0;
-      background: rgba(255,255,255,0.55);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.85;
+      animation: cloudDrift ease-in-out infinite;
+    }
+    @keyframes cloudDrift {
+      0%,100% { transform: translateX(0); }
+      50%      { transform: translateX(12px); }
+    }
+
+    /* ── MASCOT ── */
+    .mascot-box {
+      text-align: center;
+      padding: 24px 0 10px;
+      position: relative;
+      z-index: 2;
+    }
+    .mascot-emoji {
+      font-size: 68px;
+      display: block;
+      animation: mascotBob 2.2s ease-in-out infinite;
+    }
+    @keyframes mascotBob {
+      0%,100% { transform: translateY(0) rotate(-4deg); }
+      50%      { transform: translateY(-12px) rotate(4deg); }
+    }
+    .speech-bubble {
+      display: inline-block;
+      background: #fff;
+      border-radius: 20px;
+      padding: 10px 22px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #555;
+      margin-top: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      top: -11px; left: 50%;
+      transform: translateX(-50%);
+      border: 8px solid transparent;
+      border-bottom-color: #fff;
+    }
+
+    /* ── TERM BANNER ── */
+    .term-banner {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 36px;
-      border-radius: 24px;
+      gap: 10px;
+      margin: 30px 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+    .term-banner::before {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; top: 50%;
+      height: 3px;
+      background: rgba(255,255,255,0.4);
+      border-radius: 2px;
+      z-index: -1;
+    }
+    .term-pill {
+      padding: 9px 26px;
+      border-radius: 30px;
+      font-size: 0.92rem;
+      font-weight: 900;
+      color: #fff;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.15);
+      white-space: nowrap;
+    }
+    .term1 { background: linear-gradient(135deg, #9B5DE5, #F15BB5); }
+    .term2 { background: linear-gradient(135deg, #F15BB5, #FF6B35); }
+    .term3 { background: linear-gradient(135deg, #00BBF9, #9B5DE5); }
+
+    /* ── PATH SVG ── */
+    #pathSvg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: visible;
     }
 
-    /* ── MODAL (topic detail) ── */
-    .overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 200;
-      justify-content: center;
+    /* ── STEPS ── */
+    .step {
+      display: flex;
+      margin-bottom: 54px;
+      position: relative;
+      z-index: 2;
+    }
+    .step.left   { justify-content: flex-start;  padding-left: 20px; }
+    .step.center { justify-content: center; }
+    .step.right  { justify-content: flex-end;    padding-right: 20px; }
+
+    /* ── NODE ── */
+    .node {
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      padding: 20px;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      border: 5px solid rgba(255,255,255,0.55);
+      box-shadow: 0 8px 0 rgba(0,0,0,0.15), 0 0 0 3px rgba(255,255,255,0.25);
+      transition: transform 0.2s, box-shadow 0.2s;
+      user-select: none;
+    }
+    .node:hover {
+      transform: translateY(-8px) scale(1.08);
+      box-shadow: 0 16px 0 rgba(0,0,0,0.12), 0 0 28px rgba(255,255,255,0.5);
+    }
+    .node:active { transform: translateY(0) scale(0.96); }
+
+    .node.done {
+      box-shadow: 0 8px 0 rgba(0,0,0,0.15), 0 0 22px rgba(255,215,0,0.55), 0 0 50px rgba(255,215,0,0.2);
+    }
+
+    .node-emoji { font-size: 38px; line-height: 1; margin-bottom: 4px; }
+    .node-label {
+      font-size: 0.65rem; font-weight: 900; color: #fff;
+      text-align: center; text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+      line-height: 1.25; padding: 0 6px; max-width: 88px;
+    }
+
+    .star-badge {
+      position: absolute;
+      top: -9px; right: -9px;
+      width: 30px; height: 30px;
+      background: var(--yellow);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      animation: starPulse 2s ease-in-out infinite;
+    }
+    @keyframes starPulse {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.2); }
+    }
+
+    /* Node colours */
+    .n1  { background: linear-gradient(135deg,#FF6B35,#FFD93D); }
+    .n2  { background: linear-gradient(135deg,#9B5DE5,#F15BB5); }
+    .n3  { background: linear-gradient(135deg,#00BBF9,#9B5DE5); }
+    .n4  { background: linear-gradient(135deg,#00F5D4,#00BBF9); }
+    .n5  { background: linear-gradient(135deg,#F15BB5,#FF6B35); }
+    .n6  { background: linear-gradient(135deg,#FFD93D,#00F5D4); }
+    .n7  { background: linear-gradient(135deg,#9B5DE5,#00BBF9); }
+    .n8  { background: linear-gradient(135deg,#FF6B35,#F15BB5); }
+    .n9  { background: linear-gradient(135deg,#00F5D4,#9B5DE5); }
+    .n10 { background: linear-gradient(135deg,#FFD93D,#FF6B35); }
+    .n11 { background: linear-gradient(135deg,#00BBF9,#F15BB5); }
+    .n12 { background: linear-gradient(135deg,#F15BB5,#9B5DE5); }
+
+    /* ── FINISH ── */
+    .finish {
+      text-align: center;
+      padding: 20px 0 40px;
+      position: relative;
+      z-index: 2;
+    }
+    .finish-icon { font-size: 64px; animation: bounce 1.4s ease-in-out infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+    .finish-badge {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 12px 32px;
+      background: linear-gradient(135deg,#FFD93D,#FF6B35);
+      color: #fff;
+      border-radius: 40px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.15);
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.15);
+    }
+
+    /* ── MODAL ── */
+    .overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 200;
+      justify-content: center; align-items: center; padding: 20px;
     }
     .overlay.show { display: flex; }
 
     .modal {
-      background: #fff;
-      border-radius: 30px;
-      padding: 36px 30px 28px;
-      max-width: 480px;
-      width: 100%;
-      position: relative;
+      background: #fff; border-radius: 30px;
+      padding: 36px 28px 26px; max-width: 420px;
+      width: 100%; text-align: center;
       animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
-      text-align: center;
     }
     @keyframes popIn {
       from { transform: scale(0.6); opacity: 0; }
       to   { transform: scale(1);   opacity: 1; }
     }
+    .modal-emoji { font-size: 68px; display: block; margin-bottom: 8px; }
+    .modal h2 { font-size: 1.7rem; font-weight: 900; color: #333; margin-bottom: 6px; }
+    .modal p  { color: #666; font-size: 0.98rem; line-height: 1.6; margin-bottom: 20px; }
 
-    .modal-emoji { font-size: 70px; display: block; margin-bottom: 10px; }
-    .modal h2 { font-size: 1.8rem; font-weight: 900; color: #333; margin-bottom: 8px; }
-    .modal p  { color: #666; font-size: 1rem; line-height: 1.6; margin-bottom: 20px; }
-
-    .modal-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .modal-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
     .btn {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 50px;
-      font-size: 1rem;
-      font-weight: 900;
-      cursor: pointer;
+      padding: 11px 22px; border: none; border-radius: 50px;
+      font-size: 0.95rem; font-weight: 900; cursor: pointer;
       font-family: 'Nunito', sans-serif;
       transition: transform 0.15s, box-shadow 0.15s;
-      box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+      box-shadow: 0 4px 0 rgba(0,0,0,0.14);
     }
     .btn:hover  { transform: translateY(-3px); }
-    .btn:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.15); }
-    .btn-play  { background: var(--green); color: #1a1a1a; }
-    .btn-learn { background: var(--blue);  color: #fff; }
+    .btn:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.14); }
+    .btn-play  { background: var(--green);  color: #1a1a1a; }
+    .btn-learn { background: var(--blue);   color: #fff; }
     .btn-close { background: #eee; color: #555; }
 
-    /* ── CONFETTI burst ── */
+    /* ── CONFETTI ── */
     .confetti-piece {
-      position: fixed;
-      width: 10px; height: 14px;
-      border-radius: 2px;
+      position: fixed; width: 10px; height: 14px;
+      border-radius: 2px; pointer-events: none; z-index: 300;
       animation: confettiFall 1.2s ease-in forwards;
-      z-index: 300;
-      pointer-events: none;
     }
     @keyframes confettiFall {
       0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
       100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
     }
 
-    /* ── FOOTER ── */
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #aaa;
-      font-size: 0.9rem;
-      font-weight: 700;
+    /* ── DECORATIONS ── */
+    .deco {
+      position: absolute;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
     }
-    footer span { color: var(--pink); }
+    .deco.sway  { animation: treeSway  ease-in-out infinite; }
+    .deco.float { animation: floatDeco ease-in-out infinite; }
+    @keyframes treeSway  { 0%,100%{transform:rotate(-4deg)} 50%{transform:rotate(4deg)} }
+    @keyframes floatDeco { 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-16px) rotate(180deg)} }
+
+    footer {
+      text-align: center; padding: 24px;
+      color: rgba(255,255,255,0.75); font-size: 0.88rem; font-weight: 700;
+    }
   </style>
 </head>
 <body>
 
-<!-- Floating bg stars -->
-<script>
-  const colors = ['#FFD93D','#FF6B35','#9B5DE5','#00BBF9','#F15BB5'];
-  for (let i = 0; i < 18; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    s.style.cssText = `
-      left:${Math.random()*100}vw;
-      top:${Math.random()*100}vh;
-      width:${6+Math.random()*10}px;
-      height:${6+Math.random()*10}px;
-      background:${colors[i%colors.length]};
-      animation-delay:${Math.random()*4}s;
-      animation-duration:${4+Math.random()*4}s;
-    `;
-    document.body.appendChild(s);
-  }
-</script>
-
-<!-- Header -->
-<header>
-  <span class="header-emoji">🧮</span>
-  <h1>Math Magic!</h1>
-  <p>Class 2 · Let's learn &amp; play 🎉</p>
-</header>
-
-<!-- Stars bar -->
-<div class="stars-bar">
-  <span>⭐ My Stars:</span>
-  <div class="star-count">12 ⭐</div>
-  <div class="progress-wrap">
-    <div class="progress-bar"></div>
-  </div>
-  <span style="font-size:0.85rem;color:#aaa;">12 / 12 topics ready 🎉</span>
+<!-- HUD -->
+<div class="hud">
+  <span class="hud-logo">🧮 Math Magic!</span>
+  <div class="hud-stars">⭐ 12</div>
+  <div class="hud-bar-wrap"><div class="hud-bar"></div></div>
+  <span class="hud-label">12 / 12 done 🎉</span>
 </div>
 
-<!-- TERM 1 -->
-<div class="term-label">Term 1 — Numbers &amp; Operations</div>
-<div class="grid">
-  <div class="card c1" onclick="openModal('Place Value Explorer','🔢','From Ones to Ten-Lakhs! Build numbers with sliders, learn place values, compare &amp; order. Choose 3 to 7 digits.','topic-numbers.html')">
-    <span class="card-emoji">🔢</span>
-    <h3>Place Value Explorer</h3>
-    <span class="badge">✅ Done</span>
+<!-- Adventure Map -->
+<div class="map-wrap" id="mapWrap">
+
+  <!-- SVG path drawn by JS -->
+  <svg id="pathSvg"></svg>
+
+  <!-- Mascot -->
+  <div class="mascot-box">
+    <span class="mascot-emoji">🦉</span>
+    <div class="speech-bubble">Welcome back, Math Hero!<br>Ready for today's adventure? 🚀</div>
   </div>
-  <div class="card c2" onclick="openModal('Addition','➕','Add 2 &amp; 3 digit numbers. Learn the carry-over method with fun word problems!','topic-addition.html')">
-    <span class="card-emoji">➕</span>
-    <h3>Addition</h3>
-    <span class="badge">✅ Done</span>
+
+  <!-- ── TERM 1 ── -->
+  <div class="term-banner">
+    <span style="font-size:1.4rem">🏁</span>
+    <div class="term-pill term1">Term 1 — Numbers &amp; Operations</div>
+    <span style="font-size:1.4rem">🏁</span>
   </div>
-  <div class="card c3" onclick="openModal('Subtraction','➖','Borrow &amp; subtract. Solve story sums — like a math detective!','topic-subtraction.html')">
-    <span class="card-emoji">➖</span>
-    <h3>Subtraction</h3>
-    <span class="badge">✅ Done</span>
+
+  <div class="step left" data-node="1">
+    <div class="node n1 done" onclick="openModal('Place Value Explorer','🔢','From Ones to Ten-Lakhs! Build numbers with sliders, learn place values, compare &amp; order. Choose 3 to 7 digits.','topic-numbers.html')">
+      <span class="node-emoji">🔢</span>
+      <span class="node-label">Place Value</span>
+      <div class="star-badge">⭐</div>
+    </div>
   </div>
-  <div class="card c4" onclick="openModal('Multiplication','✖️','Repeated addition, times tables 1–10, and a fun multiplication grid!','topic-multiplication.html')">
-    <span class="card-emoji">✖️</span>
-    <h3>Multiplication</h3>
-    <span class="badge">✅ Done</span>
+
+  <div class="step center" data-node="2">
+    <div class="node n2 done" onclick="openModal('Addition','➕','Add 2 &amp; 3 digit numbers. Learn the carry-over method with fun word problems!','topic-addition.html')">
+      <span class="node-emoji">➕</span>
+      <span class="node-label">Addition</span>
+      <div class="star-badge">⭐</div>
+    </div>
   </div>
+
+  <div class="step right" data-node="3">
+    <div class="node n3 done" onclick="openModal('Subtraction','➖','Borrow &amp; subtract. Solve story sums — like a math detective!','topic-subtraction.html')">
+      <span class="node-emoji">➖</span>
+      <span class="node-label">Subtraction</span>
+      <div class="star-badge">⭐</div>
+    </div>
+  </div>
+
+  <div class="step center" data-node="4">
+    <div class="node n4 done" onclick="openModal('Multiplication','✖️','Repeated addition, times tables 1–10, and a fun multiplication grid!','topic-multiplication.html')">
+      <span class="node-emoji">✖️</span>
+      <span class="node-label">Multiplication</span>
+      <div class="star-badge">⭐</div>
+    </div>
+  </div>
+
+  <!-- ── TERM 2 ── -->
+  <div class="term-banner">
+    <span style="font-size:1.4rem">🏁</span>
+    <div class="term-pill term2">Term 2 — Time, Shapes &amp; Measurement</div>
+    <span style="font-size:1.4rem">🏁</span>
+  </div>
+
+  <div class="step right" data-node="5">
+    <div class="node n5 done" onclick="openModal('Clock &amp; Time','🕒','Read analog &amp; digital clocks. Learn o\'clock, half past, quarter past &amp; to!','topic-clock.html')">
+      <span class="node-emoji">🕒</span>
+      <span class="node-label">Clock &amp; Time</span>
+      <div class="star-badge">⭐</div>
+    </div>
+  </div>
+
+  <div class="step center" data-node="6">
+    <div class="node n6 done" onclick="openModal('Division','➗','Equal sharing &amp; grouping. Simple division facts made fun!','topic-division.html')">
+      <span class="node-emoji">➗</span>
+      <span class="node-label">Division</span>
+      <div class="star-badge">⭐</div>
+    </div>
+  </div>
+
+  <div class="step left" data-node="7">
+    <div class="node n7 done" onclick="openModal('Geometry','🔷','2D &amp; 3D shapes — circles, triangles, cubes, spheres and more!','topic-geometry.html')">
+      <span class="node-emoji">🔷</span>
+      <span class="node-label">Geometry</span>
+      <div class="star-badge">⭐</div>
+    </div>
+  </div>
+
+  <div class="step center" data-node="8">
+    <div class="node n8 done" onclick="openModal('Measurement','📏','Length, weight &amp; capacity. Learn cm, m, g, kg and litres!','topic-measurement.html')">
+      <span class="node-emoji">📏</span>
+      <span class="node-label">Measurement</span>
+      <div class="star-badge">⭐</div>
+    </div>
+  </div>
+
+  <div class="step right" data-node="9">
+    <div class="node n9 done" onclick="openModal('Money','💰','Indian coins &amp; notes. Add and subtract money, go shopping!','topic-money.html')">
+      <span class="node-emoji">💰</span>
+      <span class="node-label">Money</span>
+      <div class="star-badge">⭐</div>
+    </div>
+  </div>
+
+  <!-- ── TERM 3 ── -->
+  <div class="term-banner">
+    <span style="font-size:1.4rem">🏁</span>
+    <div class="term-pill term3">Term 3 — Logic &amp; Advanced Basics</div>
+    <span style="font-size:1.4rem">🏁</span>
+  </div>
+
+  <div class="step center" data-node="10">
+    <div class="node n10 done" onclick="openModal('Fractions','🍕','Half, one-third, one-fourth — split pizzas &amp; shapes the fun way!','topic-fractions.html')">
+      <span class="node-emoji">🍕</span>
+      <span class="node-label">Fractions</span>
+      <div class="star-badge">⭐</div>
+    </div>
+  </div>
+
+  <div class="step left" data-node="11">
+    <div class="node n11 done" onclick="openModal('Patterns &amp; Skip Counting','🔁','Odd &amp; even numbers, skip counting by 2s, 5s and 10s!','topic-patterns.html')">
+      <span class="node-emoji">🔁</span>
+      <span class="node-label">Patterns</span>
+      <div class="star-badge">⭐</div>
+    </div>
+  </div>
+
+  <div class="step right" data-node="12">
+    <div class="node n12 done" onclick="openModal('Data Handling','📊','Tally marks, picture graphs &amp; bar charts — read &amp; draw data!','topic-data.html')">
+      <span class="node-emoji">📊</span>
+      <span class="node-label">Data Handling</span>
+      <div class="star-badge">⭐</div>
+    </div>
+  </div>
+
+  <!-- Finish -->
+  <div class="finish">
+    <div class="finish-icon">🏆</div>
+    <div class="finish-badge">All Topics Conquered! 🎉</div>
+  </div>
+
 </div>
 
-<!-- TERM 2 -->
-<div class="term-label">Term 2 — Time, Shapes &amp; Measurement</div>
-<div class="grid">
-  <div class="card c5" onclick="openModal('Clock &amp; Time','🕒','Read analog &amp; digital clocks. Learn o\'clock, half past, quarter past &amp; to!','topic-clock.html')">
-    <span class="card-emoji">🕒</span>
-    <h3>Clock &amp; Time</h3>
-    <span class="badge">✅ Done</span>
-  </div>
-  <div class="card c6" onclick="openModal('Division','➗','Equal sharing &amp; grouping. Simple division facts made fun!','topic-division.html')">
-    <span class="card-emoji">➗</span>
-    <h3>Division</h3>
-    <span class="badge">✅ Done</span>
-  </div>
-  <div class="card c7" onclick="openModal('Geometry','🔷','2D &amp; 3D shapes — circles, triangles, cubes, spheres and more!','topic-geometry.html')">
-    <span class="card-emoji">🔷</span>
-    <h3>Geometry</h3>
-    <span class="badge">✅ Done</span>
-  </div>
-  <div class="card c8" onclick="openModal('Measurement','📏','Length, weight &amp; capacity. Learn cm, m, g, kg and litres!','topic-measurement.html')">
-    <span class="card-emoji">📏</span>
-    <h3>Measurement</h3>
-    <span class="badge">✅ Done</span>
-  </div>
-  <div class="card c9" onclick="openModal('Money','💰','Indian coins &amp; notes. Add and subtract money, go shopping!','topic-money.html')">
-    <span class="card-emoji">💰</span>
-    <h3>Money</h3>
-    <span class="badge">✅ Done</span>
-  </div>
-</div>
+<footer>Made with ♥ for young math wizards ✨</footer>
 
-<!-- TERM 3 -->
-<div class="term-label">Term 3 — Logic &amp; Advanced Basics</div>
-<div class="grid">
-  <div class="card c10" onclick="openModal('Fractions','🍕','Half, one-third, one-fourth — split pizzas &amp; shapes the fun way!','topic-fractions.html')">
-    <span class="card-emoji">🍕</span>
-    <h3>Fractions</h3>
-    <span class="badge">✅ Done</span>
-  </div>
-  <div class="card c11" onclick="openModal('Patterns &amp; Skip Counting','🔁','Odd &amp; even numbers, skip counting by 2s, 5s and 10s!','topic-patterns.html')">
-    <span class="card-emoji">🔁</span>
-    <h3>Patterns &amp; Skip Counting</h3>
-    <span class="badge">✅ Done</span>
-  </div>
-  <div class="card c12" onclick="openModal('Data Handling','📊','Tally marks, picture graphs &amp; bar charts — read &amp; draw data!','topic-data.html')">
-    <span class="card-emoji">📊</span>
-    <h3>Data Handling</h3>
-    <span class="badge">✅ Done</span>
-  </div>
-</div>
-
-<footer>Made with <span>♥</span> for young math wizards ✨</footer>
-
-<!-- Modal overlay -->
-<div class="overlay" id="overlay" onclick="closeModal(event)">
-  <div class="modal" id="modal">
+<!-- Modal -->
+<div class="overlay" id="overlay" onclick="closeModalOverlay(event)">
+  <div class="modal">
     <span class="modal-emoji" id="mEmoji"></span>
     <h2 id="mTitle"></h2>
     <p id="mDesc"></p>
-    <div id="mMeta" style="margin-bottom:16px;font-size:0.9rem;color:#aaa;font-weight:700;"></div>
     <div class="modal-btns">
       <button class="btn btn-play"  onclick="goToTopic()">🎮 Play Game</button>
       <button class="btn btn-learn" onclick="goToTopic()">📖 Learn Now</button>
@@ -424,14 +470,111 @@
 </div>
 
 <script>
+  /* ── PATH DRAWING ── */
+  function drawPath() {
+    const wrap = document.getElementById('mapWrap');
+    const svg  = document.getElementById('pathSvg');
+    const nodes = Array.from(wrap.querySelectorAll('.node'));
+    if (nodes.length < 2) return;
+
+    const wrapRect = wrap.getBoundingClientRect();
+
+    const pts = nodes.map(n => {
+      const r = n.getBoundingClientRect();
+      return {
+        x: r.left - wrapRect.left + r.width  / 2,
+        y: r.top  - wrapRect.top  + r.height / 2
+      };
+    });
+
+    const maxY = Math.max(...pts.map(p => p.y)) + 60;
+    svg.setAttribute('viewBox', `0 0 ${wrapRect.width} ${maxY}`);
+    svg.style.height = maxY + 'px';
+
+    /* smooth bezier through all points */
+    let d = `M ${pts[0].x} ${pts[0].y}`;
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i-1], b = pts[i];
+      const midY = (a.y + b.y) / 2;
+      d += ` C ${a.x} ${midY}, ${b.x} ${midY}, ${b.x} ${b.y}`;
+    }
+
+    /* glow layer */
+    const glow = makePath(d, 'rgba(255,220,50,0.35)', 26, 'none');
+    /* shadow layer */
+    const shadow = makePath(d, 'rgba(0,0,0,0.08)', 14, 'none');
+    /* dashed trail */
+    const trail = makePath(d, 'rgba(255,255,255,0.82)', 9, '18 13');
+
+    svg.innerHTML = '';
+    svg.appendChild(glow);
+    svg.appendChild(shadow);
+    svg.appendChild(trail);
+  }
+
+  function makePath(d, stroke, width, dash) {
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', d);
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke', stroke);
+    p.setAttribute('stroke-width', width);
+    p.setAttribute('stroke-linecap', 'round');
+    if (dash !== 'none') p.setAttribute('stroke-dasharray', dash);
+    return p;
+  }
+
+  /* ── DECORATIONS ── */
+  function addDecorations() {
+    const wrap  = document.getElementById('mapWrap');
+    const h     = wrap.offsetHeight;
+    const trees = ['🌳','🌲','🌴','🌵','🌿'];
+    const extras = ['⭐','🌸','🦋','🍀','✨','🌟'];
+
+    for (let i = 0; i < 14; i++) {
+      const el = document.createElement('span');
+      el.className = 'deco sway';
+      const onLeft = Math.random() < 0.5;
+      el.style.cssText = `
+        left: ${onLeft ? 1 + Math.random()*9 : 88 + Math.random()*8}%;
+        top:  ${80 + (i / 14) * (h - 160)}px;
+        font-size: ${28 + Math.random()*18}px;
+        animation-duration: ${3 + Math.random()*3}s;
+        animation-delay: ${Math.random()*3}s;
+      `;
+      el.textContent = trees[i % trees.length];
+      wrap.appendChild(el);
+    }
+
+    for (let i = 0; i < 12; i++) {
+      const el = document.createElement('span');
+      el.className = 'deco float';
+      el.style.cssText = `
+        left: ${Math.random()*88}%;
+        top:  ${Math.random()*h}px;
+        font-size: ${14 + Math.random()*12}px;
+        animation-duration: ${4 + Math.random()*4}s;
+        animation-delay: ${Math.random()*5}s;
+        opacity: 0.6;
+      `;
+      el.textContent = extras[i % extras.length];
+      wrap.appendChild(el);
+    }
+  }
+
+  window.addEventListener('load', () => {
+    drawPath();
+    addDecorations();
+  });
+  window.addEventListener('resize', drawPath);
+
+  /* ── MODAL ── */
   let currentFile = '';
 
   function openModal(title, emoji, desc, file) {
     currentFile = file;
     document.getElementById('mTitle').textContent = title;
     document.getElementById('mEmoji').textContent = emoji;
-    document.getElementById('mDesc').innerHTML = desc;
-    document.getElementById('mMeta').textContent = '';
+    document.getElementById('mDesc').innerHTML   = desc;
     document.getElementById('overlay').classList.add('show');
     celebrate();
   }
@@ -440,25 +583,27 @@
     if (currentFile) window.location.href = currentFile;
   }
 
-  function closeModal(e) {
-    if (e.target.id === 'overlay') document.getElementById('overlay').classList.remove('show');
+  function closeModalOverlay(e) {
+    if (e.target.id === 'overlay')
+      document.getElementById('overlay').classList.remove('show');
   }
 
+  /* ── CONFETTI ── */
   function celebrate() {
-    const colors = ['#FFD93D','#FF6B35','#9B5DE5','#00BBF9','#F15BB5','#00F5D4'];
-    for (let i = 0; i < 40; i++) {
+    const cols = ['#FFD93D','#FF6B35','#9B5DE5','#00BBF9','#F15BB5','#00F5D4'];
+    for (let i = 0; i < 44; i++) {
       const c = document.createElement('div');
       c.className = 'confetti-piece';
       c.style.cssText = `
-        left: ${20 + Math.random() * 60}vw;
-        top: 40vh;
-        background: ${colors[Math.floor(Math.random() * colors.length)]};
-        animation-delay: ${Math.random() * 0.5}s;
-        animation-duration: ${0.9 + Math.random() * 0.6}s;
+        left: ${15 + Math.random()*70}vw;
+        top: 38vh;
+        background: ${cols[i % cols.length]};
+        animation-delay: ${Math.random()*0.5}s;
+        animation-duration: ${0.9 + Math.random()*0.7}s;
         transform: rotate(${Math.random()*360}deg);
       `;
       document.body.appendChild(c);
-      setTimeout(() => c.remove(), 1600);
+      setTimeout(() => c.remove(), 1700);
     }
   }
 </script>

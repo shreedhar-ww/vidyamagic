@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#9B5DE5"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="stylesheet" href="css/themes.css"/>
+<title>Subtraction — VidyaMagic</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:#FFF9F0;min-height:100vh;overflow-x:hidden;}
+
+/* ── HERO ── */
+.hero{background:var(--vm-hero-gradient);padding:0 0 32px;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;bottom:-20px;left:0;right:0;height:40px;background:#FFF9F0;border-radius:50% 50% 0 0/100% 100% 0 0;}
+.hero-inner{max-width:1200px;margin:0 auto;padding:0 24px;}
+.hero-nav{display:flex;align-items:center;gap:12px;padding:14px 0 12px;position:relative;z-index:2;}
+.back-btn{background:rgba(255,255,255,.25);border:none;border-radius:50%;width:42px;height:42px;font-size:1.3rem;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0;}
+.back-btn:hover{background:rgba(255,255,255,.4);}
+.hero-title{color:#fff;font-size:1.5rem;font-weight:900;flex:1;text-shadow:1px 2px 0 rgba(0,0,0,.15);}
+.stars-pill{background:rgba(255,255,255,.25);color:#fff;font-weight:900;padding:6px 16px;border-radius:20px;font-size:.95rem;white-space:nowrap;}
+.hero-body{display:flex;align-items:center;gap:16px;position:relative;z-index:2;padding-bottom:4px;}
+.mascot-big{font-size:68px;animation:bob 2.2s ease-in-out infinite;flex-shrink:0;}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+.hero-speech{background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border-radius:20px 20px 20px 4px;padding:12px 18px;color:#fff;font-size:.95rem;font-weight:700;line-height:1.5;max-width:380px;}
+.hero-speech strong{font-weight:900;}
+
+/* ── TABS ── */
+.tabs-wrap{position:sticky;top:0;z-index:99;background:#FFF9F0;padding:12px 0 6px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.tabs{display:flex;gap:8px;max-width:1200px;margin:0 auto;padding:0 24px;}
+.tab{flex:0 0 auto;width:120px;padding:9px 6px;text-align:center;font-weight:900;font-size:.82rem;border-radius:14px;cursor:pointer;border:2.5px solid #e8e0f5;color:#aaa;background:#fff;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;}
+.tab-icon{font-size:1.3rem;}
+.tab.active{background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(155,93,229,.35);}
+.tab.locked{opacity:.5;pointer-events:none;}
+.tab-lock{position:absolute;top:-4px;right:-4px;font-size:.7rem;}
+
+/* ── SCREEN ── */
+.screen{display:none;padding:18px 24px 48px;max-width:1200px;margin:0 auto;}
+.screen.active{display:block;}
+.learn-grid{display:grid;grid-template-columns:1fr;gap:18px;}
+@media(min-width:760px){.learn-grid{grid-template-columns:1fr 1fr;}.learn-grid .scard:first-child{grid-column:1/3;}}
+
+/* ── CARDS ── */
+.scard{background:#fff;border-radius:24px;padding:22px 20px;box-shadow:0 4px 20px rgba(0,0,0,.07);border:2px solid transparent;}
+.scard.purple-border{border-color:#f0e8ff;}
+.scard.yellow-border{border-color:#fff3cc;}
+.scard-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.scard-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.ic-purple{background:#f0e8ff;}
+.ic-yellow{background:#fff5cc;}
+.scard-head h3{font-size:1.05rem;font-weight:900;color:#333;}
+.scard-head p{font-size:.78rem;color:#aaa;font-weight:700;margin-top:1px;}
+
+/* ── INPUTS / BUTTONS ── */
+.num-inputs{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.num-input{width:110px;padding:10px 8px;text-align:center;font-size:1.6rem;font-weight:900;font-family:'Nunito',sans-serif;border:3px solid #e8e0f5;border-radius:16px;background:#fafafa;outline:none;transition:border-color .2s;}
+.num-input:focus{border-color:var(--vm-purple);box-shadow:0 0 0 4px rgba(155,93,229,.12);}
+.minus-sign{font-size:2rem;font-weight:900;color:var(--vm-pink);}
+.go-btn{display:block;width:100%;padding:13px;background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));border:none;border-radius:16px;color:#fff;font-size:1.05rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 0 rgba(155,93,229,.4);transition:transform .15s;}
+.go-btn:hover{transform:translateY(-2px);}
+
+/* ── COLUMN SUBTRACTION ── */
+.col-wrap{display:flex;flex-direction:column;align-items:center;gap:0;margin:16px 0;}
+.col-row{display:flex;gap:4px;justify-content:center;align-items:center;}
+.col-cell{width:58px;height:64px;display:flex;align-items:center;justify-content:center;font-size:2.1rem;font-weight:900;border-radius:14px;transition:all .3s;}
+.col-cell.digit{background:#f5f0ff;color:#333;border:2px solid #ede5ff;}
+.col-cell.digit.borrowed{background:#ffe0e0;color:#c00;border-color:#ffb3b3;text-decoration:line-through;opacity:.7;}
+.col-cell.borrow{background:var(--vm-yellow);color:#c85000;font-size:1.1rem;border-radius:10px;height:38px;min-height:38px;border:2px solid rgba(255,180,0,.5);animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
+.col-cell.result{background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));color:#fff;border-radius:14px;border:2px solid rgba(255,255,255,.3);animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
+.col-cell.op{color:var(--vm-pink);font-size:2.4rem;}
+.col-cell.blank{background:transparent;border:none;}
+.col-cell.pv{background:transparent;color:#ccc;font-size:.58rem;font-weight:900;height:22px;min-height:22px;letter-spacing:.4px;text-transform:uppercase;}
+.col-divider{height:5px;background:linear-gradient(90deg,var(--vm-purple),var(--vm-pink));border-radius:3px;margin:6px 0;width:100%;}
+@keyframes popIn{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.step-box{background:linear-gradient(135deg,#f5f0ff,#fff0f8);border-radius:16px;padding:14px 16px;margin-top:14px;border-left:4px solid var(--vm-purple);font-size:.95rem;font-weight:700;color:#555;line-height:1.6;animation:slideUp .3s ease;min-height:54px;}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.step-dots{display:flex;gap:6px;justify-content:center;margin-top:10px;}
+.sdot{width:9px;height:9px;border-radius:50%;background:#eee;transition:all .3s;}
+.sdot.done{background:var(--vm-purple);}
+.sdot.curr{background:var(--vm-yellow);transform:scale(1.4);}
+.step-btns{display:flex;gap:10px;justify-content:center;margin-top:14px;}
+.sbtn{padding:10px 22px;border:none;border-radius:50px;font-size:.9rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;transition:transform .15s;box-shadow:0 3px 0 rgba(0,0,0,.12);}
+.sbtn:hover{transform:translateY(-2px);}
+.sbtn.primary{background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));color:#fff;}
+.sbtn.secondary{background:#f0f0f0;color:#666;}
+
+/* ── NUMBER LINE ── */
+.numline-wrap{margin:16px 0;}
+.numline-controls{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.nl-label{font-weight:900;color:#888;font-size:.9rem;}
+.nl-val{font-size:1.5rem;font-weight:900;min-width:44px;text-align:center;background:#fff5cc;border-radius:10px;padding:4px 10px;color:var(--vm-orange);}
+.numline-svg-wrap{overflow-x:auto;padding:8px 0 16px;}
+.numline-eq{font-size:1.1rem;font-weight:900;color:#333;text-align:center;background:#fff;border-radius:14px;padding:12px 20px;border:2px solid #ede5ff;box-shadow:0 3px 10px rgba(0,0,0,.06);margin-top:8px;}
+
+/* ── ADAPTIVE QUIZ ── */
+.adapt-hud{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;
+  background:#fff;border-radius:18px;padding:14px 18px;
+  box-shadow:0 4px 14px rgba(0,0,0,.07);margin-bottom:18px;max-width:760px;
+}
+.skill-pill{background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));color:#fff;font-weight:900;padding:6px 14px;border-radius:14px;font-size:.85rem;}
+.diff-badge{background:var(--vm-yellow);color:#c85000;font-weight:900;padding:4px 12px;border-radius:12px;font-size:.85rem;}
+.streak-badge{background:#fff0e0;color:var(--vm-orange);font-weight:900;padding:4px 12px;border-radius:12px;font-size:.85rem;}
+.mastery-wrap{flex:1;min-width:120px;}
+.mastery-label{font-size:.7rem;font-weight:900;color:#aaa;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;}
+.mastery-bar{height:10px;background:#f0e8ff;border-radius:6px;overflow:hidden;}
+.mastery-fill{height:100%;background:linear-gradient(90deg,var(--vm-green),var(--vm-purple),var(--vm-pink));border-radius:6px;transition:width .5s ease;}
+.score-badge{background:var(--vm-yellow);color:#c85000;font-weight:900;padding:4px 12px;border-radius:12px;font-size:.85rem;}
+
+.qcard{background:#fff;border-radius:24px;padding:28px 22px 22px;box-shadow:0 6px 24px rgba(0,0,0,.09);text-align:center;border-top:6px solid var(--vm-pink);max-width:640px;margin:0 auto;}
+.qcard .qnum{font-size:2.6rem;font-weight:900;color:#333;letter-spacing:3px;margin-bottom:6px;padding:16px;background:linear-gradient(135deg,#f5f0ff,#fff0f8);border-radius:18px;display:inline-block;min-width:180px;}
+.qcard .qask{font-size:.9rem;color:#aaa;font-weight:700;margin:8px 0 20px;}
+
+/* Column subtraction display */
+.col-question{
+  display:inline-flex;flex-direction:column;align-items:flex-end;
+  background:linear-gradient(135deg,#f5f0ff,#fff0f8);
+  border-radius:18px;padding:16px 28px;margin-bottom:6px;
+  font-size:2.4rem;font-weight:900;font-family:'Nunito',sans-serif;
+  min-width:160px;
+}
+.col-q-row{display:flex;align-items:center;gap:10px;justify-content:flex-end;}
+.col-q-op{color:var(--vm-pink);margin-right:4px;font-size:2rem;}
+.col-q-num{color:#333;letter-spacing:2px;}
+.col-q-line{
+  width:100%;height:4px;
+  background:linear-gradient(90deg,var(--vm-purple),var(--vm-pink));
+  border-radius:2px;margin:6px 0;
+}
+.col-q-ans{color:#ccc;letter-spacing:2px;}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:480px;margin:0 auto;}
+.opt{padding:16px 8px;border:3px solid #f0e8ff;border-radius:18px;font-size:1.2rem;font-weight:900;cursor:pointer;background:#fff;font-family:'Nunito',sans-serif;transition:all .2s;color:#333;}
+.opt:hover{border-color:var(--vm-purple);background:#f5f0ff;transform:translateY(-2px);}
+.opt.correct{background:linear-gradient(135deg,var(--vm-green),var(--vm-blue));border-color:var(--vm-green);color:#111;animation:popIn .4s;}
+.opt.wrong{background:#ffe0e0;border-color:#ff8a8a;color:#c00;}
+.quiz-fb{margin-top:14px;font-size:1.05rem;font-weight:900;min-height:30px;}
+.quiz-fb.ok{color:#00b894;} .quiz-fb.no{color:#e17055;}
+.tag-row{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;}
+.qtag{font-size:.7rem;font-weight:900;padding:3px 10px;border-radius:10px;letter-spacing:.5px;text-transform:uppercase;}
+.qtag.review{background:#fff5cc;color:#c85000;}
+.qtag.preview{background:#e0f5ff;color:#0077b6;}
+.next-btn{margin-top:14px;padding:13px 36px;display:none;background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));border:none;border-radius:50px;font-size:1rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;color:#fff;box-shadow:0 4px 0 rgba(155,93,229,.35);transition:transform .15s;}
+
+/* ── QUIZ TIMER ── */
+.timer-wrap{
+  height:8px;background:#f0e8ff;border-radius:8px;
+  overflow:hidden;margin-bottom:18px;max-width:640px;margin-left:auto;margin-right:auto;
+}
+.timer-bar{
+  height:100%;border-radius:8px;
+  transition:width 1s linear, background .5s ease;
+  background:#00b894;
+}
+.timer-label{
+  text-align:center;font-size:.78rem;font-weight:900;
+  color:#aaa;margin-bottom:6px;letter-spacing:.5px;
+}
+.next-btn:hover{transform:translateY(-3px);}
+
+.toast{
+  position:fixed;top:80px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--vm-yellow),var(--vm-orange));
+  color:#fff;font-weight:900;padding:14px 26px;border-radius:30px;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:500;
+  animation:toastIn .4s ease,toastOut .4s ease 2.6s forwards;
+  text-shadow:1px 1px 0 rgba(0,0,0,.2);font-size:1rem;
+}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-30px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes toastOut{to{opacity:0;transform:translate(-50%,-30px)}}
+
+.confetti-piece{position:fixed;width:10px;height:14px;border-radius:2px;animation:fall 1.2s ease-in forwards;z-index:999;pointer-events:none;}
+@keyframes fall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+/* ── BALL TRAINER ── */
+.ball-trainer-wrap{grid-column:1/-1;}
+.ball-problem{
+  text-align:center;margin-bottom:20px;
+  font-size:2.6rem;font-weight:900;color:#333;
+  min-height:60px;display:flex;align-items:center;
+  justify-content:center;gap:12px;
+}
+.ball-problem .num-a   { color:var(--vm-blue); }
+.ball-problem .num-b   { color:var(--vm-orange); }
+.ball-problem .num-ans { color:var(--vm-purple); }
+.ball-problem .num-minus{ color:#aaa; }
+
+@keyframes numPop {
+  0%   { transform:scale(0) translateY(10px); opacity:0; }
+  70%  { transform:scale(1.3) translateY(-4px); opacity:1; }
+  100% { transform:scale(1) translateY(0); opacity:1; }
+}
+
+.ball-legend{
+  display:flex;gap:16px;justify-content:center;
+  flex-wrap:wrap;margin-bottom:16px;font-size:.85rem;font-weight:700;
+}
+.legend-dot{width:14px;height:14px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;}
+.ball-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.ball-speed{
+  display:flex;align-items:center;gap:8px;
+  font-size:.82rem;font-weight:700;color:#aaa;
+}
+.speed-toggle{
+  display:flex;gap:4px;
+}
+.speed-btn{
+  padding:5px 12px;border:2px solid #e8e0f5;border-radius:10px;
+  font-size:.78rem;font-weight:900;cursor:pointer;background:#fff;color:#aaa;
+  font-family:'Nunito',sans-serif;transition:all .2s;
+}
+.speed-btn.active{background:var(--vm-purple);color:#fff;border-color:transparent;}
+
+/* ── WORD PROBLEMS ── */
+.wp-card{background:#fff;border-radius:22px;padding:22px;box-shadow:0 4px 18px rgba(0,0,0,.07);border-top:5px solid var(--vm-yellow);position:relative;overflow:hidden;}
+.wp-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(255,211,61,.15) 0%,transparent 70%);}
+.wp-num{position:absolute;top:12px;right:14px;background:var(--vm-yellow);color:#c85000;font-size:.75rem;font-weight:900;padding:3px 10px;border-radius:12px;}
+.wp-scene{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.wp-emoji-big{font-size:52px;flex-shrink:0;animation:bounce 2.5s ease-in-out infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.wp-text{font-size:.95rem;font-weight:700;color:#444;line-height:1.7;}
+.wp-text strong{color:var(--vm-purple);}
+.wp-answer-row{display:flex;gap:10px;align-items:center;margin-top:4px;}
+.wp-input{flex:1;max-width:120px;padding:10px;text-align:center;font-size:1.4rem;font-weight:900;font-family:'Nunito',sans-serif;border:3px solid #eee;border-radius:14px;outline:none;transition:border-color .2s;}
+.wp-input:focus{border-color:var(--vm-purple);}
+.wp-check-btn{padding:10px 18px;background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));border:none;border-radius:14px;color:#fff;font-size:.9rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;box-shadow:0 3px 0 rgba(155,93,229,.35);transition:transform .15s;}
+.wp-check-btn:hover{transform:translateY(-2px);}
+.wp-fb{font-size:.9rem;font-weight:900;margin-top:8px;min-height:24px;text-align:center;}
+.wp-fb.ok{color:#00b894;}.wp-fb.no{color:#e17055;}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-nav">
+      <button class="back-btn" onclick="history.back()">←</button>
+      <div class="hero-title">➖ Subtraction</div>
+      <div class="stars-pill" id="topStars">⭐ 0</div>
+    </div>
+    <div class="hero-body">
+      <span class="mascot-big" id="mascot">🦉</span>
+      <div class="hero-speech" id="heroSpeech">
+        <strong>Hello, Math Hero!</strong><br>
+        Let's master subtraction — the art of taking away! 🎯
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TABS ── -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <div class="tab active" id="tabLearn"   onclick="switchTab('learn',this)">
+      <span class="tab-icon">📖</span>Learn
+    </div>
+    <div class="tab" id="tabTricks" onclick="switchTab('tricks',this)">
+      <span class="tab-icon">🎯</span>Tricks
+    </div>
+    <div class="tab" id="tabStories" onclick="switchTab('word',this)">
+      <span class="tab-icon">📝</span>Stories
+    </div>
+    <div class="tab" id="tabQuiz" onclick="switchTab('play',this)">
+      <span class="tab-icon">🎮</span>Quiz
+    </div>
+  </div>
+</div>
+
+<!-- ── LEARN TAB ── -->
+<div id="learn" class="screen active">
+  <div class="learn-grid">
+    <div class="scard purple-border">
+      <div class="scard-head">
+        <div class="scard-icon ic-purple">📐</div>
+        <div>
+          <h3>Column Subtraction</h3>
+          <p>Enter two numbers and watch the borrow-and-subtract magic step by step!</p>
+        </div>
+      </div>
+      <div class="num-inputs">
+        <input class="num-input" id="numA" type="number" min="0" max="999999" value="523"/>
+        <span class="minus-sign">−</span>
+        <input class="num-input" id="numB" type="number" min="0" max="999999" value="278"/>
+      </div>
+      <button class="go-btn" onclick="startSubtraction()">▶ Start Step-by-Step</button>
+      <div id="colSub" class="col-wrap" style="display:none;"></div>
+      <div class="step-dots" id="stepDots" style="display:none;"></div>
+      <div class="step-box" id="stepExplain" style="display:none;"></div>
+      <div class="step-btns" id="stepBtns" style="display:none;">
+        <button class="sbtn secondary" onclick="prevStep()">← Back</button>
+        <button class="sbtn primary"   onclick="nextStep()">Next Step →</button>
+      </div>
+    </div>
+
+    <div class="scard yellow-border">
+      <div class="scard-head">
+        <div class="scard-icon ic-yellow">↩️</div>
+        <div>
+          <h3>Number Line — Go Back!</h3>
+          <p>Start at a number, then jump backwards to subtract. Subtraction = going left!</p>
+        </div>
+      </div>
+      <div class="numline-controls">
+        <span class="nl-label">Start at</span>
+        <button class="sbtn secondary" onclick="changeNL('start',-1)">−</button>
+        <span class="nl-val" id="nlStart">14</span>
+        <button class="sbtn primary"   onclick="changeNL('start',1)">+</button>
+        <span class="nl-label">minus</span>
+        <button class="sbtn secondary" onclick="changeNL('jump',-1)">−</button>
+        <span class="nl-val" id="nlJump">5</span>
+        <button class="sbtn primary"   onclick="changeNL('jump',1)">+</button>
+      </div>
+      <div class="numline-svg-wrap" id="nlSvgWrap"></div>
+      <div class="numline-eq" id="nlEq"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── STORIES TAB ── -->
+<div id="word" class="screen">
+  <div style="max-width:760px;margin:0 auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
+      <div>
+        <div style="font-size:1.1rem;font-weight:900;color:#333;">📝 Word Problems</div>
+        <div style="font-size:.8rem;color:#aaa;font-weight:700;">Read carefully, then solve!</div>
+      </div>
+      <button onclick="newWordProblems()" style="padding:10px 20px;background:linear-gradient(135deg,var(--vm-green),var(--vm-blue));border:none;border-radius:14px;color:#111;font-size:.9rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 0 rgba(0,187,249,.3);">🔀 New Problems</button>
+    </div>
+    <div id="wpCards" style="display:grid;grid-template-columns:1fr;gap:14px;"></div>
+  </div>
+</div>
+
+<!-- ── TRICKS TAB (BALL REMOVER) ── -->
+<div id="tricks" class="screen">
+  <div style="max-width:640px;margin:0 auto;">
+
+    <!-- HUD -->
+    <div style="background:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 4px 14px rgba(0,0,0,.07);margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div id="ballPhaseBadge" style="background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));color:#fff;font-weight:900;padding:6px 16px;border-radius:14px;font-size:.88rem;">Phase 1 — 1-digit</div>
+      <div id="ballProgressDots" style="display:flex;gap:5px;"></div>
+      <div style="flex:1;"></div>
+      <button id="ballLevelUpBtn" onclick="window.ballPhaseUp()" style="display:none;padding:7px 16px;background:linear-gradient(135deg,#FFD93D,#FF6B35);border:none;border-radius:12px;color:#fff;font-size:.85rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 0 rgba(255,107,53,.35);">🚀 Next Level!</button>
+      <button onclick="window.ballReset()" style="padding:6px 14px;background:#f5f0ff;border:none;border-radius:12px;color:var(--vm-purple);font-size:.82rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;">🔄 Reset</button>
+    </div>
+
+    <div class="scard purple-border">
+
+      <!-- Problem -->
+      <div class="ball-problem" id="ballProblem" style="margin-bottom:10px;">Get ready…</div>
+
+      <!-- Legend -->
+      <div class="ball-legend" style="margin-bottom:14px;">
+        <span><span class="legend-dot" id="ldA" style="background:#06D6A0;"></span>First number (blue)</span>
+        <span><span class="legend-dot" id="ldB" style="background:#EF476F;"></span>Remove these (red)</span>
+        <span><span class="legend-dot" id="ldAns" style="background:#FFD166;"></span>What's left!</span>
+      </div>
+
+      <!-- Ball grid — exactly 10 per row, 5 rows = 50 balls -->
+      <div id="ballGrid" style="display:grid;grid-template-columns:repeat(10,48px);grid-auto-rows:48px;gap:6px;justify-content:center;margin-bottom:18px;position:relative;overflow:visible;"></div>
+
+      <!-- Answer -->
+      <div id="ballAnswerRow" style="display:none;justify-content:center;align-items:center;gap:12px;margin-bottom:12px;">
+        <input id="ballAnswerInput" type="number" placeholder="?"
+          style="width:100px;padding:11px;text-align:center;font-size:1.5rem;font-weight:900;font-family:'Nunito',sans-serif;border:3px solid #e8e0f5;border-radius:14px;outline:none;transition:border-color .2s;"
+          onkeydown="if(event.key==='Enter') window.checkBallAnswer()"
+          onfocus="this.style.borderColor='var(--vm-purple)'"
+          onblur="this.style.borderColor='#e8e0f5'"/>
+        <button onclick="window.checkBallAnswer()"
+          style="padding:11px 22px;background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));border:none;border-radius:14px;color:#fff;font-size:.95rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 0 rgba(155,93,229,.35);">Check ✅</button>
+      </div>
+      <div id="ballFeedback" style="text-align:center;font-size:1rem;font-weight:900;min-height:28px;"></div>
+
+      <!-- Controls -->
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px;">
+        <button class="sbtn primary"   onclick="window.newBallProblem()">▶ New Problem</button>
+        <button class="sbtn secondary" onclick="window.replayBall()">🔁 Replay</button>
+        <div class="ball-speed">Speed:
+          <div class="speed-toggle">
+            <button class="speed-btn active" id="spSlow" onclick="setSpeed('slow')">Slow</button>
+            <button class="speed-btn"        id="spFast" onclick="setSpeed('fast')">Fast</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── QUIZ TAB (ADAPTIVE) ── -->
+<div id="play" class="screen">
+  <div class="adapt-hud">
+    <div class="skill-pill" id="skillPill">Skill: …</div>
+    <div class="diff-badge" id="diffBadge">Level 1</div>
+    <div class="streak-badge" id="streakBadge">🔥 0</div>
+    <div class="mastery-wrap">
+      <div class="mastery-label">Mastery <span id="masteryPct">0%</span></div>
+      <div class="mastery-bar"><div class="mastery-fill" id="masteryFill" style="width:0%"></div></div>
+    </div>
+    <div class="score-badge" id="scorePill">⭐ 0</div>
+  </div>
+  <div class="timer-label" id="timerLabel">⏱ 20s</div>
+  <div class="timer-wrap"><div class="timer-bar" id="timerBar" style="width:100%"></div></div>
+  <div id="quizArea"></div>
+</div>
+
+<script type="module">
+import { ensureTheme, getTheme } from './js/theme.js';
+import { load, save, getTopic, getSkill, addStars, pushAttempt } from './js/progress.js';
+import { nextQuestion, recordAttempt, activeSkillFor } from './js/adaptive.js';
+import { api } from './js/api.js';
+
+// ── Apply theme + mascot ──
+const theme = ensureTheme();
+if (theme) {
+  document.getElementById('mascot').textContent = theme.mascot;
+}
+
+let progress = load();
+
+// ── TAB SWITCH ──
+window.switchTab = function(id, el) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  if (id === 'play') initQuiz();
+  if (id === 'word') window.newWordProblems();
+  if (id === 'tricks') window.newBallProblem();
+};
+
+function refreshTopStars() {
+  document.getElementById('topStars').textContent = '⭐ ' + (progress.totalStars || 0);
+}
+refreshTopStars();
+
+// ══════════════════════════════════════
+//  COLUMN SUBTRACTION (LEARN)
+// ══════════════════════════════════════
+const PLACE_NAMES = ['Ones','Tens','Hundreds','Thousands','Ten-Tho.','Hund-Tho.'];
+let stepData = [], stepIdx = 0, borrowEls = [], aDigitEls = [], resultEls = [];
+
+window.startSubtraction = function() {
+  let A = Math.min(999999, Math.max(0, +document.getElementById('numA').value || 0));
+  let B = Math.min(999999, Math.max(0, +document.getElementById('numB').value || 0));
+  // Ensure A >= B
+  if (B > A) { const tmp = A; A = B; B = tmp; }
+  document.getElementById('numA').value = A;
+  document.getElementById('numB').value = B;
+  const diff = A - B;
+  const colCount = String(A).length;
+
+  const digA = [], digB = [];
+  for (let i = 0; i < colCount; i++) {
+    digA[i] = Math.floor(A / Math.pow(10, i)) % 10;
+    digB[i] = Math.floor(B / Math.pow(10, i)) % 10;
+  }
+
+  // Compute borrows & result digits
+  const borrows = new Array(colCount).fill(0); // borrow[i] = 1 if col i borrows from col i+1
+  const resultDigs = [];
+  const workA = digA.slice(); // working top digits (modified by borrows)
+
+  for (let i = 0; i < colCount; i++) {
+    const bIn = borrows[i] || 0;
+    let top = workA[i] - bIn;
+    const bot = digB[i] || 0;
+    if (top < bot) {
+      borrows[i + 1] = (borrows[i + 1] || 0) + 1;
+      top += 10;
+    }
+    resultDigs[i] = top - bot;
+  }
+
+  const container = document.getElementById('colSub');
+  container.innerHTML = ''; container.style.display = 'flex';
+  const mk = (cls, txt) => {
+    const d = document.createElement('div');
+    d.className = 'col-cell ' + (cls || 'blank');
+    if (txt !== undefined && txt !== '') d.textContent = txt;
+    return d;
+  };
+  const row = cells => {
+    const r = document.createElement('div'); r.className = 'col-row';
+    cells.forEach(c => r.appendChild(c)); return r;
+  };
+
+  // Borrow indicators row (above top number)
+  borrowEls = [];
+  { const c = [mk('blank')]; for (let i = colCount - 1; i >= 0; i--) { const x = mk('borrow blank'); borrowEls[i] = x; c.push(x); } container.appendChild(row(c)); }
+
+  // Top number row — store refs so we can mark as "borrowed from"
+  aDigitEls = [];
+  { const c = [mk('blank')]; for (let i = colCount - 1; i >= 0; i--) { const x = mk('digit', digA[i] ?? ''); aDigitEls[i] = x; c.push(x); } container.appendChild(row(c)); }
+
+  // Bottom number (B) with minus sign
+  { const c = [mk('op', '−')]; for (let i = colCount - 1; i >= 0; i--) c.push(mk('digit', digB[i] ?? '')); container.appendChild(row(c)); }
+
+  const div = document.createElement('div'); div.className = 'col-divider'; container.appendChild(div);
+
+  // Result row
+  resultEls = [];
+  { const c = [mk('blank')]; for (let i = colCount - 1; i >= 0; i--) { const x = mk('result blank'); resultEls[i] = x; c.push(x); } container.appendChild(row(c)); }
+  { const c = [mk('pv')]; for (let i = colCount - 1; i >= 0; i--) c.push(mk('pv', PLACE_NAMES[i] || '')); container.appendChild(row(c)); }
+
+  // Build steps
+  stepData = [];
+  const workTop = digA.slice(); // track effective top digits after borrows applied
+  const borrowApplied = new Array(colCount).fill(0);
+
+  for (let i = 0; i < colCount; i++) {
+    const col = i;
+    const pvName = PLACE_NAMES[col] || ('Col ' + col);
+    const needBorrow = borrows[col] > 0; // this col borrows from col+1
+    const borrowedFrom = (borrows[col + 1] || 0) > 0 && (col + 1) < colCount; // col+1 was borrowed from by col
+
+    // Capture for closure
+    const topOrig = workTop[col];
+    const botD = digB[col] || 0;
+    let effectiveTop = topOrig;
+    let borrowFromNext = false;
+
+    // Check if this column needs to borrow
+    if (effectiveTop < botD) {
+      borrowFromNext = true;
+      effectiveTop += 10;
+      workTop[col + 1] = (workTop[col + 1] || 0) - 1; // deduct from next
+    }
+    const res = effectiveTop - botD;
+
+    stepData.push({
+      explain: (() => {
+        if (borrowFromNext) {
+          return `👉 <strong>${pvName}</strong>: ${topOrig} < ${botD} — borrow! Now ${effectiveTop} − ${botD} = <strong>${res}</strong>`;
+        }
+        return `👉 <strong>${pvName}</strong>: ${topOrig} − ${botD} = <strong>${res}</strong>`;
+      })(),
+      action: ((c, eff, bot, orig, borrow) => () => {
+        // Show borrow indicator above next column if we borrowed
+        if (borrow && c + 1 < colCount) {
+          const bl = borrowEls[c + 1];
+          bl.textContent = String(workTop[c + 1] + 1) + '→' + workTop[c + 1];
+          bl.classList.remove('blank'); bl.classList.add('borrow');
+          bl.style.animation = 'none'; void bl.offsetWidth; bl.style.animation = 'popIn .4s cubic-bezier(.34,1.56,.64,1)';
+          // Strike through the original top digit of the next column
+          if (aDigitEls[c + 1]) aDigitEls[c + 1].classList.add('borrowed');
+        }
+        // Show the borrow-in value above this column
+        if (borrow) {
+          const bl = borrowEls[c];
+          bl.textContent = eff;
+          bl.classList.remove('blank'); bl.classList.add('borrow');
+          bl.style.animation = 'none'; void bl.offsetWidth; bl.style.animation = 'popIn .4s cubic-bezier(.34,1.56,.64,1)';
+        }
+        // Write result
+        const rc = resultEls[c]; rc.textContent = res; rc.classList.remove('blank');
+        rc.style.animation = 'none'; void rc.offsetWidth; rc.style.animation = 'popIn .5s cubic-bezier(.34,1.56,.64,1)';
+      })(col, effectiveTop, botD, topOrig, borrowFromNext)
+    });
+  }
+  stepData.push({ explain: `🎉 <strong>${A} − ${B} = ${diff}</strong> — Excellent!`, action: () => { confettiBurst(30); } });
+
+  const dotsEl = document.getElementById('stepDots');
+  dotsEl.style.display = 'flex';
+  dotsEl.innerHTML = stepData.map((_, i) => `<div class="sdot" id="sd${i}"></div>`).join('');
+  document.getElementById('stepExplain').style.display = 'block';
+  document.getElementById('stepBtns').style.display = 'flex';
+  stepIdx = 0; applyStep(0);
+};
+
+function applyStep(idx) {
+  const exp = document.getElementById('stepExplain');
+  exp.innerHTML = stepData[idx].explain;
+  exp.style.animation = 'none'; void exp.offsetWidth; exp.style.animation = 'slideUp .3s ease';
+  stepData[idx].action();
+  document.querySelectorAll('.sdot').forEach((d, i) => {
+    d.className = 'sdot' + (i < idx ? ' done' : i === idx ? ' curr' : '');
+  });
+}
+window.nextStep = () => { if (stepIdx < stepData.length - 1) { stepIdx++; applyStep(stepIdx); } };
+window.prevStep = () => { if (stepIdx > 0) { stepIdx--; applyStep(stepIdx); } };
+
+// ══════════════════════════════════════
+//  NUMBER LINE (LEARN)
+// ══════════════════════════════════════
+let nlStart = 14, nlJump = 5;
+
+window.changeNL = function(type, delta) {
+  if (type === 'start') nlStart = Math.max(1, Math.min(20, nlStart + delta));
+  else nlJump = Math.max(1, Math.min(nlStart - 1, Math.max(1, nlJump + delta)));
+  if (nlJump >= nlStart) nlJump = nlStart - 1;
+  renderNumberLine();
+};
+
+function renderNumberLine() {
+  document.getElementById('nlStart').textContent = nlStart;
+  document.getElementById('nlJump').textContent = nlJump;
+  const ans = nlStart - nlJump;
+  const total = 20;
+  const W = 36, PAD = 20, H = 80, ARROW_H = 50, LABEL_Y = 70;
+  const svgW = (total + 1) * W + PAD * 2;
+
+  const numX = n => PAD + n * W;
+
+  // Arc from nlStart down to ans (going left)
+  const x1 = numX(nlStart), x2 = numX(ans);
+  const midX = (x1 + x2) / 2, midY = ARROW_H - 28;
+  const arcPath = `M${x1},${ARROW_H} Q${midX},${midY} ${x2},${ARROW_H}`;
+
+  let circles = '';
+  for (let n = 0; n <= total; n++) {
+    const x = numX(n);
+    let fill = '#f0e8ff', stroke = '#d6c8ff', textFill = '#888';
+    let r = 14;
+    if (n === nlStart) { fill = '#00BBF9'; stroke = '#0096c7'; textFill = '#fff'; r = 17; }
+    else if (n === ans) { fill = '#FFD93D'; stroke = '#f4a000'; textFill = '#333'; r = 17; }
+    else if (n > ans && n < nlStart) { fill = '#ffd5d5'; stroke = '#ff9999'; textFill = '#c00'; }
+    circles += `<circle cx="${x}" cy="${LABEL_Y - 5}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+      <text x="${x}" y="${LABEL_Y - 1}" text-anchor="middle" font-family="Nunito,sans-serif" font-size="12" font-weight="900" fill="${textFill}">${n}</text>`;
+  }
+
+  // Jump steps arrows
+  let jumpArrows = '';
+  for (let step = 0; step < nlJump; step++) {
+    const from = nlStart - step, to = from - 1;
+    const fx = numX(from), tx = numX(to);
+    const cy = ARROW_H - 10 - (step % 3) * 8;
+    jumpArrows += `<path d="M${fx - 4},${cy} Q${(fx + tx) / 2},${cy - 12} ${tx + 4},${cy}" stroke="#EF476F" stroke-width="2" fill="none" marker-end="url(#arr)"/>`;
+  }
+
+  const svg = `<svg width="${svgW}" height="${H + 10}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" markerWidth="7" markerHeight="7" refX="3" refY="3.5" orient="auto">
+        <polygon points="0 0, 7 3.5, 0 7" fill="#EF476F"/>
+      </marker>
+    </defs>
+    <!-- baseline -->
+    <line x1="${PAD}" y1="${LABEL_Y - 5}" x2="${svgW - PAD}" y2="${LABEL_Y - 5}" stroke="#e0d8f8" stroke-width="3"/>
+    ${jumpArrows}
+    ${circles}
+    <!-- labels -->
+    <text x="${numX(nlStart)}" y="${ARROW_H - 24}" text-anchor="middle" font-family="Nunito,sans-serif" font-size="11" font-weight="900" fill="#00BBF9">Start</text>
+    <text x="${numX(ans)}" y="${ARROW_H - 24}" text-anchor="middle" font-family="Nunito,sans-serif" font-size="11" font-weight="900" fill="#f4a000">Answer</text>
+  </svg>`;
+
+  document.getElementById('nlSvgWrap').innerHTML = svg;
+  document.getElementById('nlEq').innerHTML =
+    `<span style="color:#00BBF9;font-size:1.3em">${nlStart}</span> &nbsp;−&nbsp; <span style="color:#EF476F;font-size:1.3em">${nlJump}</span> &nbsp;=&nbsp; <strong style="color:var(--vm-purple);font-size:1.4em">${ans}</strong>`;
+}
+renderNumberLine();
+
+// ══════════════════════════════════════
+//  SUBTRACTION SKILLS & QUIZ
+// ══════════════════════════════════════
+const SUBTRACTION_SKILLS = [
+  { id: 'sub_no_borrow_2d',   level: 1, label: '2-digit, no borrow' },
+  { id: 'sub_with_borrow_2d', level: 2, label: '2-digit, with borrow' },
+  { id: 'sub_3digit',         level: 3, label: '3-digit numbers' },
+  { id: 'sub_4digit',         level: 4, label: '4-digit numbers' },
+  { id: 'sub_missing',        level: 5, label: 'Find the missing number' },
+];
+
+function ri(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function shuffle(arr) { return arr.slice().sort(() => Math.random() - 0.5); }
+
+function makeMCQ(qStr, ans, skillId) {
+  const opts = new Set([ans]);
+  while (opts.size < 4) {
+    const off = ans + ri(-Math.max(1, Math.round(ans * .3)), Math.max(1, Math.round(ans * .3)));
+    if (off >= 0) opts.add(off);
+  }
+  return { q: qStr, ans, skill: skillId, options: shuffle([...opts]) };
+}
+
+function genNoB2d() {
+  let a, b;
+  do { a = ri(10, 99); b = ri(10, a - 1); } while ((a % 10) < (b % 10) || a === b);
+  return makeMCQ(`${a} − ${b}`, a - b, 'sub_no_borrow_2d');
+}
+function genWithB2d() {
+  let a, b;
+  do { a = ri(10, 99); b = ri(10, a - 1); } while ((a % 10) >= (b % 10));
+  return makeMCQ(`${a} − ${b}`, a - b, 'sub_with_borrow_2d');
+}
+function gen3digit() {
+  const a = ri(100, 999), b = ri(10, a - 1);
+  return makeMCQ(`${a} − ${b}`, a - b, 'sub_3digit');
+}
+function gen4digit() {
+  const a = ri(1000, 9999), b = ri(100, a - 1);
+  return makeMCQ(`${a} − ${b}`, a - b, 'sub_4digit');
+}
+function genMissing() {
+  const b = ri(10, 40), ans = ri(10, 50), a = ans + b;
+  return makeMCQ(`${a} − ___ = ${ans}`, b, 'sub_missing');
+}
+
+function genQuestion(skillId) {
+  switch (skillId) {
+    case 'sub_no_borrow_2d':   return genNoB2d();
+    case 'sub_with_borrow_2d': return genWithB2d();
+    case 'sub_3digit':         return gen3digit();
+    case 'sub_4digit':         return gen4digit();
+    case 'sub_missing':        return genMissing();
+    default:                   return genNoB2d();
+  }
+}
+
+// Active skill for subtraction (inline, not using adaptive.js's ADDITION_SKILLS)
+function activeSubSkill() {
+  for (const sk of SUBTRACTION_SKILLS) {
+    const state = getSkill(progress, sk.id);
+    if ((state.mastery || 0) < 0.85 || (state.totalAttempts || 0) < 5) return sk.id;
+  }
+  return SUBTRACTION_SKILLS[SUBTRACTION_SKILLS.length - 1].id;
+}
+
+let currentQ = null, qStartTime = 0, sessionScore = 0, qAnswered = false;
+let activeSkill = null;
+let quizTimer = null, quizTimeLeft = 0;
+
+function timerDuration(difficulty) {
+  if (difficulty <= 1) return 20;
+  if (difficulty === 2) return 15;
+  return 30;
+}
+
+function startTimer(seconds) {
+  clearInterval(quizTimer);
+  quizTimeLeft = seconds;
+  const bar   = document.getElementById('timerBar');
+  const label = document.getElementById('timerLabel');
+  if (!bar) return;
+  bar.style.transition = 'none';
+  bar.style.width = '100%';
+  bar.style.background = '#00b894';
+  label.textContent = `⏱ ${quizTimeLeft}s`;
+  quizTimer = setInterval(() => {
+    quizTimeLeft--;
+    const pct = (quizTimeLeft / seconds) * 100;
+    bar.style.transition = 'width 1s linear, background .5s ease';
+    bar.style.width = pct + '%';
+    if (pct > 50)      bar.style.background = '#00b894';
+    else if (pct > 25) bar.style.background = '#FFD93D';
+    else               bar.style.background = '#FF6B35';
+    label.textContent = `⏱ ${quizTimeLeft}s`;
+    if (quizTimeLeft <= 0) { clearInterval(quizTimer); timeOut(); }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(quizTimer);
+  const label = document.getElementById('timerLabel');
+  if (label) label.textContent = '';
+}
+
+function timeOut() {
+  if (qAnswered) return;
+  qAnswered = true;
+  document.querySelectorAll('.opt').forEach(o => {
+    if (+o.textContent === currentQ.ans) o.classList.add('correct');
+  });
+  const fb = document.getElementById('qfb');
+  if (fb) { fb.innerHTML = `⏰ Time's up! Answer: <strong>${currentQ.ans}</strong>`; fb.className = 'quiz-fb no'; }
+  setTimeout(() => nextQ(), 2000);
+}
+
+function buildColDisplay(qStr) {
+  // Match "a − b" or "a - b"
+  const match = qStr.match(/^(\d+)\s*[−\-]\s*(\d+)$/);
+  if (!match) {
+    // Missing number: "a − ___ = ans" — just show as text
+    return `<div class="qnum" style="font-size:1.8rem;min-width:200px;">${qStr.replace('−','−')}</div>`;
+  }
+  const a = match[1], b = match[2];
+  return `
+    <div style="text-align:center;margin-bottom:6px;">
+      <div class="col-question">
+        <div class="col-q-row">
+          <span class="col-q-num">${a}</span>
+        </div>
+        <div class="col-q-row">
+          <span class="col-q-op">−</span>
+          <span class="col-q-num">${b}</span>
+        </div>
+        <div class="col-q-line"></div>
+        <div class="col-q-row">
+          <span class="col-q-ans">?</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function initQuiz() {
+  activeSkill = activeSubSkill();
+  sessionScore = 0;
+  updateAdaptHud();
+  loadNextQuestion();
+}
+
+function updateAdaptHud() {
+  const skillObj = SUBTRACTION_SKILLS.find(s => s.id === activeSkill) || SUBTRACTION_SKILLS[0];
+  const state = getSkill(progress, activeSkill);
+  document.getElementById('skillPill').textContent = '🎯 ' + skillObj.label;
+  document.getElementById('diffBadge').textContent = 'Level ' + (state.difficulty || 1);
+  document.getElementById('streakBadge').textContent = '🔥 ' + (state.streak || 0);
+  const pct = Math.round((state.mastery || 0) * 100);
+  document.getElementById('masteryPct').textContent = pct + '%';
+  document.getElementById('masteryFill').style.width = pct + '%';
+  document.getElementById('scorePill').textContent = '⭐ ' + sessionScore;
+}
+
+function loadNextQuestion() {
+  const q = genQuestion(activeSkill);
+  currentQ = q;
+  qStartTime = Date.now();
+  qAnswered = false;
+  const state = getSkill(progress, activeSkill);
+  startTimer(timerDuration(state.difficulty || 1));
+
+  const colDisplay = buildColDisplay(q.q);
+
+  document.getElementById('quizArea').innerHTML = `
+    <div class="qcard">
+      ${colDisplay}
+      <div class="qask">Choose the correct answer</div>
+      <div class="options">
+        ${q.options.map(o => `<button class="opt" onclick="checkAns(this,${o},${q.ans})">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-fb" id="qfb"></div>
+    </div>
+    <div style="text-align:center"><button class="next-btn" id="nxt" onclick="nextQ()">Next ➡</button></div>`;
+}
+
+window.checkAns = function(btn, chosen, correct) {
+  if (qAnswered) return;
+  qAnswered = true;
+  stopTimer();
+  const time = (Date.now() - qStartTime) / 1000;
+  const isCorrect = chosen === correct;
+  const fb = document.getElementById('qfb');
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    fb.textContent = '🎉 Correct!'; fb.className = 'quiz-fb ok';
+    sessionScore += 1; addStars(progress, 1);
+    confettiBurst(20);
+  } else {
+    btn.classList.add('wrong');
+    fb.innerHTML = `😅 The answer is <strong>${correct}</strong>`; fb.className = 'quiz-fb no';
+    document.querySelectorAll('.opt').forEach(o => { if (+o.textContent === correct) o.classList.add('correct'); });
+  }
+
+  // Update skill state inline
+  const state = getSkill(progress, activeSkill);
+  state.totalAttempts = (state.totalAttempts || 0) + 1;
+  const recentWindow = 5;
+  state.recentResults = state.recentResults || [];
+  state.recentResults.push(isCorrect ? 1 : 0);
+  if (state.recentResults.length > recentWindow) state.recentResults.shift();
+  const recentCorrect = state.recentResults.filter(Boolean).length;
+  state.mastery = Math.min(1, (state.mastery || 0) + (isCorrect ? 0.12 : -0.06));
+  state.streak = isCorrect ? (state.streak || 0) + 1 : 0;
+
+  let promoted = false, demoted = false;
+  if (recentCorrect >= 4 && (state.difficulty || 1) < 5) {
+    state.difficulty = (state.difficulty || 1) + 1; promoted = true;
+  } else if (recentCorrect <= 1 && (state.difficulty || 1) > 1) {
+    state.difficulty = (state.difficulty || 1) - 1; demoted = true;
+  }
+
+  save(progress);
+
+  // Backend logging
+  api.logAttempt({
+    kidId: progress.kidId,
+    subject: 'math', topic: 'subtraction',
+    skill: activeSkill,
+    difficulty: state.difficulty,
+    question: currentQ.q,
+    answerGiven: chosen, isCorrect, timeTaken: time
+  });
+
+  if (promoted) {
+    showToast('🚀 Level Up! Difficulty increased!');
+    if ((state.mastery || 0) >= 0.85 && state.totalAttempts >= 5) {
+      const nextIdx = SUBTRACTION_SKILLS.findIndex(s => s.id === activeSkill) + 1;
+      if (nextIdx < SUBTRACTION_SKILLS.length) {
+        activeSkill = SUBTRACTION_SKILLS[nextIdx].id;
+        showToast('🎓 New skill unlocked: ' + SUBTRACTION_SKILLS[nextIdx].label);
+      }
+    }
+  }
+  if (demoted) showToast('💡 Easier questions coming up — you got this!');
+
+  document.getElementById('topStars').textContent = '⭐ ' + (progress.totalStars || 0);
+  updateAdaptHud();
+  document.getElementById('nxt').style.display = 'inline-block';
+};
+
+window.nextQ = function() { loadNextQuestion(); };
+
+// ── HELPERS ──
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+function confettiBurst(count = 30) {
+  const cols = ['#FFD93D','#FF6B35','#9B5DE5','#00BBF9','#F15BB5','#00F5D4'];
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div'); c.className = 'confetti-piece';
+    c.style.cssText = `left:${20+Math.random()*60}vw;top:30vh;background:${cols[i%cols.length]};animation-delay:${Math.random()*.4}s;animation-duration:${.9+Math.random()*.5}s;`;
+    document.body.appendChild(c); setTimeout(() => c.remove(), 1600);
+  }
+}
+
+// ── PWA ──
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js').catch(() => {});
+}
+
+// ══════════════════════════════════════
+//  WORD PROBLEMS
+// ══════════════════════════════════════
+const WP_POOL = [
+  (a,b)=>({emoji:'🍎',text:`Riya had <strong>${a+b}</strong> apples and gave away <strong>${b}</strong>. How many does she have left?`,ans:a}),
+  (a,b)=>({emoji:'🧸',text:`A shop had <strong>${a+b}</strong> toys and sold <strong>${b}</strong>. How many toys are remaining?`,ans:a}),
+  (a,b)=>({emoji:'🎈',text:`There were <strong>${a+b}</strong> balloons at the party. <strong>${b}</strong> popped. How many are left?`,ans:a}),
+  (a,b)=>({emoji:'🐠',text:`An aquarium had <strong>${a+b}</strong> fish. <strong>${b}</strong> swam away. How many fish remain?`,ans:a}),
+  (a,b)=>({emoji:'📚',text:`Ram had <strong>${a+b}</strong> pages to read. He read <strong>${b}</strong> pages today. How many are left to read?`,ans:a}),
+  (a,b)=>({emoji:'🍪',text:`A jar had <strong>${a+b}</strong> cookies. Kids ate <strong>${b}</strong>. How many cookies are left?`,ans:a}),
+  (a,b)=>({emoji:'⭐',text:`There were <strong>${a+b}</strong> stars in the night sky sticker book. <strong>${b}</strong> stickers fell off. How many are left?`,ans:a}),
+  (a,b)=>({emoji:'🚂',text:`A train had <strong>${a+b}</strong> passengers. At the station, <strong>${b}</strong> got off. How many passengers remain?`,ans:a}),
+];
+
+function rndForLevel() {
+  const state = getSkill(progress, activeSkill || 'sub_no_borrow_2d');
+  const diff = state.difficulty || 1;
+  if (diff <= 1) return Math.floor(Math.random() * 30) + 10;
+  if (diff === 2) return Math.floor(Math.random() * 70) + 10;
+  if (diff === 3) return Math.floor(Math.random() * 700) + 100;
+  return Math.floor(Math.random() * 5000) + 500;
+}
+
+window.newWordProblems = function() {
+  const container = document.getElementById('wpCards');
+  container.innerHTML = '';
+  const used = shuffle([...WP_POOL]).slice(0, 3);
+  used.forEach((fn, i) => {
+    const b = rndForLevel();
+    const a = rndForLevel(); // the "left" part
+    const { emoji, text, ans } = fn(a, b);
+    const card = document.createElement('div');
+    card.className = 'wp-card';
+    card.innerHTML = `
+      <div class="wp-num">Q${i+1}</div>
+      <div class="wp-scene">
+        <span class="wp-emoji-big">${emoji}</span>
+        <div class="wp-text">${text}</div>
+      </div>
+      <div class="wp-answer-row">
+        <input class="wp-input" id="wpi${i}" type="number" placeholder="?"/>
+        <button class="wp-check-btn" onclick="checkWP(${i},${ans})">Check ✅</button>
+      </div>
+      <div class="wp-fb" id="wpfb${i}"></div>`;
+    container.appendChild(card);
+  });
+};
+
+window.checkWP = function(i, ans) {
+  const val = +document.getElementById('wpi' + i).value;
+  const fb  = document.getElementById('wpfb' + i);
+  if (!val && val !== 0) { fb.textContent = 'Type your answer first!'; fb.className = 'wp-fb'; return; }
+  if (val === ans) {
+    fb.innerHTML = '🎉 Correct! <strong>' + ans + '</strong> is right!';
+    fb.className = 'wp-fb ok';
+    addStars(progress, 2); save(progress);
+    document.getElementById('topStars').textContent = '⭐ ' + (progress.totalStars || 0);
+    confettiBurst(20);
+  } else {
+    fb.innerHTML = '😅 Not quite! The answer is <strong>' + ans + '</strong>';
+    fb.className = 'wp-fb no';
+  }
+};
+
+// ══════════════════════════════════════
+//  BALL REMOVER TRAINER
+// ══════════════════════════════════════
+const BALL_PHASES = [
+  { label:'Phase 1 — 1-digit from 1-digit', balls:10, genA:()=>ri(3,9), genB:()=>ri(1,3) },
+  { label:'Phase 2 — 2-digit, no borrow',   balls:30, genA:()=>ri(15,29), genB:()=>ri(1,9) },
+  { label:'Phase 3 — 2-digit, with borrow', balls:50, genA:()=>ri(20,45), genB:()=>ri(8,19) },
+];
+const PROBLEMS_PER_PHASE = 5;
+
+const BALL_THEMES = {
+  magic:  { gridBg:'#F8F5FF', defaultBg:'#EDE9F6', defaultTxt:'#555',
+            colorA:'#06D6A0', colorB:'#EF476F', colorAns:'#FFD166', numTxt:'#111' },
+  jungle: { gridBg:'#F0FFF4', defaultBg:'#C6F6D5', defaultTxt:'#276749',
+            colorA:'#48BB78', colorB:'#F6AD55', colorAns:'#FC8181', numTxt:'#111' },
+  space:  { gridBg:'#1A1A2E', defaultBg:'#2D2D44', defaultTxt:'#A0AEC0',
+            colorA:'#63B3ED', colorB:'#F687B3', colorAns:'#F6E05E', numTxt:'#111' },
+};
+let activeBallTheme = localStorage.getItem('vm_theme') || 'magic';
+
+let ballPhase   = 0;
+let ballSpeed   = 'slow';
+let ballA = 0, ballB = 0, ballAns = 0;
+let ballAnimating = false;
+let phaseCount  = 0;
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function buildBallGrid() {
+  const grid = document.getElementById('ballGrid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= 50; i++) {
+    const b = document.createElement('div');
+    b.id = 'ball' + i;
+    b.textContent = i;
+    b.style.cssText = `
+      width:48px;height:48px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+      font-size:.8rem;font-weight:900;
+      background:#EDE9F6;color:#555;
+      border:2px solid #D6CCF0;
+      box-shadow:0 3px 0 rgba(0,0,0,.1);
+      transition:background .2s,transform .2s,box-shadow .2s,opacity .3s;
+    `;
+    grid.appendChild(b);
+  }
+  resetBallColors();
+}
+
+function resetBallColors() {
+  const th = BALL_THEMES[activeBallTheme];
+  for (let i = 1; i <= 50; i++) {
+    const el = document.getElementById('ball' + i);
+    if (!el) continue;
+    el.style.transform  = 'scale(1)';
+    el.style.opacity    = '1';
+    el.style.background = th.defaultBg;
+    el.style.color      = th.defaultTxt;
+    el.style.border     = '2px solid #D6CCF0';
+    el.style.boxShadow  = '0 3px 0 rgba(0,0,0,.1)';
+    el.style.textDecoration = 'none';
+  }
+}
+
+function updatePhaseHUD() {
+  document.getElementById('ballPhaseBadge').textContent = BALL_PHASES[ballPhase].label;
+  const dots = document.getElementById('ballProgressDots');
+  dots.innerHTML = '';
+  for (let i = 0; i < PROBLEMS_PER_PHASE; i++) {
+    const d = document.createElement('div');
+    d.style.cssText = `width:10px;height:10px;border-radius:50%;background:${i < phaseCount ? '#00b894' : '#eee'};transition:background .3s;`;
+    dots.appendChild(d);
+  }
+  document.getElementById('ballLevelUpBtn').style.display =
+    (phaseCount >= PROBLEMS_PER_PHASE && ballPhase < BALL_PHASES.length - 1) ? 'inline-block' : 'none';
+}
+
+window.setSpeed = function(s) {
+  ballSpeed = s;
+  document.getElementById('spSlow').classList.toggle('active', s === 'slow');
+  document.getElementById('spFast').classList.toggle('active', s === 'fast');
+};
+
+window.setBallTheme = function(t) {
+  activeBallTheme = BALL_THEMES[t] ? t : 'magic';
+  const theme = BALL_THEMES[activeBallTheme];
+  const grid = document.getElementById('ballGrid');
+  grid.style.background   = theme.gridBg;
+  grid.style.padding      = '12px';
+  grid.style.borderRadius = '16px';
+  document.getElementById('ldA').style.background   = theme.colorA;
+  document.getElementById('ldB').style.background   = theme.colorB;
+  document.getElementById('ldAns').style.background = theme.colorAns;
+  resetBallColors();
+};
+
+window.ballPhaseUp = function() {
+  if (ballPhase < BALL_PHASES.length - 1) {
+    ballPhase++; phaseCount = 0;
+    resetBallColors(); updatePhaseHUD();
+    showToast('🚀 ' + BALL_PHASES[ballPhase].label + ' unlocked!');
+    window.newBallProblem();
+  }
+};
+
+window.ballReset = function() {
+  ballPhase = 0; phaseCount = 0;
+  resetBallColors(); updatePhaseHUD();
+  document.getElementById('ballLevelUpBtn').style.display = 'none';
+  document.getElementById('ballFeedback').textContent = '';
+  document.getElementById('ballAnswerRow').style.display = 'none';
+  showToast('🔄 Reset to Phase 1');
+  window.newBallProblem();
+};
+
+window.newBallProblem = async function() {
+  if (ballAnimating) return;
+  const phase = BALL_PHASES[ballPhase];
+  let a, b;
+  do { a = phase.genA(); b = phase.genB(); } while (b >= a || a > phase.balls);
+  ballA = a; ballB = b; ballAns = a - b;
+
+  document.getElementById('ballFeedback').textContent = '';
+  document.getElementById('ballAnswerRow').style.display = 'none';
+  document.getElementById('ballAnswerInput').value = '';
+
+  await runBallAnimation(a, b);
+
+  document.getElementById('ballAnswerRow').style.display = 'flex';
+  setTimeout(() => document.getElementById('ballAnswerInput').focus(), 100);
+};
+
+window.replayBall = function() {
+  if (ballA && !ballAnimating) runBallAnimation(ballA, ballB);
+};
+
+window.checkBallAnswer = function() {
+  const val = +document.getElementById('ballAnswerInput').value;
+  const fb  = document.getElementById('ballFeedback');
+  if (!val && val !== 0) { fb.textContent = 'Type your answer!'; fb.style.color = '#aaa'; return; }
+
+  if (val === ballAns) {
+    document.getElementById('ballProblem').innerHTML =
+      `<span class="num-a">${ballA}</span> <span class="num-minus">−</span> <span class="num-b">${ballB}</span> <span style="color:#aaa">=</span> <span class="num-ans" style="animation:numPop .5s cubic-bezier(.34,1.56,.64,1)">${ballAns}</span>`;
+    fb.innerHTML = '🎉 Correct!';
+    fb.style.color = '#00b894';
+    confettiBurst(15);
+    addStars(progress, 1); save(progress);
+    document.getElementById('topStars').textContent = '⭐ ' + (progress.totalStars || 0);
+    phaseCount = Math.min(phaseCount + 1, PROBLEMS_PER_PHASE);
+    updatePhaseHUD();
+    if (phaseCount >= PROBLEMS_PER_PHASE && ballPhase < BALL_PHASES.length - 1) {
+      setTimeout(() => window.ballPhaseUp(), 1400);
+    } else {
+      setTimeout(() => window.newBallProblem(), 1200);
+    }
+  } else {
+    document.getElementById('ballProblem').innerHTML =
+      `<span class="num-a">${ballA}</span> <span class="num-minus">−</span> <span class="num-b">${ballB}</span> <span style="color:#aaa">=</span> <span style="color:#e17055;animation:numPop .5s cubic-bezier(.34,1.56,.64,1)">${ballAns}</span>`;
+    fb.innerHTML = '😅 Not quite! The answer is <strong>' + ballAns + '</strong>';
+    fb.style.color = '#e17055';
+    document.getElementById('ballAnswerInput').value = '';
+    document.getElementById('ballAnswerInput').focus();
+  }
+};
+
+async function runBallAnimation(a, b) {
+  ballAnimating = true;
+  const ans  = a - b;
+  const fast = ballSpeed === 'fast';
+  const phaseSpeeds = [
+    { step: 400, pause: 1400 },
+    { step: 260, pause: 1000 },
+    { step:  60, pause:  300 },
+  ];
+  const ps = fast ? { step: 40, pause: 180 } : phaseSpeeds[ballPhase] || phaseSpeeds[0];
+  const step  = ps.step;
+  const pause = ps.pause;
+
+  resetBallColors();
+  const th = BALL_THEMES[activeBallTheme];
+  const prob = document.getElementById('ballProblem');
+
+  // ── STEP 1: Highlight all 'a' balls blue ──
+  prob.innerHTML = `<span class="num-a" style="animation:numPop .4s cubic-bezier(.34,1.56,.64,1)">${a}</span>`;
+  await delay(fast ? 200 : 600);
+
+  for (let i = 1; i <= a; i++) {
+    const el = document.getElementById('ball' + i);
+    el.style.background = th.colorA;
+    el.style.color      = th.numTxt;
+    el.style.transform  = 'scale(1.12)';
+    el.style.boxShadow  = `0 4px 14px ${th.colorA}99`;
+    await delay(step);
+  }
+  await delay(pause);
+
+  // ── STEP 2: Show minus ──
+  prob.innerHTML = `<span class="num-a">${a}</span> <span class="num-minus" style="animation:numPop .35s cubic-bezier(.34,1.56,.64,1)">−</span>`;
+  await delay(fast ? 150 : 500);
+
+  // ── STEP 3: Show b, then red-fade balls (a-b+1 → a) ──
+  prob.innerHTML = `<span class="num-a">${a}</span> <span class="num-minus">−</span> <span class="num-b" style="animation:numPop .4s cubic-bezier(.34,1.56,.64,1)">${b}</span>`;
+  await delay(fast ? 200 : 600);
+
+  // Remove last 'b' balls — animate them red and fade
+  for (let i = a; i >= a - b + 1; i--) {
+    const el = document.getElementById('ball' + i);
+    el.style.background     = th.colorB;
+    el.style.color          = '#fff';
+    el.style.transform      = 'scale(0.85)';
+    el.style.opacity        = '0.5';
+    el.style.boxShadow      = `0 2px 8px ${th.colorB}99`;
+    el.style.textDecoration = 'line-through';
+    await delay(step);
+  }
+  await delay(pause);
+
+  // ── STEP 4: Remaining balls pulse green ──
+  prob.innerHTML = `<span class="num-a">${a}</span> <span class="num-minus">−</span> <span class="num-b">${b}</span> <span style="color:#bbb;animation:numPop .3s ease">=</span> <span class="num-ans" style="animation:numPop .4s cubic-bezier(.34,1.56,.64,1)">?</span>`;
+  for (let i = 1; i <= ans; i++) {
+    const el = document.getElementById('ball' + i);
+    el.style.background = th.colorAns;
+    el.style.color      = '#111';
+    el.style.transform  = 'scale(1.18)';
+    el.style.boxShadow  = `0 6px 20px ${th.colorAns}99`;
+    el.style.opacity    = '1';
+  }
+  await delay(fast ? 150 : 400);
+
+  ballAnimating = false;
+}
+
+// Init
+buildBallGrid();
+updatePhaseHUD();
+window.setBallTheme(localStorage.getItem('vm_theme') || 'magic');
+setTimeout(() => window.newBallProblem(), 600);
+
+startSubtraction();
+</script>
+</body>
+</html>

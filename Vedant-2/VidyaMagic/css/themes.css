@@ -1,0 +1,13 @@
+/* VidyaMagic — Theme Variables (set by js/theme.js) */
+:root {
+  --vm-yellow: #FFD93D;
+  --vm-orange: #FF6B35;
+  --vm-pink:   #F15BB5;
+  --vm-purple: #9B5DE5;
+  --vm-blue:   #00BBF9;
+  --vm-green:  #00F5D4;
+  --vm-bg-gradient: linear-gradient(180deg,#FFE5F1 0%,#E8D5FF 70%,#C9B6FF 100%);
+  --vm-hero-gradient: linear-gradient(135deg,#9B5DE5 0%,#F15BB5 60%,#FF6B35 100%);
+  --vm-path-color: rgba(255,255,255,0.85);
+  --vm-glow-color: rgba(255,215,80,0.45);
+}

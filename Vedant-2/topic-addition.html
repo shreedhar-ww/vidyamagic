@@ -13,181 +13,311 @@
 }
 body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden;}
 
-/* NAV */
-.topnav{
-  background:linear-gradient(135deg,#9B5DE5,#F15BB5);
-  padding:14px 20px; display:flex; align-items:center; gap:14px;
-  box-shadow:0 4px 12px rgba(0,0,0,.12); position:sticky; top:0; z-index:100;
+/* ── HERO HEADER ── */
+.hero{
+  background:linear-gradient(135deg,#9B5DE5 0%,#F15BB5 60%,#FF6B35 100%);
+  padding:0 0 32px; position:relative; overflow:hidden;
+}
+.hero::after{
+  content:''; position:absolute; bottom:-20px; left:0; right:0;
+  height:40px; background:var(--bg);
+  border-radius:50% 50% 0 0/100% 100% 0 0;
+}
+.hero-inner{max-width:1200px;margin:0 auto;padding:0 24px;}
+.hero-nav{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 0 12px;position:relative;z-index:2;
 }
 .back-btn{
-  background:rgba(255,255,255,.3); border:none; border-radius:50%;
-  width:40px; height:40px; font-size:1.2rem; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; transition:transform .15s;
+  background:rgba(255,255,255,.25);border:none;border-radius:50%;
+  width:42px;height:42px;font-size:1.3rem;cursor:pointer;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s;flex-shrink:0;
 }
-.back-btn:hover{transform:scale(1.15);}
-.topnav h1{color:#fff; font-size:1.4rem; font-weight:900; text-shadow:1px 2px 0 rgba(0,0,0,.15); flex:1;}
-.stars-pill{background:rgba(255,255,255,.3);color:#fff;font-weight:900;padding:5px 14px;border-radius:20px;font-size:1rem;}
+.back-btn:hover{background:rgba(255,255,255,.4);}
+.hero-title{color:#fff;font-size:1.5rem;font-weight:900;flex:1;text-shadow:1px 2px 0 rgba(0,0,0,.15);}
+.stars-pill{background:rgba(255,255,255,.25);color:#fff;font-weight:900;
+  padding:6px 16px;border-radius:20px;font-size:.95rem;white-space:nowrap;}
 
-/* TABS */
-.tabs{display:flex;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.07);position:sticky;top:68px;z-index:99;}
-.tab{flex:1;padding:14px;text-align:center;font-weight:900;font-size:.95rem;color:#aaa;cursor:pointer;border-bottom:3px solid transparent;transition:color .2s,border-color .2s;}
-.tab.active{color:var(--purple);border-color:var(--purple);}
+.hero-body{
+  display:flex;align-items:center;gap:16px;
+  position:relative;z-index:2;padding-bottom:4px;
+}
+.mascot-big{font-size:68px;animation:mascotBob 2.2s ease-in-out infinite;flex-shrink:0;}
+@keyframes mascotBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+.hero-speech{
+  background:rgba(255,255,255,.22);backdrop-filter:blur(8px);
+  border-radius:20px 20px 20px 4px;
+  padding:12px 18px;color:#fff;font-size:.95rem;font-weight:700;
+  line-height:1.5;max-width:340px;
+}
+.hero-speech strong{font-weight:900;}
 
-/* SCREENS */
-.screen{display:none;padding:24px 20px;max-width:700px;margin:0 auto;}
+/* ── TABS ── */
+.tabs-wrap{
+  position:sticky;top:0;z-index:99;
+  background:var(--bg);padding:12px 0 6px;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);
+}
+.tabs{
+  display:flex;gap:8px;
+  max-width:1200px;margin:0 auto;padding:0 24px;
+}
+.tab{
+  flex:0 0 auto;width:120px;padding:9px 6px;text-align:center;font-weight:900;
+  font-size:.82rem;border-radius:14px;cursor:pointer;
+  border:2.5px solid #e8e0f5;color:#aaa;background:#fff;
+  transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.tab-icon{font-size:1.3rem;}
+.tab.active{
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  color:#fff;border-color:transparent;
+  box-shadow:0 4px 14px rgba(155,93,229,.35);
+}
+
+/* ── SCREENS ── */
+.screen{display:none;padding:18px 24px 48px;max-width:1200px;margin:0 auto;}
 .screen.active{display:block;}
 
-.scard{background:#fff;border-radius:24px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,.07);margin-bottom:20px;}
-.scard-title{font-size:1.1rem;font-weight:900;color:var(--purple);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+/* learn 2-col on desktop */
+.learn-grid{display:grid;grid-template-columns:1fr;gap:18px;}
+@media(min-width:760px){
+  .learn-grid{grid-template-columns:1fr 1fr;}
+  .learn-grid .scard:first-child{grid-column:1/3;}
+}
 
-/* ══ COLUMN ADDITION ══ */
-.col-add{
-  display:flex; flex-direction:column; align-items:center;
-  font-size:2.2rem; font-weight:900; font-family:'Nunito',sans-serif;
-  gap:0; max-width:560px; margin:0 auto;
+/* word 2-col on desktop */
+.wp-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px;}
+@media(min-width:760px){.wp-grid{grid-template-columns:1fr 1fr;}}
+
+/* ── SECTION CARD ── */
+.scard{
+  background:#fff;border-radius:24px;padding:22px 20px;
+  box-shadow:0 4px 20px rgba(0,0,0,.07);
+  border:2px solid transparent;
 }
-.col-row{
-  display:flex; gap:4px;
-  justify-content:center; align-items:center;
+.scard.purple-border{border-color:#f0e8ff;}
+.scard.yellow-border{border-color:#fff3cc;}
+
+.scard-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.scard-icon{
+  width:44px;height:44px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;
 }
+.ic-purple{background:#f0e8ff;}
+.ic-yellow{background:#fff5cc;}
+.scard-head h3{font-size:1.05rem;font-weight:900;color:#333;}
+.scard-head p{font-size:.78rem;color:#aaa;font-weight:700;margin-top:1px;}
+
+/* ── NUMBER INPUTS ── */
+.num-inputs{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.num-input{
+  width:110px;padding:10px 8px;text-align:center;
+  font-size:1.6rem;font-weight:900;font-family:'Nunito',sans-serif;
+  border:3px solid #e8e0f5;border-radius:16px;background:#fafafa;outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+.num-input:focus{border-color:var(--purple);box-shadow:0 0 0 4px rgba(155,93,229,.12);}
+.plus-sign{font-size:2rem;font-weight:900;color:var(--purple);}
+.go-btn{
+  display:block;width:100%;padding:13px;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  border:none;border-radius:16px;color:#fff;font-size:1.05rem;font-weight:900;
+  cursor:pointer;font-family:'Nunito',sans-serif;
+  box-shadow:0 4px 0 rgba(155,93,229,.4);transition:transform .15s;
+}
+.go-btn:hover{transform:translateY(-2px);}
+.go-btn:active{transform:translateY(1px);}
+
+/* ── COLUMN ADDITION ── */
+.col-wrap{display:flex;flex-direction:column;align-items:center;gap:0;margin:16px 0;}
+.col-row{display:flex;gap:4px;justify-content:center;align-items:center;}
 .col-cell{
-  width:56px; height:60px; display:flex; align-items:center; justify-content:center;
-  font-size:2rem; font-weight:900; border-radius:12px;
-  transition:all .3s;
+  width:58px;height:64px;display:flex;align-items:center;justify-content:center;
+  font-size:2.1rem;font-weight:900;border-radius:14px;transition:all .3s;
 }
-.col-cell.digit{background:#f5f0ff;color:#333;}
+.col-cell.digit{background:#f5f0ff;color:#333;border:2px solid #ede5ff;}
 .col-cell.carry{
-  background:var(--yellow); color:var(--orange);
-  font-size:1.1rem; border-radius:8px;
+  background:var(--yellow);color:#c85000;font-size:1.1rem;
+  border-radius:10px;height:38px;min-height:38px;
+  border:2px solid rgba(255,180,0,.5);
   animation:popIn .4s cubic-bezier(.34,1.56,.64,1);
-  min-height:36px; height:36px;
 }
 .col-cell.result{
   background:linear-gradient(135deg,var(--purple),var(--pink));
-  color:#fff; border-radius:12px;
+  color:#fff;border-radius:14px;border:2px solid rgba(255,255,255,.3);
   animation:popIn .5s cubic-bezier(.34,1.56,.64,1);
 }
-.col-cell.plus{color:var(--purple);font-size:2.2rem;}
-.col-cell.blank{background:transparent;}
-.col-cell.pv-label{
-  background:transparent; color:#aaa; font-size:.65rem; font-weight:900;
-  height:22px; min-height:22px; letter-spacing:.3px; text-transform:uppercase;
+.col-cell.op{color:var(--purple);font-size:2.4rem;}
+.col-cell.blank{background:transparent;border:none;}
+.col-cell.pv{
+  background:transparent;color:#ccc;font-size:.58rem;
+  font-weight:900;height:22px;min-height:22px;letter-spacing:.4px;text-transform:uppercase;
 }
-.divider{width:100%;height:4px;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:2px;margin:6px 0;}
+.col-divider{height:5px;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:3px;margin:6px 0;width:100%;}
+@keyframes popIn{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
 
-@keyframes popIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.step-box{
+  background:linear-gradient(135deg,#f5f0ff,#fff0f8);
+  border-radius:16px;padding:14px 16px;margin-top:14px;
+  border-left:4px solid var(--purple);font-size:.95rem;
+  font-weight:700;color:#555;line-height:1.6;
+  animation:slideUp .3s ease;min-height:54px;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* step controls */
-.step-btns{display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+.step-dots{display:flex;gap:6px;justify-content:center;margin-top:10px;}
+.sdot{width:9px;height:9px;border-radius:50%;background:#eee;transition:all .3s;}
+.sdot.done{background:var(--purple);}
+.sdot.curr{background:var(--yellow);transform:scale(1.4);}
+
+.step-btns{display:flex;gap:10px;justify-content:center;margin-top:14px;}
 .sbtn{
-  padding:10px 22px; border:none; border-radius:50px; font-size:.95rem; font-weight:900;
-  cursor:pointer; font-family:'Nunito',sans-serif; transition:transform .15s;
-  box-shadow:0 3px 0 rgba(0,0,0,.15);
+  padding:10px 22px;border:none;border-radius:50px;font-size:.9rem;font-weight:900;
+  cursor:pointer;font-family:'Nunito',sans-serif;transition:transform .15s;
+  box-shadow:0 3px 0 rgba(0,0,0,.12);
 }
 .sbtn:hover{transform:translateY(-2px);}
 .sbtn.primary{background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;}
-.sbtn.secondary{background:#eee;color:#555;}
-.sbtn.go{background:linear-gradient(135deg,var(--green),var(--blue));color:#111;}
+.sbtn.secondary{background:#f0f0f0;color:#666;}
 
-/* step explanation */
-.step-explain{
-  background:#f5f0ff; border-radius:16px; padding:14px 18px;
-  font-size:1rem; font-weight:700; color:#555; margin-top:14px;
-  border-left:4px solid var(--purple);
-  min-height:52px; line-height:1.5;
-  animation:fadeIn .3s ease;
+/* ── REPEATED ADDITION ── */
+.rep-controls{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.rep-label{font-weight:900;color:#888;font-size:.9rem;}
+.rep-val{font-size:1.5rem;font-weight:900;min-width:44px;text-align:center;background:#f5f0ff;border-radius:10px;padding:4px 10px;color:var(--purple);}
+.rep-icon-select{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+.icon-opt{
+  width:40px;height:40px;border-radius:12px;border:2.5px solid #eee;
+  font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;background:#fff;
 }
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-/* number input builder */
-.num-inputs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
-.num-input{
-  width:110px; padding:10px 8px; text-align:center;
-  font-size:1.5rem; font-weight:900; font-family:'Nunito',sans-serif;
-  border:3px solid #ddd; border-radius:14px; background:#fff;
-  outline:none; transition:border-color .2s;
-}
-.num-input:focus{border-color:var(--purple);}
-
-/* ══ REPEATED ADDITION ══ */
-.rep-wrap{text-align:center;}
-.rep-groups{
-  display:flex; flex-wrap:wrap; gap:12px; justify-content:center;
-  margin:16px 0; min-height:60px;
-}
+.icon-opt.sel{border-color:var(--purple);background:#f5f0ff;transform:scale(1.15);}
+.rep-groups{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:12px 0;min-height:64px;}
 .rep-group{
-  display:flex; flex-wrap:wrap; gap:4px; align-items:center; justify-content:center;
-  background:#f5f0ff; border-radius:16px; padding:10px 14px;
-  animation:popIn .35s cubic-bezier(.34,1.56,.64,1);
+  background:linear-gradient(135deg,#f5f0ff,#fff0f8);
+  border-radius:16px;padding:10px 12px;border:2px solid #ede5ff;
+  display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;
+  animation:popIn .35s cubic-bezier(.34,1.56,.64,1);min-width:52px;
 }
-.rep-dot{
-  width:28px; height:28px; border-radius:50%;
-  background:linear-gradient(135deg,var(--purple),var(--pink));
-  animation:popIn .25s cubic-bezier(.34,1.56,.64,1);
+.rep-icon{font-size:1.5rem;animation:popIn .25s cubic-bezier(.34,1.56,.64,1);}
+.rep-equation{
+  font-size:1.1rem;font-weight:900;color:#333;text-align:center;
+  background:#fff;border-radius:14px;padding:12px 20px;
+  border:2px solid #ede5ff;box-shadow:0 3px 10px rgba(0,0,0,.06);
 }
-.rep-eq{
-  font-size:1.3rem; font-weight:900; color:#333; margin:10px 0;
-  animation:popIn .3s ease;
-}
-.rep-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.rep-val{font-size:1.5rem;font-weight:900;min-width:40px;text-align:center;}
 
-/* ══ WORD PROBLEM ══ */
+/* ── WORD PROBLEMS ── */
 .wp-card{
-  background:linear-gradient(135deg,#fff5e0,#ffe0f0);
-  border-radius:20px; padding:20px; margin-bottom:14px;
-  border:2px solid var(--yellow);
+  background:#fff;border-radius:22px;padding:22px;
+  box-shadow:0 4px 18px rgba(0,0,0,.07);
+  border-top:5px solid var(--yellow);position:relative;overflow:hidden;
 }
-.wp-emoji{font-size:3rem;display:block;text-align:center;margin-bottom:8px;animation:bounce 2s infinite;}
+.wp-card::before{
+  content:'';position:absolute;top:0;right:0;width:80px;height:80px;
+  background:radial-gradient(circle,rgba(255,211,61,.15) 0%,transparent 70%);
+}
+.wp-num{
+  position:absolute;top:12px;right:14px;
+  background:var(--yellow);color:#c85000;font-size:.75rem;font-weight:900;
+  padding:3px 10px;border-radius:12px;
+}
+.wp-scene{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.wp-emoji-big{font-size:52px;flex-shrink:0;animation:bounce 2.5s ease-in-out infinite;}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.wp-text{font-size:1rem;font-weight:700;color:#444;line-height:1.7;text-align:center;}
-.wp-answer{
-  display:flex; gap:10px; align-items:center; justify-content:center; margin-top:14px;
-}
+.wp-text{font-size:.95rem;font-weight:700;color:#444;line-height:1.7;}
+.wp-text strong{color:var(--purple);}
+.wp-answer-row{display:flex;gap:10px;align-items:center;margin-top:4px;}
 .wp-input{
-  width:110px; padding:10px; text-align:center; font-size:1.5rem; font-weight:900;
-  border:3px solid #ddd; border-radius:14px; font-family:'Nunito',sans-serif; outline:none;
-  transition:border-color .2s;
+  flex:1;max-width:120px;padding:10px;text-align:center;
+  font-size:1.4rem;font-weight:900;font-family:'Nunito',sans-serif;
+  border:3px solid #eee;border-radius:14px;outline:none;transition:border-color .2s;
 }
 .wp-input:focus{border-color:var(--purple);}
-.wp-check{
-  padding:10px 20px; background:linear-gradient(135deg,var(--purple),var(--pink));
-  border:none; border-radius:50px; color:#fff; font-size:1rem; font-weight:900;
-  cursor:pointer; font-family:'Nunito',sans-serif;
+.wp-check-btn{
+  padding:10px 18px;background:linear-gradient(135deg,var(--purple),var(--pink));
+  border:none;border-radius:14px;color:#fff;font-size:.9rem;font-weight:900;
+  cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;
+  box-shadow:0 3px 0 rgba(155,93,229,.35);transition:transform .15s;
 }
-.wp-fb{font-size:1rem;font-weight:900;margin-top:10px;text-align:center;min-height:28px;}
+.wp-check-btn:hover{transform:translateY(-2px);}
+.wp-fb{font-size:.9rem;font-weight:900;margin-top:8px;min-height:24px;text-align:center;}
+.wp-fb.ok{color:#00b894;} .wp-fb.no{color:#e17055;}
+.new-wp-btn{
+  display:block;width:100%;padding:14px;
+  background:linear-gradient(135deg,var(--green),var(--blue));
+  border:none;border-radius:16px;color:#111;font-size:1rem;font-weight:900;
+  cursor:pointer;font-family:'Nunito',sans-serif;
+  box-shadow:0 4px 0 rgba(0,187,249,.3);transition:transform .15s;
+}
+.new-wp-btn:hover{transform:translateY(-2px);}
 
-/* ══ QUIZ ══ */
-.quiz-score{font-size:1rem;font-weight:900;color:#aaa;margin-bottom:20px;text-align:center;}
-.qcard{background:#fff;border-radius:24px;padding:28px 22px;box-shadow:0 6px 20px rgba(0,0,0,.09);margin-bottom:20px;text-align:center;}
-.qcard .qnum{font-size:2.8rem;font-weight:900;color:#333;margin-bottom:6px;letter-spacing:2px;}
-.qcard .qask{font-size:1rem;color:#888;font-weight:700;margin-bottom:20px;}
-.options{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.opt{
-  padding:14px;border:3px solid #eee;border-radius:16px;
-  font-size:1.1rem;font-weight:900;cursor:pointer;background:#fff;
-  transition:all .2s;font-family:'Nunito',sans-serif;
+/* ── QUIZ ── */
+.quiz-hud{
+  display:flex;align-items:center;gap:12px;
+  background:#fff;border-radius:18px;padding:14px 18px;
+  box-shadow:0 4px 14px rgba(0,0,0,.07);margin-bottom:16px;
+  max-width:700px;
 }
-.opt:hover{border-color:var(--purple);transform:scale(1.03);}
-.opt.correct{background:var(--green);border-color:var(--green);color:#111;animation:bounce .4s;}
-.opt.wrong{background:#FFE0E0;border-color:#FF8A8A;color:#c00;}
-.feedback{margin-top:14px;font-size:1.1rem;font-weight:900;min-height:32px;}
-.feedback.ok{color:#00b894;} .feedback.no{color:#e17055;}
+.quiz-progress{flex:1;height:12px;background:#f0e8ff;border-radius:8px;overflow:hidden;}
+.quiz-bar{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:8px;transition:width .4s ease;}
+.quiz-counter{font-size:.85rem;font-weight:900;color:#aaa;white-space:nowrap;}
+.quiz-score-badge{background:var(--yellow);color:#c85000;font-weight:900;padding:4px 12px;border-radius:12px;font-size:.9rem;}
+
+.qcard{
+  background:#fff;border-radius:24px;padding:28px 22px 22px;
+  box-shadow:0 6px 24px rgba(0,0,0,.09);text-align:center;
+  border-top:6px solid var(--purple);max-width:640px;
+}
+.qcard .qnum{
+  font-size:2.8rem;font-weight:900;color:#333;letter-spacing:3px;
+  margin-bottom:6px;padding:16px;
+  background:linear-gradient(135deg,#f5f0ff,#fff0f8);
+  border-radius:18px;display:inline-block;min-width:180px;
+}
+.qcard .qask{font-size:.9rem;color:#aaa;font-weight:700;margin:8px 0 20px;}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:480px;margin:0 auto;}
+.opt{
+  padding:16px 8px;border:3px solid #f0e8ff;border-radius:18px;
+  font-size:1.2rem;font-weight:900;cursor:pointer;background:#fff;
+  font-family:'Nunito',sans-serif;transition:all .2s;color:#333;
+}
+.opt:hover{border-color:var(--purple);background:#f5f0ff;transform:translateY(-2px);}
+.opt.correct{background:linear-gradient(135deg,#00F5D4,#00BBF9);border-color:var(--green);color:#111;animation:popIn .4s;}
+.opt.wrong{background:#ffe0e0;border-color:#ff8a8a;color:#c00;}
+.quiz-fb{margin-top:14px;font-size:1.05rem;font-weight:900;min-height:30px;}
+.quiz-fb.ok{color:#00b894;} .quiz-fb.no{color:#e17055;}
 .next-btn{
-  margin-top:16px;padding:13px 34px;
+  margin-top:14px;padding:13px 36px;display:none;
   background:linear-gradient(135deg,var(--purple),var(--pink));
   border:none;border-radius:50px;font-size:1rem;font-weight:900;
   cursor:pointer;font-family:'Nunito',sans-serif;color:#fff;
-  box-shadow:0 4px 0 rgba(0,0,0,.15);transition:transform .15s;display:none;
+  box-shadow:0 4px 0 rgba(155,93,229,.35);transition:transform .15s;
 }
 .next-btn:hover{transform:translateY(-3px);}
 
-.finish-card{background:linear-gradient(135deg,#9B5DE5,#F15BB5);border-radius:24px;padding:36px 24px;text-align:center;color:#fff;}
-.finish-card .big{font-size:5rem;}
+.finish-card{
+  border-radius:24px;padding:36px 24px;text-align:center;color:#fff;
+  background:linear-gradient(135deg,#9B5DE5,#F15BB5,#FF6B35);
+  box-shadow:0 8px 30px rgba(155,93,229,.4);max-width:480px;
+}
+.finish-card .big{font-size:5rem;display:block;animation:mascotBob 1.5s infinite;}
 .finish-card h2{font-size:2rem;font-weight:900;margin:10px 0 6px;}
-.finish-card p{font-size:1rem;opacity:.9;margin-bottom:16px;}
-.score-big{font-size:3rem;font-weight:900;background:rgba(255,255,255,.25);border-radius:16px;padding:10px 24px;display:inline-block;margin-bottom:16px;}
-.retry-btn{padding:12px 28px;background:#fff;color:var(--purple);border:none;border-radius:50px;font-size:1rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;}
+.finish-card p{font-size:1rem;opacity:.92;margin-bottom:18px;}
+.score-circle{
+  width:110px;height:110px;border-radius:50%;
+  background:rgba(255,255,255,.25);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin:0 auto 20px;border:4px solid rgba(255,255,255,.4);
+}
+.score-circle span:first-child{font-size:2.2rem;font-weight:900;line-height:1;}
+.score-circle span:last-child{font-size:.75rem;font-weight:700;opacity:.85;}
+.retry-btn{
+  padding:12px 30px;background:#fff;color:var(--purple);
+  border:none;border-radius:50px;font-size:1rem;font-weight:900;
+  cursor:pointer;font-family:'Nunito',sans-serif;
+  box-shadow:0 4px 0 rgba(0,0,0,.1);
+}
 
 /* confetti */
 .confetti-piece{position:fixed;width:10px;height:14px;border-radius:2px;animation:fall 1.2s ease-in forwards;z-index:999;pointer-events:none;}
@@ -196,444 +326,408 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;overf
 </head>
 <body>
 
-<div class="topnav">
-  <button class="back-btn" onclick="history.back()">←</button>
-  <h1>➕ Addition</h1>
-  <div class="stars-pill">⭐ 12</div>
-</div>
-
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('learn',this)">📖 Learn</div>
-  <div class="tab" onclick="switchTab('word',this)">📝 Word Problems</div>
-  <div class="tab" onclick="switchTab('play',this)">🎮 Play</div>
-</div>
-
-<!-- ════════════════════════════
-     LEARN TAB
-════════════════════════════ -->
-<div id="learn" class="screen active">
-
-  <!-- Step-by-step column addition -->
-  <div class="scard">
-    <div class="scard-title">📐 Column Addition — Step by Step</div>
-    <p style="color:#aaa;font-size:.9rem;font-weight:700;margin-bottom:14px;">Enter two numbers (up to 999,999) and watch the carry-over magic!</p>
-
-    <div class="num-inputs">
-      <input class="num-input" id="numA" type="number" min="0" max="999999" value="356" placeholder="e.g. 356"/>
-      <span style="font-size:2rem;font-weight:900;color:var(--purple);line-height:60px;">+</span>
-      <input class="num-input" id="numB" type="number" min="0" max="999999" value="478" placeholder="e.g. 478"/>
+<!-- ── HERO HEADER ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-nav">
+      <button class="back-btn" onclick="history.back()">←</button>
+      <div class="hero-title">➕ Addition</div>
+      <div class="stars-pill">⭐ 12</div>
     </div>
-    <div style="text-align:center;margin-bottom:14px;">
-      <button class="sbtn go" onclick="startAddition()">▶ Start</button>
-    </div>
-
-    <!-- column display built dynamically -->
-    <div class="col-add" id="colAdd" style="display:none;"></div>
-
-    <div class="step-explain" id="stepExplain" style="display:none;"></div>
-
-    <div class="step-btns" id="stepBtns" style="display:none;">
-      <button class="sbtn secondary" onclick="prevStep()">← Back</button>
-      <button class="sbtn primary" onclick="nextStep()">Next Step →</button>
+    <div class="hero-body">
+      <span class="mascot-big">🦉</span>
+      <div class="hero-speech">
+        <strong>Hello, Math Hero!</strong><br>
+        Let's master addition — from small sums to big carries! 🚀
+      </div>
     </div>
   </div>
+</div>
 
-  <!-- Repeated addition -->
-  <div class="scard">
-    <div class="scard-title">🔄 Repeated Addition (= Multiplication later!)</div>
-    <p style="color:#aaa;font-size:.9rem;font-weight:700;margin-bottom:14px;">Adding equal groups — the fun way!</p>
-    <div class="rep-wrap">
+<!-- ── TABS ── -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('learn',this)">
+      <span class="tab-icon">📖</span>Learn
+    </div>
+    <div class="tab" onclick="switchTab('word',this)">
+      <span class="tab-icon">📝</span>Stories
+    </div>
+    <div class="tab" onclick="switchTab('play',this)">
+      <span class="tab-icon">🎮</span>Quiz
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     LEARN TAB
+══════════════════════════════════ -->
+<div id="learn" class="screen active">
+  <div class="learn-grid">
+
+    <div class="scard purple-border">
+      <div class="scard-head">
+        <div class="scard-icon ic-purple">📐</div>
+        <div>
+          <h3>Column Addition</h3>
+          <p>Enter two numbers and watch the carry-over magic step by step!</p>
+        </div>
+      </div>
+      <div class="num-inputs">
+        <input class="num-input" id="numA" type="number" min="0" max="999999" value="356"/>
+        <span class="plus-sign">+</span>
+        <input class="num-input" id="numB" type="number" min="0" max="999999" value="478"/>
+      </div>
+      <button class="go-btn" onclick="startAddition()">▶ Start Step-by-Step</button>
+      <div id="colAdd" class="col-wrap" style="display:none;"></div>
+      <div class="step-dots" id="stepDots" style="display:none;"></div>
+      <div class="step-box" id="stepExplain" style="display:none;"></div>
+      <div class="step-btns" id="stepBtns" style="display:none;">
+        <button class="sbtn secondary" onclick="prevStep()">← Back</button>
+        <button class="sbtn primary" onclick="nextStep()">Next Step →</button>
+      </div>
+    </div>
+
+    <div class="scard yellow-border">
+      <div class="scard-head">
+        <div class="scard-icon ic-yellow">🔄</div>
+        <div>
+          <h3>Repeated Addition</h3>
+          <p>Equal groups — this is where multiplication comes from!</p>
+        </div>
+      </div>
+      <div class="rep-icon-select" id="iconSelect"></div>
       <div class="rep-controls">
         <button class="sbtn secondary" onclick="changeRep('groups',-1)">−</button>
         <span class="rep-val" id="repGVal">3</span>
-        <button class="sbtn primary" onclick="changeRep('groups',1)">+</button>
-        <span style="font-weight:900;color:#888;"> groups of </span>
+        <button class="sbtn primary"   onclick="changeRep('groups', 1)">+</button>
+        <span class="rep-label">groups of</span>
         <button class="sbtn secondary" onclick="changeRep('each',-1)">−</button>
         <span class="rep-val" id="repEVal">4</span>
-        <button class="sbtn primary" onclick="changeRep('each',1)">+</button>
+        <button class="sbtn primary"   onclick="changeRep('each', 1)">+</button>
       </div>
       <div class="rep-groups" id="repGroups"></div>
-      <div class="rep-eq" id="repEq"></div>
+      <div class="rep-equation" id="repEq"></div>
     </div>
-  </div>
 
-</div><!-- /learn -->
-
-
-<!-- ════════════════════════════
-     WORD PROBLEMS TAB
-════════════════════════════ -->
-<div id="word" class="screen">
-
-  <div id="wpCards"></div>
-
-  <div style="text-align:center;margin-top:4px;">
-    <button class="sbtn primary" onclick="newWordProblems()">🔀 New Problems</button>
   </div>
 </div>
 
+<!-- ══════════════════════════════════
+     STORIES TAB
+══════════════════════════════════ -->
+<div id="word" class="screen">
+  <div id="wpCards" class="wp-grid"></div>
+  <button class="new-wp-btn" onclick="newWordProblems()">🔀 New Problems</button>
+</div>
 
-<!-- ════════════════════════════
-     PLAY TAB
-════════════════════════════ -->
+<!-- ══════════════════════════════════
+     QUIZ TAB
+══════════════════════════════════ -->
 <div id="play" class="screen">
-  <div class="quiz-score" id="quizScore">Question 1 of 8</div>
+  <div class="quiz-hud">
+    <div class="quiz-progress"><div class="quiz-bar" id="quizBar" style="width:0%"></div></div>
+    <div class="quiz-counter" id="quizCounter">1 / 8</div>
+    <div class="quiz-score-badge" id="quizScoreBadge">⭐ 0</div>
+  </div>
   <div id="quizArea"></div>
 </div>
 
-
 <script>
 // ── TAB SWITCH ──
-function switchTab(id,el){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+function switchTab(id, el) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   el.classList.add('active');
-  if(id==='play') initQuiz();
-  if(id==='word') newWordProblems();
+  if (id === 'play') initQuiz();
+  if (id === 'word') newWordProblems();
 }
 
 // ══════════════════════════
 //  COLUMN ADDITION
 // ══════════════════════════
-const PLACE_NAMES = ['Ones','Tens','Hundreds','Thousands','Ten-Thousands','Hundred-Thousands'];
+const PLACE_NAMES = ['Ones','Tens','Hundreds','Thousands','Ten-Tho.','Hund-Tho.'];
+let stepData = [], stepIdx = 0, carryEls = [], resultEls = [];
 
-let stepData=[], stepIdx=0;
-// Arrays for dynamic carry and result cells (indexed 0=ones, 1=tens, ...)
-let carryEls=[], resultEls=[];
+function startAddition() {
+  const A = Math.min(999999, Math.max(0, +document.getElementById('numA').value || 0));
+  const B = Math.min(999999, Math.max(0, +document.getElementById('numB').value || 0));
+  document.getElementById('numA').value = A;
+  document.getElementById('numB').value = B;
+  const total = A + B;
+  const colCount = String(total).length;
 
-function startAddition(){
-  const A=Math.min(999999,Math.max(0,+document.getElementById('numA').value||0));
-  const B=Math.min(999999,Math.max(0,+document.getElementById('numB').value||0));
-  document.getElementById('numA').value=A;
-  document.getElementById('numB').value=B;
-
-  const total=A+B;
-
-  // Determine column count from number of digits in the result
-  const totalStr=String(total);
-  const colCount=totalStr.length; // result digit count drives column count
-
-  // Extract digits for A and B (index 0 = ones)
-  const digA=[], digB=[];
-  for(let i=0;i<colCount;i++){
-    digA[i]=Math.floor(A/Math.pow(10,i))%10;
-    digB[i]=Math.floor(B/Math.pow(10,i))%10;
+  const digA = [], digB = [];
+  for (let i = 0; i < colCount; i++) {
+    digA[i] = Math.floor(A / Math.pow(10, i)) % 10;
+    digB[i] = Math.floor(B / Math.pow(10, i)) % 10;
+  }
+  const carries = new Array(colCount + 1).fill(0);
+  const remDigs = [];
+  for (let i = 0; i < colCount; i++) {
+    const s = (digA[i] || 0) + (digB[i] || 0) + carries[i];
+    carries[i + 1] = Math.floor(s / 10);
+    remDigs[i] = s % 10;
   }
 
-  // Pre-compute carries and result digits
-  const carries=new Array(colCount+1).fill(0);
-  const remDigs=[];
-  for(let i=0;i<colCount;i++){
-    const s=(digA[i]||0)+(digB[i]||0)+carries[i];
-    carries[i+1]=Math.floor(s/10);
-    remDigs[i]=s%10;
-  }
+  const container = document.getElementById('colAdd');
+  container.innerHTML = '';
+  container.style.display = 'flex';
 
-  // Build DOM
-  const container=document.getElementById('colAdd');
-  container.innerHTML='';
-  container.style.display='flex';
-
-  // Helper to create a cell
-  function makeCell(cls,text){
-    const d=document.createElement('div');
-    d.className='col-cell '+(cls||'blank');
-    if(text!==undefined&&text!=='') d.textContent=text;
+  function makeCell(cls, text) {
+    const d = document.createElement('div');
+    d.className = 'col-cell ' + (cls || 'blank');
+    if (text !== undefined && text !== '') d.textContent = text;
     return d;
   }
-  function makeRow(cells){
-    const row=document.createElement('div');
-    row.className='col-row';
-    cells.forEach(c=>row.appendChild(c));
+  function makeRow(cells) {
+    const row = document.createElement('div');
+    row.className = 'col-row';
+    cells.forEach(c => row.appendChild(c));
     return row;
   }
 
-  // Width = colCount columns + 1 operator column
-  const totalCols=colCount+1;
+  carryEls = [];
+  { const cells = [makeCell('blank')];
+    for (let i = colCount-1; i >= 0; i--) { const c = makeCell('carry blank'); carryEls[i]=c; cells.push(c); }
+    container.appendChild(makeRow(cells)); }
 
-  // ── CARRY ROW ──
-  carryEls=[];
-  {
-    const cells=[];
-    // operator placeholder
-    cells.push(makeCell('blank'));
-    // columns right-to-left visual order: highest index first in the row
-    for(let i=colCount-1;i>=0;i--){
-      const c=makeCell('carry blank');
-      carryEls[i]=c;
-      cells.push(c);
-    }
-    container.appendChild(makeRow(cells));
-  }
+  { const cells = [makeCell('blank')];
+    for (let i = colCount-1; i >= 0; i--) cells.push(makeCell('digit', digA[i] !== undefined ? digA[i] : ''));
+    container.appendChild(makeRow(cells)); }
 
-  // ── ROW A ──
-  {
-    const cells=[];
-    cells.push(makeCell('blank'));
-    for(let i=colCount-1;i>=0;i--){
-      cells.push(makeCell('digit',digA[i]!==undefined&&(i<String(A).length||i===0)?digA[i]:''));
-    }
-    container.appendChild(makeRow(cells));
-  }
+  { const cells = [makeCell('op', '+')];
+    for (let i = colCount-1; i >= 0; i--) cells.push(makeCell('digit', digB[i] !== undefined ? digB[i] : ''));
+    container.appendChild(makeRow(cells)); }
 
-  // ── ROW B (with plus sign) ──
-  {
-    const cells=[];
-    cells.push(makeCell('plus','+'));
-    for(let i=colCount-1;i>=0;i--){
-      cells.push(makeCell('digit',digB[i]!==undefined&&(i<String(B).length||i===0)?digB[i]:''));
-    }
-    container.appendChild(makeRow(cells));
-  }
+  const divEl = document.createElement('div'); divEl.className = 'col-divider'; container.appendChild(divEl);
 
-  // ── DIVIDER ──
-  const div=document.createElement('div');
-  div.className='divider';
-  container.appendChild(div);
+  resultEls = [];
+  { const cells = [makeCell('blank')];
+    for (let i = colCount-1; i >= 0; i--) { const c = makeCell('result blank'); resultEls[i]=c; cells.push(c); }
+    container.appendChild(makeRow(cells)); }
 
-  // ── RESULT ROW ──
-  resultEls=[];
-  {
-    const cells=[];
-    cells.push(makeCell('blank'));
-    for(let i=colCount-1;i>=0;i--){
-      const c=makeCell('result blank');
-      resultEls[i]=c;
-      cells.push(c);
-    }
-    container.appendChild(makeRow(cells));
-  }
+  { const cells = [makeCell('pv')];
+    for (let i = colCount-1; i >= 0; i--) cells.push(makeCell('pv', PLACE_NAMES[i] || ''));
+    container.appendChild(makeRow(cells)); }
 
-  // ── PLACE VALUE LABELS ROW ──
-  {
-    const cells=[];
-    cells.push(makeCell('pv-label')); // operator column empty
-    for(let i=colCount-1;i>=0;i--){
-      cells.push(makeCell('pv-label',PLACE_NAMES[i]||''));
-    }
-    container.appendChild(makeRow(cells));
-  }
-
-  document.getElementById('stepExplain').style.display='block';
-  document.getElementById('stepBtns').style.display='flex';
-
-  // ── BUILD STEPS right-to-left ──
-  stepData=[];
-  for(let i=0;i<colCount;i++){
-    const col=i; // capture
-    const aD=digA[col]||0, bD=digB[col]||0, cIn=carries[col];
-    const s=aD+bD+cIn;
-    const cOut=carries[col+1];
-    const rem=remDigs[col];
-    const pvName=PLACE_NAMES[col]||('Column '+col);
-
+  stepData = [];
+  for (let i = 0; i < colCount; i++) {
+    const col = i;
+    const aD = digA[col]||0, bD = digB[col]||0, cIn = carries[col];
+    const s = aD + bD + cIn, cOut = carries[col+1], rem = remDigs[col];
+    const pvName = PLACE_NAMES[col] || ('Col '+col);
     stepData.push({
-      explain:`👉 <strong>${pvName}</strong> column: ${aD} + ${bD}${cIn?' + '+cIn+' (carry)':''} = <strong>${s}</strong>${s>=10?' — carry the '+cOut+'!':''}`,
-      action:()=>{
-        // show result digit with spring animation
-        const rc=resultEls[col];
-        rc.textContent=rem;
-        rc.classList.remove('blank');
-        rc.style.animation='none'; void rc.offsetWidth;
-        rc.style.animation='popIn .5s cubic-bezier(.34,1.56,.64,1)';
-        // show carry if needed
-        if(cOut&&col+1<colCount){
-          const cc=carryEls[col+1];
-          cc.textContent=cOut;
-          cc.classList.remove('blank');
-          cc.classList.add('carry');
-          cc.style.animation='none'; void cc.offsetWidth;
-          cc.style.animation='popIn .4s cubic-bezier(.34,1.56,.64,1)';
+      explain: `👉 <strong>${pvName}</strong>: ${aD} + ${bD}${cIn?' + '+cIn+' (carry)':''} = <strong>${s}</strong>${s>=10?' — write <strong>'+rem+'</strong>, carry <strong>'+cOut+'</strong>!':' — write <strong>'+rem+'</strong>'}`,
+      action: () => {
+        const rc = resultEls[col];
+        rc.textContent = rem; rc.classList.remove('blank');
+        rc.style.animation = 'none'; void rc.offsetWidth; rc.style.animation = 'popIn .5s cubic-bezier(.34,1.56,.64,1)';
+        if (cOut && col+1 < colCount) {
+          const cc = carryEls[col+1];
+          cc.textContent = cOut; cc.classList.remove('blank'); cc.classList.add('carry');
+          cc.style.animation = 'none'; void cc.offsetWidth; cc.style.animation = 'popIn .4s cubic-bezier(.34,1.56,.64,1)';
         }
       }
     });
   }
-
-  // Final celebration step
   stepData.push({
-    explain:`🎉 <strong>${A} + ${B} = ${total}</strong> — Great job! You used the carry-over method!`,
-    action:()=>{ confettiBurst(25); }
+    explain: `🎉 <strong>${A} + ${B} = ${total}</strong> — You did it! Perfect carry-over technique! 🌟`,
+    action: () => { confettiBurst(30); }
   });
 
-  stepIdx=0;
+  const dotsEl = document.getElementById('stepDots');
+  dotsEl.style.display = 'flex';
+  dotsEl.innerHTML = stepData.map((_,i) => `<div class="sdot" id="sd${i}"></div>`).join('');
+
+  document.getElementById('stepExplain').style.display = 'block';
+  document.getElementById('stepBtns').style.display = 'flex';
+  stepIdx = 0;
   applyStep(0);
 }
 
-function applyStep(idx){
-  const exp=document.getElementById('stepExplain');
-  exp.innerHTML=stepData[idx].explain;
-  exp.style.animation='none'; void exp.offsetWidth; exp.style.animation='fadeIn .3s ease';
+function applyStep(idx) {
+  const exp = document.getElementById('stepExplain');
+  exp.innerHTML = stepData[idx].explain;
+  exp.style.animation = 'none'; void exp.offsetWidth; exp.style.animation = 'slideUp .3s ease';
   stepData[idx].action();
+  document.querySelectorAll('.sdot').forEach((d,i) => {
+    d.className = 'sdot' + (i < idx ? ' done' : i === idx ? ' curr' : '');
+  });
 }
-function nextStep(){ if(stepIdx<stepData.length-1){ stepIdx++; applyStep(stepIdx); }}
-function prevStep(){ if(stepIdx>0){ stepIdx--; } }
+function nextStep() { if (stepIdx < stepData.length-1) { stepIdx++; applyStep(stepIdx); } }
+function prevStep() { if (stepIdx > 0) { stepIdx--; applyStep(stepIdx); } }
 
 // ══════════════════════════
 //  REPEATED ADDITION
 // ══════════════════════════
-let repG=3, repE=4;
-function changeRep(type,delta){
-  if(type==='groups') repG=Math.max(1,Math.min(8,repG+delta));
-  else repE=Math.max(1,Math.min(9,repE+delta));
+const ICON_SETS = ['🍎','🌟','🐶','🎈','🍕','🦋','⚽','🌸'];
+let repG = 3, repE = 4, selIcon = '🍎';
+
+function buildIconSelect() {
+  document.getElementById('iconSelect').innerHTML = ICON_SETS.map(ic =>
+    `<div class="icon-opt${ic===selIcon?' sel':''}" onclick="selectIcon('${ic}')">${ic}</div>`
+  ).join('');
+}
+function selectIcon(ic) { selIcon = ic; buildIconSelect(); renderRep(); }
+function changeRep(type, delta) {
+  if (type === 'groups') repG = Math.max(1, Math.min(8, repG+delta));
+  else repE = Math.max(1, Math.min(9, repE+delta));
   renderRep();
 }
-function renderRep(){
-  document.getElementById('repGVal').textContent=repG;
-  document.getElementById('repEVal').textContent=repE;
-  const wrap=document.getElementById('repGroups'); wrap.innerHTML='';
-  const eqParts=[];
-  for(let g=0;g<repG;g++){
-    const grp=document.createElement('div'); grp.className='rep-group';
-    grp.style.animationDelay=(g*.08)+'s';
-    for(let e=0;e<repE;e++){
-      const dot=document.createElement('div'); dot.className='rep-dot';
-      dot.style.animationDelay=(g*.08+e*.04)+'s';
-      grp.appendChild(dot);
+function renderRep() {
+  document.getElementById('repGVal').textContent = repG;
+  document.getElementById('repEVal').textContent = repE;
+  const wrap = document.getElementById('repGroups'); wrap.innerHTML = '';
+  const eqParts = [];
+  for (let g = 0; g < repG; g++) {
+    const grp = document.createElement('div'); grp.className = 'rep-group';
+    grp.style.animationDelay = (g*0.07)+'s';
+    for (let e = 0; e < repE; e++) {
+      const ic = document.createElement('span'); ic.className = 'rep-icon';
+      ic.textContent = selIcon; ic.style.animationDelay = (g*0.07+e*0.04)+'s';
+      grp.appendChild(ic);
     }
-    wrap.appendChild(grp);
-    eqParts.push(repE);
+    wrap.appendChild(grp); eqParts.push(repE);
   }
-  document.getElementById('repEq').textContent=`${eqParts.join(' + ')} = ${repG*repE}`;
+  document.getElementById('repEq').innerHTML =
+    `${eqParts.join(' + ')} = <strong style="color:var(--purple);font-size:1.3em">${repG*repE}</strong>`;
 }
+buildIconSelect();
 renderRep();
 
 // ══════════════════════════
 //  WORD PROBLEMS
 // ══════════════════════════
-const WP_POOL=[
-  (a,b)=>({emoji:'🍎',text:`Riya has <strong>${a}</strong> apples. Her friend gives her <strong>${b}</strong> more apples. How many apples does Riya have now?`,ans:a+b}),
-  (a,b)=>({emoji:'✏️',text:`There are <strong>${a}</strong> pencils in one box and <strong>${b}</strong> pencils in another box. How many pencils are there altogether?`,ans:a+b}),
-  (a,b)=>({emoji:'🚗',text:`A toy shop has <strong>${a}</strong> red cars and <strong>${b}</strong> blue cars. How many cars are in the shop?`,ans:a+b}),
-  (a,b)=>({emoji:'🌸',text:`A garden has <strong>${a}</strong> roses and <strong>${b}</strong> sunflowers. How many flowers are there in the garden?`,ans:a+b}),
-  (a,b)=>({emoji:'📚',text:`Ram read <strong>${a}</strong> pages on Monday and <strong>${b}</strong> pages on Tuesday. How many pages did he read in all?`,ans:a+b}),
-  (a,b)=>({emoji:'🎈',text:`At a party there are <strong>${a}</strong> red balloons and <strong>${b}</strong> yellow balloons. How many balloons in total?`,ans:a+b}),
+const WP_POOL = [
+  (a,b)=>({emoji:'🍎',text:`Riya has <strong>${a}</strong> apples. Her friend gives her <strong>${b}</strong> more. How many apples does she have now?`,ans:a+b}),
+  (a,b)=>({emoji:'✏️',text:`One box has <strong>${a}</strong> pencils and another has <strong>${b}</strong> pencils. How many altogether?`,ans:a+b}),
+  (a,b)=>({emoji:'🚗',text:`A shop has <strong>${a}</strong> red cars and <strong>${b}</strong> blue cars. How many cars in total?`,ans:a+b}),
+  (a,b)=>({emoji:'🌸',text:`A garden has <strong>${a}</strong> roses and <strong>${b}</strong> sunflowers. How many flowers in all?`,ans:a+b}),
+  (a,b)=>({emoji:'📚',text:`Ram read <strong>${a}</strong> pages Monday and <strong>${b}</strong> pages Tuesday. How many pages total?`,ans:a+b}),
+  (a,b)=>({emoji:'🎈',text:`There are <strong>${a}</strong> red and <strong>${b}</strong> yellow balloons at the party. How many balloons?`,ans:a+b}),
+  (a,b)=>({emoji:'🍪',text:`A bakery made <strong>${a}</strong> cookies in the morning and <strong>${b}</strong> in the evening. Total cookies?`,ans:a+b}),
+  (a,b)=>({emoji:'🐦',text:`<strong>${a}</strong> birds on one tree, <strong>${b}</strong> on another. How many birds altogether?`,ans:a+b}),
 ];
 
-// Tiered random number generators
-function rndTier(){
-  const tier=rnd(3);
-  if(tier===0) return rnd(90)+10;       // 2-digit: 10–99
-  if(tier===1) return rnd(900)+100;     // 3-digit: 100–999
-  return rnd(9000)+1000;                // 4-digit: 1000–9999
+function rndTier() {
+  const t = rnd(3);
+  return t===0 ? rnd(90)+10 : t===1 ? rnd(900)+100 : rnd(9000)+1000;
 }
 
-let wpAnswered=[];
-function newWordProblems(){
-  const container=document.getElementById('wpCards'); container.innerHTML='';
-  wpAnswered=[];
-  const used=shuffle([...WP_POOL]).slice(0,3);
-  used.forEach((fn,i)=>{
-    const a=rndTier();
-    const b=rndTier();
-    const {emoji,text,ans}=fn(a,b);
-    wpAnswered.push({ans, revealed:false});
-    container.innerHTML+=`
-    <div class="wp-card" id="wp${i}">
-      <span class="wp-emoji">${emoji}</span>
-      <div class="wp-text">${text}</div>
-      <div class="wp-answer">
-        <input class="wp-input" id="wpi${i}" type="number" placeholder="?"/>
-        <button class="wp-check" onclick="checkWP(${i},${ans})">Check ✅</button>
+function newWordProblems() {
+  const container = document.getElementById('wpCards'); container.innerHTML = '';
+  shuffle([...WP_POOL]).slice(0,3).forEach((fn,i) => {
+    const a = rndTier(), b = rndTier(), {emoji,text,ans} = fn(a,b);
+    const div = document.createElement('div');
+    div.className = 'wp-card'; div.id = 'wp'+i;
+    div.innerHTML = `
+      <div class="wp-num">Q${i+1}</div>
+      <div class="wp-scene">
+        <span class="wp-emoji-big">${emoji}</span>
+        <div class="wp-text">${text}</div>
       </div>
-      <div class="wp-fb" id="wpfb${i}"></div>
-    </div>`;
+      <div class="wp-answer-row">
+        <input class="wp-input" id="wpi${i}" type="number" placeholder="?"/>
+        <button class="wp-check-btn" onclick="checkWP(${i},${ans})">Check ✅</button>
+      </div>
+      <div class="wp-fb" id="wpfb${i}"></div>`;
+    container.appendChild(div);
   });
 }
 
-function checkWP(i,ans){
-  const val=+document.getElementById('wpi'+i).value;
-  const fb=document.getElementById('wpfb'+i);
-  if(val===ans){
+function checkWP(i, ans) {
+  const val = +document.getElementById('wpi'+i).value;
+  const fb = document.getElementById('wpfb'+i);
+  if (!val && val!==0) { fb.textContent='Type your answer first!'; fb.className='wp-fb'; return; }
+  if (val===ans) {
     fb.innerHTML='🎉 Correct! <strong>'+ans+'</strong> is right!';
-    fb.style.color='#00b894';
-    confettiBurst(20);
-  } else if(val===0||isNaN(val)){
-    fb.textContent='Type your answer first!'; fb.style.color='#aaa';
+    fb.className='wp-fb ok'; confettiBurst(20);
   } else {
-    fb.innerHTML='😅 Not quite. Try again or the answer is <strong>'+ans+'</strong>';
-    fb.style.color='#e17055';
+    fb.innerHTML='😅 Not quite! The answer is <strong>'+ans+'</strong>';
+    fb.className='wp-fb no';
   }
 }
 
 // ══════════════════════════
 //  QUIZ
 // ══════════════════════════
-function genQ(){
-  const type=rnd(6);
-  if(type===0){
-    // 2-digit + 2-digit
-    const a=rnd(89)+10, b=rnd(89)+10;
-    return {q:`${a} + ${b}`,ans:a+b,wrongs:[a+b+10,a+b-10,a+b+1,a+b-1]};
-  } else if(type===1){
-    // 3-digit + 2-digit
-    const a=rnd(800)+100, b=rnd(89)+10;
-    return {q:`${a} + ${b}`,ans:a+b,wrongs:[a+b+100,a+b-10,a+b+10,a+b+1]};
-  } else if(type===2){
-    // 3-digit + 3-digit
-    const a=rnd(400)+100, b=rnd(400)+100;
-    return {q:`${a} + ${b}`,ans:a+b,wrongs:[a+b+10,a+b-10,a+b+100,a+b-1]};
-  } else if(type===3){
-    // 4-digit + 3-digit
-    const a=rnd(9000)+1000, b=rnd(900)+100;
-    return {q:`${a} + ${b}`,ans:a+b,wrongs:[a+b+100,a+b-100,a+b+10,a+b+1000]};
-  } else if(type===4){
-    // 4-digit + 4-digit
-    const a=rnd(5000)+1000, b=rnd(5000)+1000;
-    return {q:`${a} + ${b}`,ans:a+b,wrongs:[a+b+100,a+b-100,a+b+1000,a+b-10]};
-  } else {
-    // fill in blank: ___ + b = c
-    const b=rnd(50)+10, c=rnd(300)+100;
-    const a=c-b;
-    return {q:`___ + ${b} = ${c}`,ans:a,wrongs:[a+10,a-10,a+1,c]};
-  }
+function genQ() {
+  const t = rnd(6);
+  if (t===0){ const a=rnd(89)+10,b=rnd(89)+10; return {q:`${a} + ${b}`,ans:a+b,wrongs:[a+b+10,a+b-10,a+b+1,a+b-1]}; }
+  if (t===1){ const a=rnd(800)+100,b=rnd(89)+10; return {q:`${a} + ${b}`,ans:a+b,wrongs:[a+b+100,a+b-10,a+b+10,a+b+1]}; }
+  if (t===2){ const a=rnd(400)+100,b=rnd(400)+100; return {q:`${a} + ${b}`,ans:a+b,wrongs:[a+b+10,a+b-10,a+b+100,a+b-1]}; }
+  if (t===3){ const a=rnd(9000)+1000,b=rnd(900)+100; return {q:`${a} + ${b}`,ans:a+b,wrongs:[a+b+100,a+b-100,a+b+10,a+b+1000]}; }
+  if (t===4){ const a=rnd(5000)+1000,b=rnd(5000)+1000; return {q:`${a} + ${b}`,ans:a+b,wrongs:[a+b+100,a+b-100,a+b+1000,a+b-10]}; }
+  const b=rnd(50)+10,c=rnd(300)+100,a=c-b;
+  return {q:`___ + ${b} = ${c}`,ans:a,wrongs:[a+10,a-10,a+1,c]};
 }
 
 let qs=[], qi=0, score=0, qAnswered=false;
-function initQuiz(){
-  qs=Array.from({length:8},genQ); qi=0; score=0; qAnswered=false; renderQ();
+function initQuiz() { qs=Array.from({length:8},genQ); qi=0; score=0; qAnswered=false; renderQ(); }
+
+function updateHUD() {
+  document.getElementById('quizBar').style.width = (qi/qs.length*100)+'%';
+  document.getElementById('quizCounter').textContent = (qi+1)+' / '+qs.length;
+  document.getElementById('quizScoreBadge').textContent = '⭐ '+score;
 }
-function renderQ(){
-  if(qi>=qs.length){showFinish();return;}
-  document.getElementById('quizScore').textContent=`Question ${qi+1} of ${qs.length}  |  ⭐ ${score}`;
-  const q=qs[qi]; qAnswered=false;
-  const opts=shuffle([q.ans,...q.wrongs.filter(w=>w>0&&w!==q.ans).slice(0,3)]);
-  document.getElementById('quizArea').innerHTML=`
+
+function renderQ() {
+  if (qi >= qs.length) { showFinish(); return; }
+  updateHUD();
+  const q = qs[qi]; qAnswered = false;
+  const opts = shuffle([q.ans, ...q.wrongs.filter(w=>w>0&&w!==q.ans).slice(0,3)]);
+  document.getElementById('quizArea').innerHTML = `
     <div class="qcard">
       <div class="qnum">${q.q}</div>
-      <div class="qask">What is the answer?</div>
-      <div class="options">${opts.map(o=>`<button class="opt" onclick="checkAns(this,${o},${q.ans})">${o}</button>`).join('')}</div>
-      <div class="feedback" id="fb"></div>
+      <div class="qask">Choose the correct answer</div>
+      <div class="options">
+        ${opts.map(o=>`<button class="opt" onclick="checkAns(this,${o},${q.ans})">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-fb" id="qfb"></div>
     </div>
     <button class="next-btn" id="nxt" onclick="nextQ()">Next ➡</button>`;
 }
-function checkAns(btn,chosen,correct){
-  if(qAnswered)return; qAnswered=true;
-  const fb=document.getElementById('fb');
-  document.getElementById('nxt').style.display='inline-block';
-  if(chosen===correct){
-    btn.classList.add('correct'); fb.textContent='🎉 Correct!'; fb.className='feedback ok';
-    score++; confettiBurst(25);
+
+function checkAns(btn, chosen, correct) {
+  if (qAnswered) return; qAnswered = true;
+  document.getElementById('nxt').style.display = 'inline-block';
+  const fb = document.getElementById('qfb');
+  if (chosen===correct) {
+    btn.classList.add('correct'); fb.textContent='🎉 Correct!'; fb.className='quiz-fb ok';
+    score++; updateHUD(); confettiBurst(25);
   } else {
     btn.classList.add('wrong');
-    fb.innerHTML=`😅 The answer is <strong>${correct}</strong>`; fb.className='feedback no';
+    fb.innerHTML=`😅 The answer is <strong>${correct}</strong>`; fb.className='quiz-fb no';
     document.querySelectorAll('.opt').forEach(o=>{if(+o.textContent===correct)o.classList.add('correct');});
   }
-  document.getElementById('quizScore').textContent=`Question ${qi+1} of ${qs.length}  |  ⭐ ${score}`;
 }
-function nextQ(){qi++;renderQ();}
-function showFinish(){
-  const pct=Math.round(score/qs.length*100);
-  const msg=pct===100?'🌟 Perfect! You\'re an Addition Star!':pct>=75?'🎊 Awesome job!':pct>=50?'👍 Good effort, keep going!':'💪 Practice makes perfect!';
-  document.getElementById('quizArea').innerHTML=`<div class="finish-card"><div class="big">${pct===100?'🏆':'🎯'}</div><h2>Quiz Done!</h2><p>${msg}</p><div class="score-big">${score} / ${qs.length} ⭐</div><br><button class="retry-btn" onclick="initQuiz()">🔄 Try Again</button></div>`;
-  if(pct===100)confettiBurst(80);
-  document.getElementById('quizScore').textContent=`Final: ${score} / ${qs.length}`;
+function nextQ() { qi++; renderQ(); }
+
+function showFinish() {
+  document.getElementById('quizBar').style.width='100%';
+  document.getElementById('quizCounter').textContent='Done!';
+  const pct = Math.round(score/qs.length*100);
+  const msg = pct===100?'🌟 Perfect! You\'re an Addition Star!':
+              pct>=75?'🎊 Awesome job!':pct>=50?'👍 Good effort!':'💪 Keep practicing!';
+  document.getElementById('quizArea').innerHTML=`
+    <div class="finish-card">
+      <span class="big">${pct===100?'🏆':'🎯'}</span>
+      <h2>Quiz Complete!</h2><p>${msg}</p>
+      <div class="score-circle">
+        <span>${score}/${qs.length}</span>
+        <span>⭐ stars</span>
+      </div>
+      <button class="retry-btn" onclick="initQuiz()">🔄 Try Again</button>
+    </div>`;
+  if (pct===100) confettiBurst(80);
 }
 
-// helpers
-function rnd(n){return Math.floor(Math.random()*n);}
-function shuffle(a){return a.sort(()=>Math.random()-.5);}
-function confettiBurst(count=30){
+// ── HELPERS ──
+function rnd(n) { return Math.floor(Math.random()*n); }
+function shuffle(a) { return a.sort(()=>Math.random()-.5); }
+function confettiBurst(count=30) {
   const cols=['#FFD93D','#FF6B35','#9B5DE5','#00BBF9','#F15BB5','#00F5D4'];
   for(let i=0;i<count;i++){
     const c=document.createElement('div'); c.className='confetti-piece';
@@ -642,7 +736,6 @@ function confettiBurst(count=30){
   }
 }
 
-// init
 startAddition();
 </script>
 </body>

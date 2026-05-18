@@ -1,0 +1,19 @@
+{
+  "name": "VidyaMagic",
+  "short_name": "VidyaMagic",
+  "description": "India's themed adventure learning app — Math, GK and more for kids.",
+  "start_url": "./prototype.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFF9F0",
+  "theme_color": "#9B5DE5",
+  "orientation": "portrait",
+  "categories": ["education", "kids"],
+  "lang": "en-IN",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#9B5DE5"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="stylesheet" href="css/themes.css"/>
+<title>Addition — VidyaMagic</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:#FFF9F0;min-height:100vh;overflow-x:hidden;}
+
+/* ── HERO ── */
+.hero{background:var(--vm-hero-gradient);padding:0 0 32px;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;bottom:-20px;left:0;right:0;height:40px;background:#FFF9F0;border-radius:50% 50% 0 0/100% 100% 0 0;}
+.hero-inner{max-width:1200px;margin:0 auto;padding:0 24px;}
+.hero-nav{display:flex;align-items:center;gap:12px;padding:14px 0 12px;position:relative;z-index:2;}
+.back-btn{background:rgba(255,255,255,.25);border:none;border-radius:50%;width:42px;height:42px;font-size:1.3rem;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0;}
+.back-btn:hover{background:rgba(255,255,255,.4);}
+.hero-title{color:#fff;font-size:1.5rem;font-weight:900;flex:1;text-shadow:1px 2px 0 rgba(0,0,0,.15);}
+.stars-pill{background:rgba(255,255,255,.25);color:#fff;font-weight:900;padding:6px 16px;border-radius:20px;font-size:.95rem;white-space:nowrap;}
+.hero-body{display:flex;align-items:center;gap:16px;position:relative;z-index:2;padding-bottom:4px;}
+.mascot-big{font-size:68px;animation:bob 2.2s ease-in-out infinite;flex-shrink:0;}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+.hero-speech{background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border-radius:20px 20px 20px 4px;padding:12px 18px;color:#fff;font-size:.95rem;font-weight:700;line-height:1.5;max-width:380px;}
+.hero-speech strong{font-weight:900;}
+
+/* ── TABS ── */
+.tabs-wrap{position:sticky;top:0;z-index:99;background:#FFF9F0;padding:12px 0 6px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.tabs{display:flex;gap:8px;max-width:1200px;margin:0 auto;padding:0 24px;}
+.tab{flex:0 0 auto;width:120px;padding:9px 6px;text-align:center;font-weight:900;font-size:.82rem;border-radius:14px;cursor:pointer;border:2.5px solid #e8e0f5;color:#aaa;background:#fff;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;}
+.tab-icon{font-size:1.3rem;}
+.tab.active{background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(155,93,229,.35);}
+.tab.locked{opacity:.5;pointer-events:none;}
+.tab-lock{position:absolute;top:-4px;right:-4px;font-size:.7rem;}
+
+/* ── SCREEN ── */
+.screen{display:none;padding:18px 24px 48px;max-width:1200px;margin:0 auto;}
+.screen.active{display:block;}
+.learn-grid{display:grid;grid-template-columns:1fr;gap:18px;}
+@media(min-width:760px){.learn-grid{grid-template-columns:1fr 1fr;}.learn-grid .scard:first-child{grid-column:1/3;}}
+
+/* ── CARDS ── */
+.scard{background:#fff;border-radius:24px;padding:22px 20px;box-shadow:0 4px 20px rgba(0,0,0,.07);border:2px solid transparent;}
+.scard.purple-border{border-color:#f0e8ff;}
+.scard.yellow-border{border-color:#fff3cc;}
+.scard-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.scard-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.ic-purple{background:#f0e8ff;}
+.ic-yellow{background:#fff5cc;}
+.scard-head h3{font-size:1.05rem;font-weight:900;color:#333;}
+.scard-head p{font-size:.78rem;color:#aaa;font-weight:700;margin-top:1px;}
+
+/* ── INPUTS / BUTTONS ── */
+.num-inputs{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.num-input{width:110px;padding:10px 8px;text-align:center;font-size:1.6rem;font-weight:900;font-family:'Nunito',sans-serif;border:3px solid #e8e0f5;border-radius:16px;background:#fafafa;outline:none;transition:border-color .2s;}
+.num-input:focus{border-color:var(--vm-purple);box-shadow:0 0 0 4px rgba(155,93,229,.12);}
+.plus-sign{font-size:2rem;font-weight:900;color:var(--vm-purple);}
+.go-btn{display:block;width:100%;padding:13px;background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));border:none;border-radius:16px;color:#fff;font-size:1.05rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 0 rgba(155,93,229,.4);transition:transform .15s;}
+.go-btn:hover{transform:translateY(-2px);}
+
+/* ── COLUMN ADD ── */
+.col-wrap{display:flex;flex-direction:column;align-items:center;gap:0;margin:16px 0;}
+.col-row{display:flex;gap:4px;justify-content:center;align-items:center;}
+.col-cell{width:58px;height:64px;display:flex;align-items:center;justify-content:center;font-size:2.1rem;font-weight:900;border-radius:14px;transition:all .3s;}
+.col-cell.digit{background:#f5f0ff;color:#333;border:2px solid #ede5ff;}
+.col-cell.carry{background:var(--vm-yellow);color:#c85000;font-size:1.1rem;border-radius:10px;height:38px;min-height:38px;border:2px solid rgba(255,180,0,.5);animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
+.col-cell.result{background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));color:#fff;border-radius:14px;border:2px solid rgba(255,255,255,.3);animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
+.col-cell.op{color:var(--vm-purple);font-size:2.4rem;}
+.col-cell.blank{background:transparent;border:none;}
+.col-cell.pv{background:transparent;color:#ccc;font-size:.58rem;font-weight:900;height:22px;min-height:22px;letter-spacing:.4px;text-transform:uppercase;}
+.col-divider{height:5px;background:linear-gradient(90deg,var(--vm-purple),var(--vm-pink));border-radius:3px;margin:6px 0;width:100%;}
+@keyframes popIn{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.step-box{background:linear-gradient(135deg,#f5f0ff,#fff0f8);border-radius:16px;padding:14px 16px;margin-top:14px;border-left:4px solid var(--vm-purple);font-size:.95rem;font-weight:700;color:#555;line-height:1.6;animation:slideUp .3s ease;min-height:54px;}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.step-dots{display:flex;gap:6px;justify-content:center;margin-top:10px;}
+.sdot{width:9px;height:9px;border-radius:50%;background:#eee;transition:all .3s;}
+.sdot.done{background:var(--vm-purple);}
+.sdot.curr{background:var(--vm-yellow);transform:scale(1.4);}
+.step-btns{display:flex;gap:10px;justify-content:center;margin-top:14px;}
+.sbtn{padding:10px 22px;border:none;border-radius:50px;font-size:.9rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;transition:transform .15s;box-shadow:0 3px 0 rgba(0,0,0,.12);}
+.sbtn:hover{transform:translateY(-2px);}
+.sbtn.primary{background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));color:#fff;}
+.sbtn.secondary{background:#f0f0f0;color:#666;}
+
+/* ── REPEATED ADD ── */
+.rep-controls{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.rep-label{font-weight:900;color:#888;font-size:.9rem;}
+.rep-val{font-size:1.5rem;font-weight:900;min-width:44px;text-align:center;background:#f5f0ff;border-radius:10px;padding:4px 10px;color:var(--vm-purple);}
+.rep-icon-select{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+.icon-opt{width:40px;height:40px;border-radius:12px;border:2.5px solid #eee;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;background:#fff;}
+.icon-opt.sel{border-color:var(--vm-purple);background:#f5f0ff;transform:scale(1.15);}
+.rep-groups{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:12px 0;min-height:64px;}
+.rep-group{background:linear-gradient(135deg,#f5f0ff,#fff0f8);border-radius:16px;padding:10px 12px;border:2px solid #ede5ff;display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;animation:popIn .35s cubic-bezier(.34,1.56,.64,1);min-width:52px;}
+.rep-icon{font-size:1.5rem;animation:popIn .25s cubic-bezier(.34,1.56,.64,1);}
+.rep-equation{font-size:1.1rem;font-weight:900;color:#333;text-align:center;background:#fff;border-radius:14px;padding:12px 20px;border:2px solid #ede5ff;box-shadow:0 3px 10px rgba(0,0,0,.06);}
+
+/* ── ADAPTIVE QUIZ ── */
+.adapt-hud{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;
+  background:#fff;border-radius:18px;padding:14px 18px;
+  box-shadow:0 4px 14px rgba(0,0,0,.07);margin-bottom:18px;max-width:760px;
+}
+.skill-pill{background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));color:#fff;font-weight:900;padding:6px 14px;border-radius:14px;font-size:.85rem;}
+.diff-badge{background:var(--vm-yellow);color:#c85000;font-weight:900;padding:4px 12px;border-radius:12px;font-size:.85rem;}
+.streak-badge{background:#fff0e0;color:var(--vm-orange);font-weight:900;padding:4px 12px;border-radius:12px;font-size:.85rem;}
+.mastery-wrap{flex:1;min-width:120px;}
+.mastery-label{font-size:.7rem;font-weight:900;color:#aaa;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;}
+.mastery-bar{height:10px;background:#f0e8ff;border-radius:6px;overflow:hidden;}
+.mastery-fill{height:100%;background:linear-gradient(90deg,var(--vm-green),var(--vm-purple),var(--vm-pink));border-radius:6px;transition:width .5s ease;}
+.score-badge{background:var(--vm-yellow);color:#c85000;font-weight:900;padding:4px 12px;border-radius:12px;font-size:.85rem;}
+
+.qcard{background:#fff;border-radius:24px;padding:28px 22px 22px;box-shadow:0 6px 24px rgba(0,0,0,.09);text-align:center;border-top:6px solid var(--vm-purple);max-width:640px;margin:0 auto;}
+.qcard .qnum{font-size:2.6rem;font-weight:900;color:#333;letter-spacing:3px;margin-bottom:6px;padding:16px;background:linear-gradient(135deg,#f5f0ff,#fff0f8);border-radius:18px;display:inline-block;min-width:180px;}
+.qcard .qask{font-size:.9rem;color:#aaa;font-weight:700;margin:8px 0 20px;}
+
+/* Column addition display */
+.col-question{
+  display:inline-flex;flex-direction:column;align-items:flex-end;
+  background:linear-gradient(135deg,#f5f0ff,#fff0f8);
+  border-radius:18px;padding:16px 28px;margin-bottom:6px;
+  font-size:2.4rem;font-weight:900;font-family:'Nunito',sans-serif;
+  min-width:160px;
+}
+.col-q-row{display:flex;align-items:center;gap:10px;justify-content:flex-end;}
+.col-q-op{color:var(--vm-purple);margin-right:4px;font-size:2rem;}
+.col-q-num{color:#333;letter-spacing:2px;}
+.col-q-line{
+  width:100%;height:4px;
+  background:linear-gradient(90deg,var(--vm-purple),var(--vm-pink));
+  border-radius:2px;margin:6px 0;
+}
+.col-q-ans{color:#ccc;letter-spacing:2px;}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:480px;margin:0 auto;}
+.opt{padding:16px 8px;border:3px solid #f0e8ff;border-radius:18px;font-size:1.2rem;font-weight:900;cursor:pointer;background:#fff;font-family:'Nunito',sans-serif;transition:all .2s;color:#333;}
+.opt:hover{border-color:var(--vm-purple);background:#f5f0ff;transform:translateY(-2px);}
+.opt.correct{background:linear-gradient(135deg,var(--vm-green),var(--vm-blue));border-color:var(--vm-green);color:#111;animation:popIn .4s;}
+.opt.wrong{background:#ffe0e0;border-color:#ff8a8a;color:#c00;}
+.quiz-fb{margin-top:14px;font-size:1.05rem;font-weight:900;min-height:30px;}
+.quiz-fb.ok{color:#00b894;} .quiz-fb.no{color:#e17055;}
+.tag-row{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;}
+.qtag{font-size:.7rem;font-weight:900;padding:3px 10px;border-radius:10px;letter-spacing:.5px;text-transform:uppercase;}
+.qtag.review{background:#fff5cc;color:#c85000;}
+.qtag.preview{background:#e0f5ff;color:#0077b6;}
+.next-btn{margin-top:14px;padding:13px 36px;display:none;background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));border:none;border-radius:50px;font-size:1rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;color:#fff;box-shadow:0 4px 0 rgba(155,93,229,.35);transition:transform .15s;}
+
+/* ── QUIZ TIMER ── */
+.timer-wrap{
+  height:8px;background:#f0e8ff;border-radius:8px;
+  overflow:hidden;margin-bottom:18px;max-width:640px;margin-left:auto;margin-right:auto;
+}
+.timer-bar{
+  height:100%;border-radius:8px;
+  transition:width 1s linear, background .5s ease;
+  background:#00b894;
+}
+.timer-label{
+  text-align:center;font-size:.78rem;font-weight:900;
+  color:#aaa;margin-bottom:6px;letter-spacing:.5px;
+}
+.next-btn:hover{transform:translateY(-3px);}
+
+.toast{
+  position:fixed;top:80px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--vm-yellow),var(--vm-orange));
+  color:#fff;font-weight:900;padding:14px 26px;border-radius:30px;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:500;
+  animation:toastIn .4s ease,toastOut .4s ease 2.6s forwards;
+  text-shadow:1px 1px 0 rgba(0,0,0,.2);font-size:1rem;
+}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-30px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes toastOut{to{opacity:0;transform:translate(-50%,-30px)}}
+
+.confetti-piece{position:fixed;width:10px;height:14px;border-radius:2px;animation:fall 1.2s ease-in forwards;z-index:999;pointer-events:none;}
+@keyframes fall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+/* ── BALL TRAINER ── */
+.ball-trainer-wrap{grid-column:1/-1;}
+.ball-problem{
+  text-align:center;margin-bottom:20px;
+  font-size:2.6rem;font-weight:900;color:#333;
+  min-height:60px;display:flex;align-items:center;
+  justify-content:center;gap:12px;
+}
+.ball-problem .num-a   { color:var(--vm-blue); }
+.ball-problem .num-b   { color:var(--vm-orange); }
+.ball-problem .num-ans { color:var(--vm-purple); }
+.ball-problem .num-plus{ color:#aaa; }
+
+@keyframes numPop {
+  0%   { transform:scale(0) translateY(10px); opacity:0; }
+  70%  { transform:scale(1.3) translateY(-4px); opacity:1; }
+  100% { transform:scale(1) translateY(0); opacity:1; }
+}
+.ball-grid{
+  display:flex;flex-wrap:wrap;gap:8px;
+  justify-content:center;margin:0 auto 20px;
+  max-width:640px;
+}
+.ball{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;font-weight:900;
+  background:#9B5DE5;color:#fff;
+  border:3px solid rgba(255,255,255,.3);
+  transition:background .25s, transform .25s, box-shadow .25s;
+  cursor:default;flex-shrink:0;
+  box-shadow:0 3px 0 rgba(0,0,0,.15);
+}
+.ball.hl-a{
+  background:linear-gradient(135deg,#00BBF9,#9B5DE5);
+  color:#fff;border-color:transparent;
+  transform:scale(1.15);
+  box-shadow:0 4px 14px rgba(0,187,249,.45);
+}
+.ball.hl-b{
+  background:linear-gradient(135deg,#FF6B35,#FFD93D);
+  color:#fff;border-color:transparent;
+  transform:scale(1.15);
+  box-shadow:0 4px 14px rgba(255,107,53,.45);
+}
+.ball.hl-ans{
+  background:linear-gradient(135deg,#9B5DE5,#F15BB5);
+  color:#fff;border-color:transparent;
+  transform:scale(1.3);
+  box-shadow:0 6px 20px rgba(155,93,229,.55);
+  animation:ansBounce .6s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes ansBounce{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.5)}
+  100%{transform:scale(1.3)}
+}
+/* Answer ball animation */
+@keyframes answerPop {
+  0%   { transform:scale(1);    box-shadow:0 0 0 0 rgba(0,0,0,.5); }
+  30%  { transform:scale(1.55); box-shadow:0 0 0 8px rgba(0,0,0,.15); }
+  60%  { transform:scale(1.35); box-shadow:0 0 0 14px rgba(0,0,0,.05); }
+  100% { transform:scale(1.4);  box-shadow:0 0 0 18px rgba(0,0,0,0); }
+}
+.ball-answer-active {
+  animation: answerPop .7s cubic-bezier(.34,1.56,.64,1) forwards !important;
+  position:relative;
+  z-index:10;
+}
+/* Ripple ring */
+.ball-ripple {
+  position:absolute;
+  border-radius:50%;
+  border:3px solid #111;
+  animation:rippleOut .8s ease-out forwards;
+  pointer-events:none;
+}
+@keyframes rippleOut {
+  0%   { width:48px;height:48px;opacity:.9;top:0;left:0; }
+  100% { width:90px;height:90px;opacity:0;top:-21px;left:-21px; }
+}
+.ball-wrapper {
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.ball-legend{
+  display:flex;gap:16px;justify-content:center;
+  flex-wrap:wrap;margin-bottom:16px;font-size:.85rem;font-weight:700;
+}
+.legend-dot{width:14px;height:14px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;}
+.ball-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.ball-speed{
+  display:flex;align-items:center;gap:8px;
+  font-size:.82rem;font-weight:700;color:#aaa;
+}
+.speed-toggle{
+  display:flex;gap:4px;
+}
+.speed-btn{
+  padding:5px 12px;border:2px solid #e8e0f5;border-radius:10px;
+  font-size:.78rem;font-weight:900;cursor:pointer;background:#fff;color:#aaa;
+  font-family:'Nunito',sans-serif;transition:all .2s;
+}
+.speed-btn.active{background:var(--vm-purple);color:#fff;border-color:transparent;}
+
+/* ── WORD PROBLEMS ── */
+.wp-card{background:#fff;border-radius:22px;padding:22px;box-shadow:0 4px 18px rgba(0,0,0,.07);border-top:5px solid var(--vm-yellow);position:relative;overflow:hidden;}
+.wp-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(255,211,61,.15) 0%,transparent 70%);}
+.wp-num{position:absolute;top:12px;right:14px;background:var(--vm-yellow);color:#c85000;font-size:.75rem;font-weight:900;padding:3px 10px;border-radius:12px;}
+.wp-scene{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.wp-emoji-big{font-size:52px;flex-shrink:0;animation:bounce 2.5s ease-in-out infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.wp-text{font-size:.95rem;font-weight:700;color:#444;line-height:1.7;}
+.wp-text strong{color:var(--vm-purple);}
+.wp-answer-row{display:flex;gap:10px;align-items:center;margin-top:4px;}
+.wp-input{flex:1;max-width:120px;padding:10px;text-align:center;font-size:1.4rem;font-weight:900;font-family:'Nunito',sans-serif;border:3px solid #eee;border-radius:14px;outline:none;transition:border-color .2s;}
+.wp-input:focus{border-color:var(--vm-purple);}
+.wp-check-btn{padding:10px 18px;background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));border:none;border-radius:14px;color:#fff;font-size:.9rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;box-shadow:0 3px 0 rgba(155,93,229,.35);transition:transform .15s;}
+.wp-check-btn:hover{transform:translateY(-2px);}
+.wp-fb{font-size:.9rem;font-weight:900;margin-top:8px;min-height:24px;text-align:center;}
+.wp-fb.ok{color:#00b894;}.wp-fb.no{color:#e17055;}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-nav">
+      <button class="back-btn" onclick="history.back()">←</button>
+      <div class="hero-title">➕ Addition</div>
+      <div class="stars-pill" id="topStars">⭐ 0</div>
+    </div>
+    <div class="hero-body">
+      <span class="mascot-big" id="mascot">🦉</span>
+      <div class="hero-speech" id="heroSpeech">
+        <strong>Hello, Math Hero!</strong><br>
+        Let's master addition together. The questions will adapt to you! 🚀
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TABS ── -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <div class="tab active" id="tabLearn"   onclick="switchTab('learn',this)">
+      <span class="tab-icon">📖</span>Learn
+    </div>
+    <div class="tab" id="tabTricks" onclick="switchTab('tricks',this)">
+      <span class="tab-icon">🎯</span>Tricks
+    </div>
+    <div class="tab" id="tabStories" onclick="switchTab('word',this)">
+      <span class="tab-icon">📝</span>Stories
+    </div>
+    <div class="tab" id="tabQuiz" onclick="switchTab('play',this)">
+      <span class="tab-icon">🎮</span>Quiz
+    </div>
+  </div>
+</div>
+
+<!-- ── LEARN TAB ── -->
+<div id="learn" class="screen active">
+  <div class="learn-grid">
+    <div class="scard purple-border">
+      <div class="scard-head">
+        <div class="scard-icon ic-purple">📐</div>
+        <div>
+          <h3>Column Addition</h3>
+          <p>Enter two numbers and watch the carry-over magic step by step!</p>
+        </div>
+      </div>
+      <div class="num-inputs">
+        <input class="num-input" id="numA" type="number" min="0" max="999999" value="356"/>
+        <span class="plus-sign">+</span>
+        <input class="num-input" id="numB" type="number" min="0" max="999999" value="478"/>
+      </div>
+      <button class="go-btn" onclick="startAddition()">▶ Start Step-by-Step</button>
+      <div id="colAdd" class="col-wrap" style="display:none;"></div>
+      <div class="step-dots" id="stepDots" style="display:none;"></div>
+      <div class="step-box" id="stepExplain" style="display:none;"></div>
+      <div class="step-btns" id="stepBtns" style="display:none;">
+        <button class="sbtn secondary" onclick="prevStep()">← Back</button>
+        <button class="sbtn primary"   onclick="nextStep()">Next Step →</button>
+      </div>
+    </div>
+
+    <div class="scard yellow-border">
+      <div class="scard-head">
+        <div class="scard-icon ic-yellow">🔄</div>
+        <div>
+          <h3>Repeated Addition</h3>
+          <p>Equal groups — this is where multiplication comes from!</p>
+        </div>
+      </div>
+      <div class="rep-icon-select" id="iconSelect"></div>
+      <div class="rep-controls">
+        <button class="sbtn secondary" onclick="changeRep('groups',-1)">−</button>
+        <span class="rep-val" id="repGVal">3</span>
+        <button class="sbtn primary"   onclick="changeRep('groups',1)">+</button>
+        <span class="rep-label">groups of</span>
+        <button class="sbtn secondary" onclick="changeRep('each',-1)">−</button>
+        <span class="rep-val" id="repEVal">4</span>
+        <button class="sbtn primary"   onclick="changeRep('each',1)">+</button>
+      </div>
+      <div class="rep-groups" id="repGroups"></div>
+      <div class="rep-equation" id="repEq"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── STORIES TAB ── -->
+<div id="word" class="screen">
+  <div style="max-width:760px;margin:0 auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
+      <div>
+        <div style="font-size:1.1rem;font-weight:900;color:#333;">📝 Word Problems</div>
+        <div style="font-size:.8rem;color:#aaa;font-weight:700;">Read carefully, then solve!</div>
+      </div>
+      <button onclick="newWordProblems()" style="padding:10px 20px;background:linear-gradient(135deg,var(--vm-green),var(--vm-blue));border:none;border-radius:14px;color:#111;font-size:.9rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 0 rgba(0,187,249,.3);">🔀 New Problems</button>
+    </div>
+    <div id="wpCards" style="display:grid;grid-template-columns:1fr;gap:14px;"></div>
+  </div>
+</div>
+
+<!-- ── TRICKS TAB (BALL PATTERN TRAINER) ── -->
+<div id="tricks" class="screen">
+  <div style="max-width:640px;margin:0 auto;">
+
+    <!-- HUD -->
+    <div style="background:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 4px 14px rgba(0,0,0,.07);margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div id="ballPhaseBadge" style="background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));color:#fff;font-weight:900;padding:6px 16px;border-radius:14px;font-size:.88rem;">Phase 1 — 1+1 digit</div>
+      <div id="ballProgressDots" style="display:flex;gap:5px;"></div>
+      <div style="flex:1;"></div>
+      <button id="ballLevelUpBtn" onclick="window.ballPhaseUp()" style="display:none;padding:7px 16px;background:linear-gradient(135deg,#FFD93D,#FF6B35);border:none;border-radius:12px;color:#fff;font-size:.85rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 0 rgba(255,107,53,.35);">🚀 Next Level!</button>
+      <button onclick="window.ballReset()" style="padding:6px 14px;background:#f5f0ff;border:none;border-radius:12px;color:var(--vm-purple);font-size:.82rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;">🔄 Reset</button>
+    </div>
+
+    <div class="scard purple-border">
+
+      <!-- Problem -->
+      <div class="ball-problem" id="ballProblem" style="margin-bottom:10px;">Get ready…</div>
+
+      <!-- Legend -->
+      <div class="ball-legend" style="margin-bottom:14px;">
+        <span><span class="legend-dot" id="ldA" style="background:#06D6A0;"></span>First number</span>
+        <span><span class="legend-dot" id="ldB" style="background:#EF476F;"></span>Add this many</span>
+        <span><span class="legend-dot" id="ldAns" style="background:#FFD166;"></span>Answer!</span>
+      </div>
+
+      <!-- Ball grid — exactly 10 per row, 5 rows = 50 balls -->
+      <div id="ballGrid" style="display:grid;grid-template-columns:repeat(10,48px);grid-auto-rows:48px;gap:6px;justify-content:center;margin-bottom:18px;position:relative;overflow:visible;"></div>
+
+      <!-- Answer -->
+      <div id="ballAnswerRow" style="display:none;justify-content:center;align-items:center;gap:12px;margin-bottom:12px;">
+        <input id="ballAnswerInput" type="number" placeholder="?"
+          style="width:100px;padding:11px;text-align:center;font-size:1.5rem;font-weight:900;font-family:'Nunito',sans-serif;border:3px solid #e8e0f5;border-radius:14px;outline:none;transition:border-color .2s;"
+          onkeydown="if(event.key==='Enter') window.checkBallAnswer()"
+          onfocus="this.style.borderColor='var(--vm-purple)'"
+          onblur="this.style.borderColor='#e8e0f5'"/>
+        <button onclick="window.checkBallAnswer()"
+          style="padding:11px 22px;background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));border:none;border-radius:14px;color:#fff;font-size:.95rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 0 rgba(155,93,229,.35);">Check ✅</button>
+      </div>
+      <div id="ballFeedback" style="text-align:center;font-size:1rem;font-weight:900;min-height:28px;"></div>
+
+      <!-- Controls -->
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px;">
+        <button class="sbtn primary"   onclick="window.newBallProblem()">▶ New Problem</button>
+        <button class="sbtn secondary" onclick="window.replayBall()">🔁 Replay</button>
+        <div class="ball-speed">Speed:
+          <div class="speed-toggle">
+            <button class="speed-btn active" id="spSlow" onclick="setSpeed('slow')">Slow</button>
+            <button class="speed-btn"        id="spFast" onclick="setSpeed('fast')">Fast</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── QUIZ TAB (ADAPTIVE) ── -->
+<div id="play" class="screen">
+  <div class="adapt-hud">
+    <div class="skill-pill" id="skillPill">Skill: …</div>
+    <div class="diff-badge" id="diffBadge">Level 1</div>
+    <div class="streak-badge" id="streakBadge">🔥 0</div>
+    <div class="mastery-wrap">
+      <div class="mastery-label">Mastery <span id="masteryPct">0%</span></div>
+      <div class="mastery-bar"><div class="mastery-fill" id="masteryFill" style="width:0%"></div></div>
+    </div>
+    <div class="score-badge" id="scorePill">⭐ 0</div>
+  </div>
+  <div class="timer-label" id="timerLabel">⏱ 15s</div>
+  <div class="timer-wrap"><div class="timer-bar" id="timerBar" style="width:100%"></div></div>
+  <div id="quizArea"></div>
+</div>
+
+<script type="module">
+import { ensureTheme, getTheme } from './js/theme.js';
+import { load, save, getTopic, getSkill, addStars, pushAttempt } from './js/progress.js';
+import { ADDITION_SKILLS, nextQuestion, recordAttempt, activeSkillFor } from './js/adaptive.js';
+import { api } from './js/api.js';
+
+// ── Apply theme + mascot ──
+const theme = ensureTheme();
+if (theme) {
+  document.getElementById('mascot').textContent = theme.mascot;
+}
+
+let progress = load();
+
+// Mark learn complete after running column addition once + interacting with rep
+function markLearnDone() {
+  const t = getTopic(progress, 'math', 'addition');
+  if (!t.sections.learn) {
+    t.sections.learn = true;
+    save(progress);
+    document.getElementById('tabStories').classList.remove('locked');
+  }
+}
+
+// ── TAB SWITCH ──
+window.switchTab = function(id, el) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  if (id === 'play') initQuiz();
+  if (id === 'word') window.newWordProblems();
+  if (id === 'tricks') window.newBallProblem();
+};
+
+// Unlock tabs — Stories unlocks after Learn, Quiz always available
+function refreshTabLocks() {
+  document.getElementById('tabStories').classList.remove('locked');
+  document.getElementById('topStars').textContent = '⭐ ' + (progress.totalStars || 0);
+}
+refreshTabLocks();
+
+// ══════════════════════════════════════
+//  COLUMN ADDITION (LEARN)
+// ══════════════════════════════════════
+const PLACE_NAMES = ['Ones','Tens','Hundreds','Thousands','Ten-Tho.','Hund-Tho.'];
+let stepData = [], stepIdx = 0, carryEls = [], resultEls = [];
+
+window.startAddition = function() {
+  const A = Math.min(999999, Math.max(0, +document.getElementById('numA').value || 0));
+  const B = Math.min(999999, Math.max(0, +document.getElementById('numB').value || 0));
+  document.getElementById('numA').value = A;
+  document.getElementById('numB').value = B;
+  const total = A + B;
+  const colCount = String(total).length;
+
+  const digA = [], digB = [];
+  for (let i = 0; i < colCount; i++) {
+    digA[i] = Math.floor(A / Math.pow(10, i)) % 10;
+    digB[i] = Math.floor(B / Math.pow(10, i)) % 10;
+  }
+  const carries = new Array(colCount + 1).fill(0);
+  const remDigs = [];
+  for (let i = 0; i < colCount; i++) {
+    const s = (digA[i] || 0) + (digB[i] || 0) + carries[i];
+    carries[i + 1] = Math.floor(s / 10);
+    remDigs[i] = s % 10;
+  }
+
+  const container = document.getElementById('colAdd');
+  container.innerHTML = ''; container.style.display = 'flex';
+  const mk = (cls, txt) => { const d = document.createElement('div'); d.className = 'col-cell '+(cls||'blank'); if (txt!==undefined&&txt!=='') d.textContent = txt; return d; };
+  const row = cells => { const r = document.createElement('div'); r.className = 'col-row'; cells.forEach(c=>r.appendChild(c)); return r; };
+
+  carryEls = [];
+  { const c = [mk('blank')]; for (let i=colCount-1;i>=0;i--){ const x=mk('carry blank'); carryEls[i]=x; c.push(x); } container.appendChild(row(c)); }
+  { const c = [mk('blank')]; for (let i=colCount-1;i>=0;i--) c.push(mk('digit', digA[i]??'')); container.appendChild(row(c)); }
+  { const c = [mk('op','+')]; for (let i=colCount-1;i>=0;i--) c.push(mk('digit', digB[i]??'')); container.appendChild(row(c)); }
+  const div = document.createElement('div'); div.className='col-divider'; container.appendChild(div);
+  resultEls = [];
+  { const c = [mk('blank')]; for (let i=colCount-1;i>=0;i--){ const x=mk('result blank'); resultEls[i]=x; c.push(x); } container.appendChild(row(c)); }
+  { const c = [mk('pv')]; for (let i=colCount-1;i>=0;i--) c.push(mk('pv', PLACE_NAMES[i]||'')); container.appendChild(row(c)); }
+
+  stepData = [];
+  for (let i = 0; i < colCount; i++) {
+    const col = i, aD = digA[col]||0, bD = digB[col]||0, cIn = carries[col];
+    const s = aD+bD+cIn, cOut = carries[col+1], rem = remDigs[col];
+    const pvName = PLACE_NAMES[col]||('Col '+col);
+    stepData.push({
+      explain:`👉 <strong>${pvName}</strong>: ${aD} + ${bD}${cIn?' + '+cIn+' (carry)':''} = <strong>${s}</strong>${s>=10?' — write <strong>'+rem+'</strong>, carry <strong>'+cOut+'</strong>!':' — write <strong>'+rem+'</strong>'}`,
+      action:()=>{
+        const rc = resultEls[col]; rc.textContent = rem; rc.classList.remove('blank');
+        rc.style.animation='none'; void rc.offsetWidth; rc.style.animation='popIn .5s cubic-bezier(.34,1.56,.64,1)';
+        if (cOut && col+1<colCount){ const cc=carryEls[col+1]; cc.textContent=cOut; cc.classList.remove('blank'); cc.classList.add('carry'); cc.style.animation='none'; void cc.offsetWidth; cc.style.animation='popIn .4s cubic-bezier(.34,1.56,.64,1)'; }
+      }
+    });
+  }
+  stepData.push({ explain:`🎉 <strong>${A} + ${B} = ${total}</strong> — Great work!`, action:()=>{ confettiBurst(30); markLearnDone(); refreshTabLocks(); } });
+
+  const dotsEl = document.getElementById('stepDots');
+  dotsEl.style.display='flex';
+  dotsEl.innerHTML = stepData.map((_,i)=>`<div class="sdot" id="sd${i}"></div>`).join('');
+  document.getElementById('stepExplain').style.display='block';
+  document.getElementById('stepBtns').style.display='flex';
+  stepIdx = 0; applyStep(0);
+};
+
+function applyStep(idx) {
+  const exp = document.getElementById('stepExplain');
+  exp.innerHTML = stepData[idx].explain;
+  exp.style.animation = 'none'; void exp.offsetWidth; exp.style.animation = 'slideUp .3s ease';
+  stepData[idx].action();
+  document.querySelectorAll('.sdot').forEach((d,i) => {
+    d.className = 'sdot' + (i < idx ? ' done' : i === idx ? ' curr' : '');
+  });
+}
+window.nextStep = ()=>{ if (stepIdx<stepData.length-1){ stepIdx++; applyStep(stepIdx); } };
+window.prevStep = ()=>{ if (stepIdx>0){ stepIdx--; applyStep(stepIdx); } };
+
+// ══════════════════════════════════════
+//  REPEATED ADDITION
+// ══════════════════════════════════════
+const ICON_SETS = ['🍎','🌟','🐶','🎈','🍕','🦋','⚽','🌸'];
+let repG = 3, repE = 4, selIcon = '🍎';
+function buildIconSelect() {
+  document.getElementById('iconSelect').innerHTML = ICON_SETS.map(ic => `<div class="icon-opt${ic===selIcon?' sel':''}" onclick="selectIcon('${ic}')">${ic}</div>`).join('');
+}
+window.selectIcon = ic => { selIcon = ic; buildIconSelect(); renderRep(); };
+window.changeRep = (type, delta) => {
+  if (type === 'groups') repG = Math.max(1, Math.min(8, repG+delta));
+  else repE = Math.max(1, Math.min(9, repE+delta));
+  renderRep(); markLearnDone(); refreshTabLocks();
+};
+function renderRep() {
+  document.getElementById('repGVal').textContent = repG;
+  document.getElementById('repEVal').textContent = repE;
+  const wrap = document.getElementById('repGroups'); wrap.innerHTML = '';
+  const eq = [];
+  for (let g = 0; g < repG; g++) {
+    const grp = document.createElement('div'); grp.className = 'rep-group';
+    grp.style.animationDelay = (g*.07)+'s';
+    for (let e = 0; e < repE; e++) {
+      const ic = document.createElement('span'); ic.className = 'rep-icon';
+      ic.textContent = selIcon; ic.style.animationDelay = (g*.07+e*.04)+'s';
+      grp.appendChild(ic);
+    }
+    wrap.appendChild(grp); eq.push(repE);
+  }
+  document.getElementById('repEq').innerHTML = `${eq.join(' + ')} = <strong style="color:var(--vm-purple);font-size:1.3em">${repG*repE}</strong>`;
+}
+buildIconSelect(); renderRep();
+
+// ══════════════════════════════════════
+//  ADAPTIVE QUIZ
+// ══════════════════════════════════════
+let currentQ = null, qStartTime = 0, sessionScore = 0, qAnswered = false;
+let activeSkill = null;
+let quizTimer = null, quizTimeLeft = 0;
+
+// Timer durations per difficulty level
+function timerDuration(difficulty) {
+  if (difficulty <= 1) return 20;  // 2-digit no carry
+  if (difficulty === 2) return 15; // 2-digit with carry
+  return 30;                       // 3-digit and above
+}
+
+function startTimer(seconds) {
+  clearInterval(quizTimer);
+  quizTimeLeft = seconds;
+  const bar   = document.getElementById('timerBar');
+  const label = document.getElementById('timerLabel');
+  if (!bar) return;
+
+  bar.style.transition = 'none';
+  bar.style.width = '100%';
+  bar.style.background = '#00b894';
+  label.textContent = `⏱ ${quizTimeLeft}s`;
+
+  quizTimer = setInterval(() => {
+    quizTimeLeft--;
+    const pct = (quizTimeLeft / seconds) * 100;
+
+    // Force reflow then animate
+    bar.style.transition = 'width 1s linear, background .5s ease';
+    bar.style.width = pct + '%';
+
+    // Colour shifts green → yellow → red
+    if (pct > 50)      bar.style.background = '#00b894';
+    else if (pct > 25) bar.style.background = '#FFD93D';
+    else               bar.style.background = '#FF6B35';
+
+    label.textContent = `⏱ ${quizTimeLeft}s`;
+
+    if (quizTimeLeft <= 0) {
+      clearInterval(quizTimer);
+      timeOut();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(quizTimer);
+  const label = document.getElementById('timerLabel');
+  if (label) label.textContent = '';
+}
+
+function timeOut() {
+  if (qAnswered) return;
+  qAnswered = true;
+
+  // Show correct answer gently — no penalty
+  document.querySelectorAll('.opt').forEach(o => {
+    if (+o.textContent === currentQ.ans) o.classList.add('correct');
+  });
+  const fb = document.getElementById('qfb');
+  if (fb) { fb.innerHTML = `⏰ Time's up! Answer: <strong>${currentQ.ans}</strong>`; fb.className = 'quiz-fb no'; }
+
+  // Auto next after 2s so kid sees the answer
+  setTimeout(() => nextQ(), 2000);
+}
+
+// Build column addition display for quiz questions
+function buildColDisplay(qStr) {
+  // Match "a + b" pattern
+  const match = qStr.match(/^(\d+)\s*\+\s*(\d+)$/);
+  if (!match) {
+    // Fallback for fill-in-blank or other formats
+    return `<div class="qnum">${qStr}</div>`;
+  }
+  const a = match[1], b = match[2];
+  return `
+    <div style="text-align:center;margin-bottom:6px;">
+      <div class="col-question">
+        <div class="col-q-row">
+          <span class="col-q-num">${a}</span>
+        </div>
+        <div class="col-q-row">
+          <span class="col-q-op">+</span>
+          <span class="col-q-num">${b}</span>
+        </div>
+        <div class="col-q-line"></div>
+        <div class="col-q-row">
+          <span class="col-q-ans">?</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function initQuiz() {
+  activeSkill = activeSkillFor(progress, ADDITION_SKILLS);
+  sessionScore = 0;
+  updateAdaptHud();
+  loadNextQuestion();
+}
+
+function updateAdaptHud() {
+  const skillObj = ADDITION_SKILLS.find(s => s.id === activeSkill) || ADDITION_SKILLS[0];
+  const state = getSkill(progress, activeSkill);
+  document.getElementById('skillPill').textContent = '🎯 ' + skillObj.label;
+  document.getElementById('diffBadge').textContent = 'Level ' + state.difficulty;
+  document.getElementById('streakBadge').textContent = '🔥 ' + state.streak;
+  const pct = Math.round((state.mastery || 0) * 100);
+  document.getElementById('masteryPct').textContent = pct + '%';
+  document.getElementById('masteryFill').style.width = pct + '%';
+  document.getElementById('scorePill').textContent = '⭐ ' + sessionScore;
+}
+
+function loadNextQuestion() {
+  const q = nextQuestion(progress, activeSkill);
+  currentQ = q;
+  qStartTime = Date.now();
+  qAnswered = false;
+  const state = getSkill(progress, activeSkill);
+  startTimer(timerDuration(state.difficulty));
+
+  const tags = [];
+  if (q.isReview)  tags.push('<span class="qtag review">🔁 Review</span>');
+  if (q.isPreview) tags.push('<span class="qtag preview">⚡ Sneak Peek</span>');
+
+  // Build column display for simple a+b questions
+  const colDisplay = buildColDisplay(q.q);
+
+  document.getElementById('quizArea').innerHTML = `
+    <div class="qcard">
+      ${tags.length ? `<div class="tag-row">${tags.join('')}</div>` : ''}
+      ${colDisplay}
+      <div class="qask">Choose the correct answer</div>
+      <div class="options">
+        ${q.options.map(o => `<button class="opt" onclick="checkAns(this,${o},${q.ans})">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-fb" id="qfb"></div>
+    </div>
+    <div style="text-align:center"><button class="next-btn" id="nxt" onclick="nextQ()">Next ➡</button></div>`;
+}
+
+window.checkAns = function(btn, chosen, correct) {
+  if (qAnswered) return;
+  qAnswered = true;
+  stopTimer();
+  const time = (Date.now() - qStartTime) / 1000;
+  const isCorrect = chosen === correct;
+  const fb = document.getElementById('qfb');
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    fb.textContent = '🎉 Correct!'; fb.className = 'quiz-fb ok';
+    sessionScore += 1; addStars(progress, 1);
+    confettiBurst(20);
+  } else {
+    btn.classList.add('wrong');
+    fb.innerHTML = `😅 The answer is <strong>${correct}</strong>`; fb.className = 'quiz-fb no';
+    document.querySelectorAll('.opt').forEach(o => { if (+o.textContent === correct) o.classList.add('correct'); });
+  }
+
+  // Record attempt → updates skill state, may promote/demote
+  // Use the skill of the question (could be preview/review of different skill)
+  const skillForRecord = currentQ.skill || activeSkill;
+  const result = recordAttempt(progress, skillForRecord, currentQ, chosen, isCorrect, time);
+
+  // Backend logging (best-effort)
+  api.logAttempt({
+    kidId: progress.kidId,
+    subject: 'math', topic: 'addition',
+    skill: skillForRecord,
+    difficulty: result.newDifficulty,
+    question: currentQ.q,
+    answerGiven: chosen, isCorrect, timeTaken: time
+  });
+
+  if (result.promoted) {
+    showToast('🚀 Level Up! Difficulty increased!');
+    // If the active skill itself was promoted past mastery, advance to next skill
+    if (skillForRecord === activeSkill) {
+      const state = getSkill(progress, activeSkill);
+      if (state.mastery >= 0.85 && state.totalAttempts >= 5) {
+        const nextIdx = ADDITION_SKILLS.findIndex(s => s.id === activeSkill) + 1;
+        if (nextIdx < ADDITION_SKILLS.length) {
+          activeSkill = ADDITION_SKILLS[nextIdx].id;
+          showToast('🎓 New skill unlocked: ' + ADDITION_SKILLS[nextIdx].label);
+        }
+      }
+    }
+  }
+  if (result.demoted) showToast('💡 Easier questions coming up — you got this!');
+
+  document.getElementById('topStars').textContent = '⭐ ' + (progress.totalStars || 0);
+  updateAdaptHud();
+  document.getElementById('nxt').style.display = 'inline-block';
+
+  // Mark quiz as touched after 5 answered
+  const t = getTopic(progress, 'math', 'addition');
+  if (!t.sections.quiz && progress.attempts.length >= 5) {
+    t.sections.quiz = true; save(progress);
+  }
+};
+
+window.nextQ = function() { loadNextQuestion(); };
+
+// ── HELPERS ──
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+function confettiBurst(count = 30) {
+  const cols = ['#FFD93D','#FF6B35','#9B5DE5','#00BBF9','#F15BB5','#00F5D4'];
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div'); c.className = 'confetti-piece';
+    c.style.cssText = `left:${20+Math.random()*60}vw;top:30vh;background:${cols[i%cols.length]};animation-delay:${Math.random()*.4}s;animation-duration:${.9+Math.random()*.5}s;`;
+    document.body.appendChild(c); setTimeout(() => c.remove(), 1600);
+  }
+}
+
+// ── PWA ──
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+}
+
+// Init the column addition with default values
+// ══════════════════════════════════════
+//  WORD PROBLEMS
+// ══════════════════════════════════════
+const WP_POOL = [
+  (a,b)=>({emoji:'🍎',text:`Riya has <strong>${a}</strong> apples. Her friend gives her <strong>${b}</strong> more. How many apples does she have now?`,ans:a+b}),
+  (a,b)=>({emoji:'✏️',text:`One box has <strong>${a}</strong> pencils and another has <strong>${b}</strong> pencils. How many pencils altogether?`,ans:a+b}),
+  (a,b)=>({emoji:'🚗',text:`A shop has <strong>${a}</strong> red cars and <strong>${b}</strong> blue cars. How many cars in total?`,ans:a+b}),
+  (a,b)=>({emoji:'🌸',text:`A garden has <strong>${a}</strong> roses and <strong>${b}</strong> sunflowers. How many flowers in all?`,ans:a+b}),
+  (a,b)=>({emoji:'📚',text:`Ram read <strong>${a}</strong> pages on Monday and <strong>${b}</strong> pages on Tuesday. How many pages total?`,ans:a+b}),
+  (a,b)=>({emoji:'🎈',text:`There are <strong>${a}</strong> red and <strong>${b}</strong> yellow balloons at the party. How many balloons?`,ans:a+b}),
+  (a,b)=>({emoji:'🍪',text:`A bakery made <strong>${a}</strong> cookies in the morning and <strong>${b}</strong> in the evening. Total cookies?`,ans:a+b}),
+  (a,b)=>({emoji:'🐦',text:`<strong>${a}</strong> birds on one tree and <strong>${b}</strong> on another. How many birds altogether?`,ans:a+b}),
+  (a,b)=>({emoji:'⚽',text:`Team A scored <strong>${a}</strong> goals and Team B scored <strong>${b}</strong> goals. Total goals in the match?`,ans:a+b}),
+  (a,b)=>({emoji:'🦋',text:`Priya collected <strong>${a}</strong> stamps this week and <strong>${b}</strong> last week. How many stamps in all?`,ans:a+b}),
+];
+
+function shuffle(a) { return a.slice().sort(() => Math.random() - 0.5); }
+
+function rndForLevel() {
+  const skillId = activeSkill || activeSkillFor(progress, ADDITION_SKILLS);
+  const state = getSkill(progress, skillId);
+  const diff = state.difficulty || 1;
+  if (diff <= 1) return Math.floor(Math.random() * 40) + 10;
+  if (diff === 2) return Math.floor(Math.random() * 80) + 10;
+  if (diff === 3) return Math.floor(Math.random() * 800) + 100;
+  return Math.floor(Math.random() * 8000) + 1000;
+}
+
+window.newWordProblems = function() {
+  const container = document.getElementById('wpCards');
+  container.innerHTML = '';
+  const used = shuffle([...WP_POOL]).slice(0, 3);
+  used.forEach((fn, i) => {
+    const a = rndForLevel(), b = rndForLevel();
+    const { emoji, text, ans } = fn(a, b);
+    const card = document.createElement('div');
+    card.className = 'wp-card';
+    card.innerHTML = `
+      <div class="wp-num">Q${i+1}</div>
+      <div class="wp-scene">
+        <span class="wp-emoji-big">${emoji}</span>
+        <div class="wp-text">${text}</div>
+      </div>
+      <div class="wp-answer-row">
+        <input class="wp-input" id="wpi${i}" type="number" placeholder="?"/>
+        <button class="wp-check-btn" onclick="checkWP(${i},${ans})">Check ✅</button>
+      </div>
+      <div class="wp-fb" id="wpfb${i}"></div>`;
+    container.appendChild(card);
+  });
+};
+
+window.checkWP = function(i, ans) {
+  const val = +document.getElementById('wpi'+i).value;
+  const fb  = document.getElementById('wpfb'+i);
+  if (!val && val !== 0) { fb.textContent = 'Type your answer first!'; fb.className = 'wp-fb'; return; }
+  if (val === ans) {
+    fb.innerHTML = '🎉 Correct! <strong>' + ans + '</strong> is right!';
+    fb.className = 'wp-fb ok';
+    addStars(progress, 2); save(progress);
+    document.getElementById('topStars').textContent = '⭐ ' + (progress.totalStars || 0);
+    confettiBurst(20);
+  } else {
+    fb.innerHTML = '😅 Not quite! The answer is <strong>' + ans + '</strong>';
+    fb.className = 'wp-fb no';
+  }
+};
+
+// ══════════════════════════════════════
+//  BALL PATTERN TRAINER
+// ══════════════════════════════════════
+const BALL_PHASES = [
+  { label:'Phase 1 — 1+1 digit', balls:10, genA:()=>ri(1,5),  genB:()=>ri(1,4)  },
+  { label:'Phase 2 — 2+1 digit', balls:20, genA:()=>ri(10,15), genB:()=>ri(1,5)  },
+  { label:'Phase 3 — 2+2 digit', balls:50, genA:()=>ri(10,24), genB:()=>ri(10,24) },
+];
+const PROBLEMS_PER_PHASE = 5;
+
+// Ball themes match the 3 app-level themes set in prototype.html
+const BALL_THEMES = {
+  magic:  { gridBg:'#F8F5FF', defaultBg:'#EDE9F6', defaultTxt:'#555',
+            colorA:'#06D6A0', colorB:'#EF476F', colorAns:'#FFD166', numTxt:'#111' },
+  jungle: { gridBg:'#F0FFF4', defaultBg:'#C6F6D5', defaultTxt:'#276749',
+            colorA:'#48BB78', colorB:'#F6AD55', colorAns:'#FC8181', numTxt:'#111' },
+  space:  { gridBg:'transparent', defaultBg:'#C3DAFE', defaultTxt:'#3C366B',
+            colorA:'#63B3ED', colorB:'#F687B3', colorAns:'#F6E05E', numTxt:'#111' },
+};
+// Read app theme from localStorage; fallback to magic
+let activeBallTheme = localStorage.getItem('vm_theme') || 'magic';
+
+let ballPhase     = 0;
+let ballSpeed     = 'slow';
+let ballA = 0, ballB = 0, ballAns = 0;
+let ballAnimating = false;
+let phaseCount    = 0;
+let answerStart   = 0;
+
+function ri(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function delay(ms)    { return new Promise(r => setTimeout(r, ms)); }
+
+// ── Build all 50 balls once ──
+function buildBallGrid() {
+  const grid = document.getElementById('ballGrid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= 50; i++) {
+    const b = document.createElement('div');
+    b.id = 'ball'+i;
+    b.textContent = i;
+    b.style.cssText = `
+      width:48px;height:48px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+      font-size:.8rem;font-weight:900;
+      background:#EDE9F6;color:#555;
+      border:2px solid #D6CCF0;
+      box-shadow:0 3px 0 rgba(0,0,0,.1);
+      transition:background .2s,transform .2s,box-shadow .2s;
+    `;
+    grid.appendChild(b);
+  }
+  resetBallColors();
+}
+
+// ── Reset: all 50 balls to theme default ──
+function resetBallColors() {
+  const th = BALL_THEMES[activeBallTheme];
+  for (let i = 1; i <= 50; i++) {
+    const el = document.getElementById('ball'+i);
+    if (!el) continue;
+    el.classList.remove('ball-answer-active');
+    el.style.transform  = 'scale(1)';
+    el.style.background = th.defaultBg;
+    el.style.color      = th.defaultTxt;
+    el.style.border     = '2px solid #D6CCF0';
+    el.style.boxShadow  = '0 3px 0 rgba(0,0,0,.1)';
+  }
+}
+
+function updatePhaseHUD() {
+  document.getElementById('ballPhaseBadge').textContent = BALL_PHASES[ballPhase].label;
+  // Progress dots (5 per phase)
+  const dots = document.getElementById('ballProgressDots');
+  dots.innerHTML = '';
+  for (let i = 0; i < PROBLEMS_PER_PHASE; i++) {
+    const d = document.createElement('div');
+    d.style.cssText = `width:10px;height:10px;border-radius:50%;background:${i < phaseCount ? '#00b894' : '#eee'};transition:background .3s;`;
+    dots.appendChild(d);
+  }
+  document.getElementById('ballLevelUpBtn').style.display =
+    (phaseCount >= PROBLEMS_PER_PHASE && ballPhase < BALL_PHASES.length - 1) ? 'inline-block' : 'none';
+}
+
+window.setSpeed = function(s) {
+  ballSpeed = s;
+  document.getElementById('spSlow').classList.toggle('active', s === 'slow');
+  document.getElementById('spFast').classList.toggle('active', s === 'fast');
+};
+
+window.setBallTheme = function(t) {
+  activeBallTheme = BALL_THEMES[t] ? t : 'magic';
+  const theme = BALL_THEMES[activeBallTheme];
+  const grid = document.getElementById('ballGrid');
+  grid.style.background   = 'transparent';
+  grid.style.padding      = '4px';
+  grid.style.borderRadius = '0';
+  document.getElementById('ldA').style.background   = theme.colorA;
+  document.getElementById('ldB').style.background   = theme.colorB;
+  document.getElementById('ldAns').style.background = theme.colorAns;
+  resetBallColors();
+};
+
+window.ballPhaseUp = function() {
+  if (ballPhase < BALL_PHASES.length - 1) {
+    ballPhase++; phaseCount = 0;
+    resetBallColors(); updatePhaseHUD();
+    showToast('🚀 ' + BALL_PHASES[ballPhase].label + ' unlocked!');
+    window.newBallProblem();
+  }
+};
+
+window.ballReset = function() {
+  ballPhase = 0; phaseCount = 0;
+  resetBallColors(); updatePhaseHUD();
+  document.getElementById('ballLevelUpBtn').style.display = 'none';
+  document.getElementById('ballFeedback').textContent = '';
+  document.getElementById('ballAnswerRow').style.display = 'none';
+  showToast('🔄 Reset to Phase 1');
+  window.newBallProblem();
+};
+
+window.newBallProblem = async function() {
+  if (ballAnimating) return;
+  const phase = BALL_PHASES[ballPhase];
+  let a, b;
+  do { a = phase.genA(); b = phase.genB(); }
+  while (a + b > phase.balls);
+  ballA = a; ballB = b; ballAns = a + b;
+
+  document.getElementById('ballFeedback').textContent = '';
+  document.getElementById('ballAnswerRow').style.display = 'none';
+  document.getElementById('ballAnswerInput').value = '';
+
+  await runBallAnimation(a, b);
+
+  document.getElementById('ballAnswerRow').style.display = 'flex';
+  setTimeout(() => document.getElementById('ballAnswerInput').focus(), 100);
+  answerStart = Date.now();
+};
+
+window.replayBall = function() {
+  if (ballA && !ballAnimating) runBallAnimation(ballA, ballB);
+};
+
+window.checkBallAnswer = function() {
+  const val = +document.getElementById('ballAnswerInput').value;
+  const fb  = document.getElementById('ballFeedback');
+  if (!val && val !== 0) { fb.textContent = 'Type your answer!'; fb.style.color='#aaa'; return; }
+
+  if (val === ballAns) {
+    // Reveal full equation with answer
+    document.getElementById('ballProblem').innerHTML =
+      `<span class="num-a">${ballA}</span> <span class="num-plus">+</span> <span class="num-b">${ballB}</span> <span style="color:#aaa">=</span> <span class="num-ans" style="animation:numPop .5s cubic-bezier(.34,1.56,.64,1)">${ballAns}</span>`;
+    fb.innerHTML = '🎉 Correct!';
+    fb.style.color = '#00b894';
+    confettiBurst(15);
+    addStars(progress, 1); save(progress);
+    document.getElementById('topStars').textContent = '⭐ ' + (progress.totalStars || 0);
+    phaseCount = Math.min(phaseCount + 1, PROBLEMS_PER_PHASE);
+    updatePhaseHUD();
+    // Auto advance phase after completing 5
+    if (phaseCount >= PROBLEMS_PER_PHASE && ballPhase < BALL_PHASES.length - 1) {
+      setTimeout(() => window.ballPhaseUp(), 1400);
+    } else {
+      setTimeout(() => window.newBallProblem(), 1200);
+    }
+  } else {
+    document.getElementById('ballProblem').innerHTML =
+      `<span class="num-a">${ballA}</span> <span class="num-plus">+</span> <span class="num-b">${ballB}</span> <span style="color:#aaa">=</span> <span style="color:#e17055;animation:numPop .5s cubic-bezier(.34,1.56,.64,1)">${ballAns}</span>`;
+    fb.innerHTML = '😅 Not quite! The answer is <strong>' + ballAns + '</strong>';
+    fb.style.color = '#e17055';
+    document.getElementById('ballAnswerInput').value = '';
+    document.getElementById('ballAnswerInput').focus();
+  }
+};
+
+async function runBallAnimation(a, b) {
+  ballAnimating = true;
+  const ans  = a + b;
+  const fast = ballSpeed === 'fast';
+  // Speed increases per phase — Phase 1 slowest, Phase 3 fastest
+  const phaseSpeeds = [
+    { step: 400, pause: 1400 },  // Phase 1 — 1+1 digit, very slow
+    { step: 260, pause: 1000 },  // Phase 2 — 2+1 digit, slow-medium
+    { step:  60, pause:  300 },  // Phase 3 — 2+2 digit, fast
+  ];
+  const ps = fast ? { step: 40, pause: 180 } : phaseSpeeds[ballPhase] || phaseSpeeds[0];
+  const step  = ps.step;
+  const pause = ps.pause;
+
+  resetBallColors();
+  const th = BALL_THEMES[activeBallTheme];
+  const prob = document.getElementById('ballProblem');
+
+  // ── STEP 1: Show first number only ──
+  prob.innerHTML = `<span class="num-a" style="animation:numPop .4s cubic-bezier(.34,1.56,.64,1)">${a}</span>`;
+  await delay(fast ? 200 : 600);
+
+  // Highlight balls 1 → a
+  for (let i = 1; i <= a; i++) {
+    const el = document.getElementById('ball'+i);
+    el.style.background = th.colorA;
+    el.style.color      = th.numTxt;
+    el.style.transform  = 'scale(1.12)';
+    el.style.boxShadow  = `0 4px 14px ${th.colorA}99`;
+    await delay(step);
+  }
+  await delay(pause);
+
+  // ── STEP 2: Show + sign ──
+  prob.innerHTML = `<span class="num-a">${a}</span> <span class="num-plus" style="animation:numPop .35s cubic-bezier(.34,1.56,.64,1)">+</span>`;
+  await delay(fast ? 150 : 500);
+
+  // ── STEP 3: Show second number ──
+  prob.innerHTML = `<span class="num-a">${a}</span> <span class="num-plus">+</span> <span class="num-b" style="animation:numPop .4s cubic-bezier(.34,1.56,.64,1)">${b}</span>`;
+  await delay(fast ? 200 : 600);
+
+  // Highlight balls a+1 → ans
+  for (let i = a+1; i <= ans; i++) {
+    const el = document.getElementById('ball'+i);
+    el.style.background = th.colorB;
+    el.style.color      = th.numTxt;
+    el.style.transform  = 'scale(1.12)';
+    el.style.boxShadow  = `0 4px 14px ${th.colorB}99`;
+    await delay(step);
+  }
+  await delay(pause);
+
+  // ── STEP 4: Show = ? ──
+  prob.innerHTML = `<span class="num-a">${a}</span> <span class="num-plus">+</span> <span class="num-b">${b}</span> <span style="color:#bbb;animation:numPop .3s ease">=</span> <span class="num-ans" style="animation:numPop .4s cubic-bezier(.34,1.56,.64,1)">?</span>`;
+  await delay(fast ? 150 : 400);
+
+  // Answer ball — pop + black border + ripple rings
+  const ansEl = document.getElementById('ball'+ans);
+  ansEl.style.background  = th.colorAns;
+  ansEl.style.color       = '#111';
+  ansEl.style.border      = '2px solid rgba(255,255,255,.3)';
+  ansEl.style.transform   = '';
+  ansEl.style.boxShadow   = '';
+  ansEl.style.transition  = 'none';
+  // Wrap in relative container for ripple positioning
+  ansEl.classList.add('ball-answer-active');
+
+
+  document.getElementById('ballProblem').innerHTML =
+    `<span class="num-a">${a}</span> <span style="color:#bbb">+</span> <span class="num-b">${b}</span> = <span class="num-ans">?</span>`;
+
+  ballAnimating = false;
+}
+
+// Init — apply app-level theme automatically
+buildBallGrid();
+updatePhaseHUD();
+window.setBallTheme(localStorage.getItem('vm_theme') || 'magic');
+setTimeout(() => window.newBallProblem(), 600);
+
+startAddition();
+</script>
+</body>
+</html>
