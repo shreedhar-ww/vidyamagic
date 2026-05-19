@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Vedant's Progress — VidyaMagic</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:#F8F5FF;min-height:100vh;padding:24px;}
+
+.header{background:linear-gradient(135deg,#9B5DE5,#F15BB5);border-radius:24px;padding:24px;color:#fff;margin-bottom:24px;display:flex;align-items:center;gap:16px;}
+.header h1{font-size:1.6rem;font-weight:900;}
+.header p{font-size:.9rem;opacity:.9;margin-top:4px;}
+.kid-avatar{font-size:56px;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px;}
+
+.card{background:#fff;border-radius:20px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,.07);}
+.card h3{font-size:1rem;font-weight:900;color:#333;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f5f0ff;}
+.stat-row:last-child{border:none;}
+.stat-label{font-size:.85rem;font-weight:700;color:#888;}
+.stat-val{font-size:.95rem;font-weight:900;color:#333;}
+.stat-val.green{color:#00b894;}
+.stat-val.orange{color:#FF6B35;}
+.stat-val.purple{color:#9B5DE5;}
+
+.mastery-bar-wrap{background:#f0e8ff;border-radius:8px;height:10px;overflow:hidden;margin-top:6px;}
+.mastery-bar-fill{height:100%;background:linear-gradient(90deg,#9B5DE5,#F15BB5);border-radius:8px;transition:width .5s;}
+
+.skill-row{padding:8px 0;border-bottom:1px solid #f5f0ff;}
+.skill-row:last-child{border:none;}
+.skill-name{font-size:.82rem;font-weight:900;color:#555;margin-bottom:4px;}
+
+.attempt-row{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #f5f0ff;font-size:.82rem;}
+.attempt-row:last-child{border:none;}
+.attempt-q{font-weight:700;color:#333;}
+.attempt-badge{padding:2px 8px;border-radius:8px;font-weight:900;font-size:.75rem;}
+.correct{background:#d4edda;color:#155724;}
+.wrong{background:#f8d7da;color:#721c24;}
+
+.refresh-btn{
+  display:block;width:100%;padding:14px;
+  background:linear-gradient(135deg,#9B5DE5,#F15BB5);
+  border:none;border-radius:16px;color:#fff;font-size:1rem;font-weight:900;
+  cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:20px;
+}
+.sync-btn{
+  display:block;width:100%;padding:14px;
+  background:linear-gradient(135deg,#00F5D4,#00BBF9);
+  border:none;border-radius:16px;color:#111;font-size:1rem;font-weight:900;
+  cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:24px;
+}
+.empty{text-align:center;color:#aaa;font-weight:700;font-size:.9rem;padding:20px 0;}
+.tag{display:inline-block;padding:2px 10px;border-radius:10px;font-size:.72rem;font-weight:900;margin-left:6px;}
+.tag-done{background:#d4edda;color:#155724;}
+.tag-pending{background:#fff3cd;color:#856404;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="kid-avatar">🚀</span>
+  <div>
+    <h1>Vedant's Progress</h1>
+    <p id="headerSub">Loading...</p>
+  </div>
+</div>
+
+<button class="sync-btn" onclick="syncAndLoad()">🔄 Sync from Device + Refresh</button>
+
+<div class="grid" id="statsGrid"></div>
+
+<div class="card" style="margin-bottom:16px;">
+  <h3>📝 Recent Attempts</h3>
+  <div id="attemptsTable"><div class="empty">No attempts yet</div></div>
+</div>
+
+<button class="refresh-btn" onclick="loadFromDB()">↻ Refresh from DB</button>
+
+<script>
+const KID_ID = '79b201b1-f3f0-4f07-a56e-99c7e47d6166';
+const API    = 'http://localhost:3001/api';
+
+async function api(path) {
+  try {
+    const r = await fetch(API + path);
+    return r.ok ? r.json() : null;
+  } catch { return null; }
+}
+
+// Sync localStorage progress → DB first, then reload
+async function syncAndLoad() {
+  const raw = localStorage.getItem('vm_progress');
+  if (raw) {
+    const p = JSON.parse(raw);
+    const topics = Object.values(p.topics || {});
+    const skills = Object.values(p.skills  || {});
+    await fetch(API + '/progress/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kidId: KID_ID, topics, skills })
+    });
+    // Also batch-log unsent attempts
+    const attempts = (p.attempts || []).map(a => ({ ...a, kidId: KID_ID, subject:'math', topic:'addition' }));
+    if (attempts.length) {
+      await fetch(API + '/attempts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(attempts)
+      });
+    }
+  }
+  loadFromDB();
+}
+
+async function loadFromDB() {
+  const [progressData, attemptsData] = await Promise.all([
+    api(`/progress/${KID_ID}`),
+    api(`/attempts-detail/${KID_ID}`)
+  ]);
+
+  renderStats(progressData);
+  renderAttempts(attemptsData);
+}
+
+function renderStats(data) {
+  const grid = document.getElementById('statsGrid');
+  grid.innerHTML = '';
+
+  if (!data) { grid.innerHTML = '<div class="card"><div class="empty">Backend not reachable</div></div>'; return; }
+
+  const { progress, skills } = data;
+
+  // Summary card
+  const totalStars    = JSON.parse(localStorage.getItem('vm_progress') || '{}').totalStars || 0;
+  const topicsDone    = progress.filter(t => t.sections?.quiz).length;
+  const totalAttempts = skills.reduce((s, k) => s + (k.total_attempts || 0), 0);
+  const totalCorrect  = skills.reduce((s, k) => s + (k.total_correct  || 0), 0);
+  const accuracy      = totalAttempts ? Math.round(totalCorrect / totalAttempts * 100) : 0;
+
+  document.getElementById('headerSub').textContent =
+    `Age 7 · Grade 2 · Space theme · ${totalStars} ⭐ stars`;
+
+  grid.innerHTML += `
+    <div class="card">
+      <h3>📊 Summary</h3>
+      <div class="stat-row"><span class="stat-label">Total Stars</span><span class="stat-val orange">⭐ ${totalStars}</span></div>
+      <div class="stat-row"><span class="stat-label">Topics Completed</span><span class="stat-val purple">${topicsDone} / 12</span></div>
+      <div class="stat-row"><span class="stat-label">Total Questions</span><span class="stat-val">${totalAttempts}</span></div>
+      <div class="stat-row"><span class="stat-label">Accuracy</span><span class="stat-val ${accuracy>=75?'green':'orange'}">${accuracy}%</span></div>
+      <div class="stat-row"><span class="stat-label">Correct Answers</span><span class="stat-val green">${totalCorrect}</span></div>
+    </div>`;
+
+  // Topic progress card
+  if (progress.length) {
+    let topicRows = progress.map(t => {
+      const sec = t.sections || {};
+      const done = [sec.learn, sec.stories, sec.quiz].filter(Boolean).length;
+      const stars = ['⭐','⭐','⭐'].map((_,i) => i < done ? '⭐' : '☆').join('');
+      return `<div class="stat-row">
+        <span class="stat-label">${t.topic} (${t.subject})</span>
+        <span class="stat-val">${stars} L${t.current_level || 1}</span>
+      </div>`;
+    }).join('');
+    grid.innerHTML += `<div class="card"><h3>📚 Topics</h3>${topicRows}</div>`;
+  }
+
+  // Skills card
+  if (skills.length) {
+    const LABELS = {
+      add_no_carry_2d:'Addition L1', add_with_carry_2d:'Addition L2',
+      add_3digit:'Addition L3', add_4digit:'Addition L4', add_missing_addend:'Addition L5',
+      sub_no_borrow_2d:'Subtraction L1', sub_with_borrow_2d:'Subtraction L2',
+      sub_3digit:'Subtraction L3'
+    };
+    let skillRows = skills.map(s => {
+      const pct = Math.round((s.mastery || 0) * 100);
+      const acc  = s.total_attempts ? Math.round(s.total_correct / s.total_attempts * 100) : 0;
+      return `<div class="skill-row">
+        <div class="skill-name">${LABELS[s.skill] || s.skill}
+          <span class="tag ${pct>=85?'tag-done':'tag-pending'}">${pct>=85?'Mastered':'In Progress'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.78rem;color:#aaa;margin-bottom:4px;">
+          <span>Mastery ${pct}%</span><span>Accuracy ${acc}% · ${s.total_attempts} Qs · L${s.difficulty}</span>
+        </div>
+        <div class="mastery-bar-wrap"><div class="mastery-bar-fill" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+    grid.innerHTML += `<div class="card" style="grid-column:1/-1"><h3>🧠 Skill Mastery</h3>${skillRows}</div>`;
+  }
+}
+
+function renderAttempts(data) {
+  const el = document.getElementById('attemptsTable');
+  // Get from localStorage as fallback
+  const local = JSON.parse(localStorage.getItem('vm_progress') || '{}').attempts || [];
+  const list  = (data?.attempts || local).slice(-20).reverse();
+  if (!list.length) { el.innerHTML = '<div class="empty">No attempts yet — play some questions first!</div>'; return; }
+  el.innerHTML = list.map(a => `
+    <div class="attempt-row">
+      <span class="attempt-q">${a.question || a.q || '?'}</span>
+      <span class="attempt-badge ${a.isCorrect||a.is_correct?'correct':'wrong'}">${a.isCorrect||a.is_correct?'✓':'✗'}</span>
+      <span style="color:#aaa;font-size:.75rem;">${a.skill?.replace('add_','')?.replace('sub_','') || ''}</span>
+      <span style="color:#aaa;font-size:.75rem;">${a.timeTaken||a.time_taken ? (+(a.timeTaken||a.time_taken)).toFixed(1)+'s' : ''}</span>
+    </div>`).join('');
+}
+
+// Auto load on open
+syncAndLoad();
+</script>
+</body>
+</html>

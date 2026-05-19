@@ -354,7 +354,10 @@ body{font-family:'Nunito',sans-serif;background:#FFF9F0;min-height:100vh;overflo
         <span class="plus-sign">+</span>
         <input class="num-input" id="numB" type="number" min="0" max="999999" value="478"/>
       </div>
-      <button class="go-btn" onclick="startAddition()">▶ Start Step-by-Step</button>
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <button class="go-btn" onclick="startAddition()" style="flex:2;">▶ Start Step-by-Step</button>
+        <button class="go-btn" onclick="randomAndStart()" style="flex:1;background:linear-gradient(135deg,var(--vm-green),var(--vm-blue));">🎲 Random</button>
+      </div>
       <div id="colAdd" class="col-wrap" style="display:none;"></div>
       <div class="step-dots" id="stepDots" style="display:none;"></div>
       <div class="step-box" id="stepExplain" style="display:none;"></div>
@@ -470,7 +473,14 @@ body{font-family:'Nunito',sans-serif;background:#FFF9F0;min-height:100vh;overflo
     </div>
     <div class="score-badge" id="scorePill">⭐ 0</div>
   </div>
-  <div class="timer-label" id="timerLabel">⏱ 15s</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;max-width:640px;margin:10px auto 4px;padding:0 2px;">
+    <div class="timer-label" id="timerLabel" style="margin:0;">⏱ 20s</div>
+    <div style="display:flex;gap:6px;">
+      <button id="diffEasy"   onclick="setQuizDiff('easy')"   style="padding:4px 12px;border:2px solid #00b894;border-radius:10px;font-size:.75rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;background:#d4edda;color:#155724;">🟢 Easy</button>
+      <button id="diffMedium" onclick="setQuizDiff('medium')" style="padding:4px 12px;border:2px solid #FFD93D;border-radius:10px;font-size:.75rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;background:#fff3cd;color:#856404;">🟡 Medium</button>
+      <button id="diffHard"   onclick="setQuizDiff('hard')"   style="padding:4px 12px;border:2px solid #FF6B35;border-radius:10px;font-size:.75rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;background:#ffe5d0;color:#c0392b;">🔴 Hard</button>
+    </div>
+  </div>
   <div class="timer-wrap"><div class="timer-bar" id="timerBar" style="width:100%"></div></div>
   <div id="quizArea"></div>
 </div>
@@ -522,6 +532,26 @@ refreshTabLocks();
 // ══════════════════════════════════════
 const PLACE_NAMES = ['Ones','Tens','Hundreds','Thousands','Ten-Tho.','Hund-Tho.'];
 let stepData = [], stepIdx = 0, carryEls = [], resultEls = [];
+
+// Alternate between 2-digit and 3-digit on each Random click
+let learnRandTurn = 0;
+
+window.randomAndStart = function() {
+  let a, b;
+  if (learnRandTurn % 2 === 0) {
+    // 2-digit with carry (more interesting than no-carry)
+    do { a = ri(12, 89); b = ri(11, 89); } while ((a%10)+(b%10) < 5 || a+b > 99);
+  } else {
+    // 3-digit
+    a = ri(100, 699); b = ri(100, 699);
+  }
+  learnRandTurn++;
+  document.getElementById('numA').value = a;
+  document.getElementById('numB').value = b;
+  startAddition();
+};
+
+function ri(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
 
 window.startAddition = function() {
   const A = Math.min(999999, Math.max(0, +document.getElementById('numA').value || 0));
@@ -635,10 +665,26 @@ let activeSkill = null;
 let quizTimer = null, quizTimeLeft = 0;
 
 // Timer durations per difficulty level
+let quizDiffMode = 'medium'; // easy | medium | hard
+
+window.setQuizDiff = function(mode) {
+  quizDiffMode = mode;
+  ['easy','medium','hard'].forEach(m => {
+    const btn = document.getElementById('diff' + m.charAt(0).toUpperCase() + m.slice(1));
+    if (!btn) return;
+    btn.style.opacity = m === mode ? '1' : '0.45';
+    btn.style.transform = m === mode ? 'scale(1.08)' : 'scale(1)';
+  });
+};
+
 function timerDuration(difficulty) {
-  if (difficulty <= 1) return 20;  // 2-digit no carry
-  if (difficulty === 2) return 15; // 2-digit with carry
-  return 30;                       // 3-digit and above
+  // Base time per difficulty level
+  const base = { 1: 20, 2: 15, 3: 30, 4: 30, 5: 30 };
+  const t = base[difficulty] || 20;
+  // Adjust by mode
+  if (quizDiffMode === 'easy')   return Math.round(t * 1.75); // ~1.75× more time
+  if (quizDiffMode === 'hard')   return Math.round(t * 0.5);  // half the time
+  return t; // medium = default
 }
 
 function startTimer(seconds) {
@@ -726,6 +772,7 @@ function buildColDisplay(qStr) {
 function initQuiz() {
   activeSkill = activeSkillFor(progress, ADDITION_SKILLS);
   sessionScore = 0;
+  window.setQuizDiff(quizDiffMode);
   updateAdaptHud();
   loadNextQuestion();
 }
@@ -826,7 +873,8 @@ window.checkAns = function(btn, chosen, correct) {
 
   // Mark quiz as touched after 5 answered
   const t = getTopic(progress, 'math', 'addition');
-  if (!t.sections.quiz && progress.attempts.length >= 5) {
+  // Mark quiz section done after first correct answer
+  if (!t.sections.quiz && isCorrect) {
     t.sections.quiz = true; save(progress);
   }
 };
@@ -885,6 +933,9 @@ function rndForLevel() {
 }
 
 window.newWordProblems = function() {
+  // Mark stories section done when kid opens it
+  const t = getTopic(progress, 'math', 'addition');
+  if (!t.sections.stories) { t.sections.stories = true; save(progress); }
   const container = document.getElementById('wpCards');
   container.innerHTML = '';
   const used = shuffle([...WP_POOL]).slice(0, 3);
@@ -953,8 +1004,7 @@ let ballAnimating = false;
 let phaseCount    = 0;
 let answerStart   = 0;
 
-function ri(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-function delay(ms)    { return new Promise(r => setTimeout(r, ms)); }
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ── Build all 50 balls once ──
 function buildBallGrid() {
@@ -1181,7 +1231,13 @@ updatePhaseHUD();
 window.setBallTheme(localStorage.getItem('vm_theme') || 'magic');
 setTimeout(() => window.newBallProblem(), 600);
 
-startAddition();
+// Pre-fill with a simple 2-digit example on load
+(function prefill() {
+  let a, b;
+  do { a = ri(12, 89); b = ri(11, 89); } while ((a%10)+(b%10) < 5 || a+b > 99);
+  document.getElementById('numA').value = a;
+  document.getElementById('numB').value = b;
+})();
 </script>
 </body>
 </html>

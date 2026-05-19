@@ -23,4 +23,19 @@ r.post('/', async (req, res) => {
   }
 });
 
+// Get recent attempts for a kid (for dashboard)
+r.get('/detail/:kidId', async (req, res) => {
+  try {
+    const { rows } = await query(
+      `SELECT question, answer_given, is_correct, time_taken, skill, difficulty, created_at
+       FROM attempts WHERE kid_id=$1
+       ORDER BY created_at DESC LIMIT 50`,
+      [req.params.kidId]
+    );
+    res.json({ attempts: rows });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 export default r;

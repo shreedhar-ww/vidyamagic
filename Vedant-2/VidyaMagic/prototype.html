@@ -185,8 +185,29 @@
   <button class="theme-btn" style="background:rgba(255,100,100,.12);color:#e17055;" onclick="confirmReset()">🔄 Reset</button>
 </div>
 
+<!-- ── SUBJECT SWITCHER ── -->
+<div id="subjectSwitcher" style="display:none;min-height:60vh;display:none;align-items:center;justify-content:center;padding:30px 24px;">
+  <div style="width:100%;max-width:480px;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:1.1rem;font-weight:900;color:rgba(255,255,255,.9);">What do you want to explore today?</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div onclick="switchSubject('math')" style="border-radius:24px;padding:28px 16px;text-align:center;cursor:pointer;background:linear-gradient(135deg,var(--vm-purple),var(--vm-pink));color:#fff;box-shadow:0 8px 0 rgba(0,0,0,.15);transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:3rem;margin-bottom:10px;">🔢</div>
+        <div style="font-size:1.1rem;font-weight:900;">Math Magic</div>
+        <div style="font-size:.75rem;font-weight:700;opacity:.85;margin-top:6px;" id="mathProgress">0/12 topics</div>
+      </div>
+      <div onclick="switchSubject('gk')" style="border-radius:24px;padding:28px 16px;text-align:center;cursor:pointer;background:linear-gradient(135deg,#FF6B35,#FF6B9D);color:#fff;box-shadow:0 8px 0 rgba(0,0,0,.15);transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:3rem;margin-bottom:10px;">🇮🇳</div>
+        <div style="font-size:1.1rem;font-weight:900;">Bharat Discover</div>
+        <div style="font-size:.75rem;font-weight:700;opacity:.85;margin-top:6px;" id="gkProgress">0/8 states</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ── ADVENTURE MAP ── -->
-<div class="map-wrap" id="mapWrap" style="display:none;">
+<div class="map-wrap" id="mapWrap" style="display:none;padding-top:10px;">
   <svg id="pathSvg"></svg>
 
   <div class="mascot-box">
@@ -264,9 +285,29 @@ window.chooseTheme = function(id) {
   setTheme(id);
   document.getElementById('picker').classList.add('hide');
   document.getElementById('hud').style.display = 'flex';
-  document.getElementById('mapWrap').style.display = 'block';
-  bootMap();
+  document.getElementById('subjectSwitcher').style.display = 'flex';
+  document.getElementById('mapWrap').style.display = 'none';
+  updateSubjectProgress();
 };
+
+window.switchSubject = function(subject) {
+  if (subject === 'gk') {
+    window.location.href = 'bharat-discover.html';
+  } else {
+    // Show math adventure map, hide subject switcher
+    document.getElementById('subjectSwitcher').style.display = 'none';
+    document.getElementById('mapWrap').style.display = 'block';
+    bootMap();
+  }
+};
+
+function updateSubjectProgress() {
+  const p = load();
+  const mathDone = Object.values(p.topics || {}).filter(t => t.sections?.quiz).length;
+  const gkDone   = (p.gk?.quizDone || []).length;
+  document.getElementById('mathProgress').textContent = `${mathDone}/12 topics`;
+  document.getElementById('gkProgress').textContent   = `${gkDone}/8 states`;
+}
 
 window.changeTheme = function() {
   document.getElementById('picker').classList.remove('hide');
@@ -419,8 +460,9 @@ const existing = ensureTheme();
 if (existing) {
   document.getElementById('picker').classList.add('hide');
   document.getElementById('hud').style.display = 'flex';
-  document.getElementById('mapWrap').style.display = 'block';
-  bootMap();
+  document.getElementById('subjectSwitcher').style.display = 'flex';
+  document.getElementById('mapWrap').style.display = 'none';
+  updateSubjectProgress();
 }
 
 window.addEventListener('resize', drawPath);

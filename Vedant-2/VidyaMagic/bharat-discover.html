@@ -3,463 +3,573 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="theme-color" content="#FF6B35"/>
 <link rel="manifest" href="manifest.json"/>
 <link rel="stylesheet" href="css/themes.css"/>
+<script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE"></script>
 <title>Bharat Discover — VidyaMagic</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Nunito',sans-serif;background:#FFF9F0;min-height:100vh;overflow-x:hidden;}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(180deg,#FFF5E0 0%,#FFE8CC 40%,#FFD4A8 100%);min-height:100vh;overflow-x:hidden;}
 
-/* ── HERO ── */
-.hero{background:linear-gradient(135deg,#FF6B35 0%,#FF6B9D 50%,#9B5DE5 100%);padding:0 0 32px;position:relative;overflow:hidden;}
-.hero::after{content:'';position:absolute;bottom:-20px;left:0;right:0;height:40px;background:#FFF9F0;border-radius:50% 50% 0 0/100% 100% 0 0;}
-.hero-inner{max-width:1200px;margin:0 auto;padding:0 24px;}
-.hero-nav{display:flex;align-items:center;gap:12px;padding:14px 0 12px;position:relative;z-index:2;}
-.back-btn{background:rgba(255,255,255,.25);border:none;border-radius:50%;width:42px;height:42px;font-size:1.3rem;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;transition:background .2s;}
-.back-btn:hover{background:rgba(255,255,255,.4);}
-.hero-title{color:#fff;font-size:1.5rem;font-weight:900;flex:1;text-shadow:1px 2px 0 rgba(0,0,0,.15);}
-.stars-pill{background:rgba(255,255,255,.25);color:#fff;font-weight:900;padding:6px 16px;border-radius:20px;font-size:.95rem;}
-.hero-body{display:flex;align-items:center;gap:16px;position:relative;z-index:2;padding-bottom:4px;}
-.mascot-big{font-size:68px;animation:bob 2.2s ease-in-out infinite;flex-shrink:0;}
-@keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
-.hero-speech{background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border-radius:20px 20px 20px 4px;padding:12px 18px;color:#fff;font-size:.95rem;font-weight:700;line-height:1.5;max-width:380px;}
 
-/* ── PROGRESS BAR ── */
-.xp-bar-wrap{background:rgba(255,255,255,.2);border-radius:10px;height:10px;margin:10px 24px 0;overflow:hidden;position:relative;z-index:2;}
-.xp-bar{height:100%;background:#FFD93D;border-radius:10px;transition:width .5s ease;}
 
-/* ── TABS ── */
-.tabs-wrap{position:sticky;top:0;z-index:99;background:#FFF9F0;padding:12px 0 6px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
-.tabs{display:flex;gap:8px;max-width:1200px;margin:0 auto;padding:0 24px;}
-.tab{flex:0 0 auto;width:130px;padding:9px 6px;text-align:center;font-weight:900;font-size:.82rem;border-radius:14px;cursor:pointer;border:2.5px solid #ffe0cc;color:#aaa;background:#fff;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;}
-.tab-icon{font-size:1.3rem;}
-.tab.active{background:linear-gradient(135deg,#FF6B35,#FF6B9D);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(255,107,53,.35);}
+/* ── HUD ── */
+.hud{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);padding:10px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,.1);}
+.hud-back{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#FF6B35;}
+.hud-logo{font-size:1.2rem;font-weight:900;background:linear-gradient(135deg,#FF6B35,#FF6B9D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hud-stars{background:#FFD93D;padding:5px 14px;border-radius:20px;font-size:.95rem;font-weight:900;color:#333;}
+.hud-bar-wrap{flex:1;max-width:200px;height:12px;background:#ffe8cc;border-radius:10px;overflow:hidden;}
+.hud-bar{height:100%;background:linear-gradient(90deg,#FF6B35,#FF6B9D);border-radius:10px;transition:width .5s;}
+.hud-label{font-size:.78rem;font-weight:700;color:#aaa;white-space:nowrap;}
 
-/* ── SCREENS ── */
-.screen{display:none;padding:18px 24px 48px;max-width:1200px;margin:0 auto;}
-.screen.active{display:block;}
+/* ── MAP ── */
+.map-wrap{position:relative;max-width:480px;margin:0 auto;padding:20px 20px 80px;}
+#pathSvg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:visible;}
 
-/* ── STATE CARDS GRID ── */
-.states-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+/* Mascot */
+.mascot-box{text-align:center;padding:20px 0 10px;position:relative;z-index:2;}
+.mascot-emoji{font-size:64px;display:block;animation:bob 2.2s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(4deg)}}
+.speech{display:inline-block;background:#fff;border-radius:20px;padding:10px 22px;font-size:.95rem;font-weight:700;color:#555;margin-top:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);position:relative;}
+.speech::before{content:'';position:absolute;top:-11px;left:50%;transform:translateX(-50%);border:8px solid transparent;border-bottom-color:#fff;}
 
-.state-card{
-  border-radius:22px;padding:20px 16px;text-align:center;cursor:pointer;
-  position:relative;overflow:hidden;
-  box-shadow:0 6px 0 rgba(0,0,0,.1);
-  transition:transform .2s,box-shadow .2s;
-  color:#fff;
+/* Region banner */
+.region-banner{display:flex;align-items:center;justify-content:center;gap:10px;margin:28px 0 20px;position:relative;z-index:2;}
+.region-banner::before{content:'';position:absolute;left:0;right:0;top:50%;height:3px;background:rgba(255,255,255,.5);border-radius:2px;z-index:-1;}
+.region-pill{padding:8px 24px;border-radius:30px;font-size:.88rem;font-weight:900;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.12);white-space:nowrap;}
+.rp1{background:linear-gradient(135deg,#FF6B35,#FF6B9D);}
+.rp2{background:linear-gradient(135deg,#9B5DE5,#00BBF9);}
+.rp3{background:linear-gradient(135deg,#00F5D4,#9B5DE5);}
+
+/* Step */
+.step{display:flex;margin-bottom:50px;position:relative;z-index:2;}
+.step.left  {justify-content:flex-start;padding-left:18px;}
+.step.center{justify-content:center;}
+.step.right {justify-content:flex-end;padding-right:18px;}
+
+/* Node */
+.node{
+  width:108px;height:108px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;color:#fff;
+  border:5px solid rgba(255,255,255,.55);
+  box-shadow:0 8px 0 rgba(0,0,0,.15),0 0 0 3px rgba(255,255,255,.2);
+  transition:transform .2s,box-shadow .2s;user-select:none;
 }
-.state-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 12px 0 rgba(0,0,0,.08);}
-.state-card:active{transform:translateY(0) scale(.97);}
-.state-card.completed::after{
-  content:'✅';position:absolute;top:10px;right:12px;font-size:1.2rem;
-}
-.state-emoji{font-size:48px;display:block;margin-bottom:8px;animation:wobble 3s ease-in-out infinite;}
-@keyframes wobble{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
-.state-name{font-size:1.1rem;font-weight:900;text-shadow:1px 2px 0 rgba(0,0,0,.15);}
-.state-capital-badge{
-  display:inline-block;margin-top:8px;
-  background:rgba(255,255,255,.3);
-  padding:3px 12px;border-radius:12px;font-size:.75rem;font-weight:700;
-}
+.node:not(.locked):hover{transform:translateY(-8px) scale(1.08);box-shadow:0 16px 0 rgba(0,0,0,.12),0 0 28px rgba(255,255,255,.5);}
+.node.done{box-shadow:0 8px 0 rgba(0,0,0,.15),0 0 22px rgba(255,215,0,.55);}
+.node.locked{opacity:.5;cursor:not-allowed;filter:grayscale(.3);}
+.node-emoji{font-size:36px;line-height:1;margin-bottom:3px;}
+.node-label{font-size:.62rem;font-weight:900;text-shadow:1px 1px 0 rgba(0,0,0,.2);line-height:1.2;padding:0 6px;max-width:90px;text-align:center;}
+.star-badge{position:absolute;top:-9px;right:-9px;width:30px;height:30px;background:#FFD93D;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
 
-/* State card colors */
-.sc1{background:linear-gradient(135deg,#FF6B35,#FFD93D);}
-.sc2{background:linear-gradient(135deg,#00BBF9,#9B5DE5);}
-.sc3{background:linear-gradient(135deg,#F15BB5,#FF6B35);}
-.sc4{background:linear-gradient(135deg,#00F5D4,#00BBF9);}
-.sc5{background:linear-gradient(135deg,#9B5DE5,#F15BB5);}
-.sc6{background:linear-gradient(135deg,#FFD93D,#00F5D4);}
-.sc7{background:linear-gradient(135deg,#FF6B35,#F15BB5);}
-.sc8{background:linear-gradient(135deg,#00BBF9,#00F5D4);}
+/* Stars below node */
+.node-stars{display:flex;gap:3px;justify-content:center;font-size:1.2rem;line-height:1;margin-top:6px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3));}
 
-/* ── STATE DETAIL MODAL ── */
+/* Unlock hint */
+.unlock-hint{font-size:.6rem;font-weight:900;color:rgba(100,50,0,.6);margin-top:4px;text-align:center;max-width:90px;line-height:1.3;}
+
+/* Node colours */
+.n1{background:linear-gradient(135deg,#FF6B35,#FFD93D);}
+.n2{background:linear-gradient(135deg,#00BBF9,#9B5DE5);}
+.n3{background:linear-gradient(135deg,#F15BB5,#FF6B35);}
+.n4{background:linear-gradient(135deg,#00F5D4,#00BBF9);}
+.n5{background:linear-gradient(135deg,#9B5DE5,#F15BB5);}
+.n6{background:linear-gradient(135deg,#FFD93D,#00F5D4);}
+.n7{background:linear-gradient(135deg,#FF6B35,#F15BB5);}
+.n8{background:linear-gradient(135deg,#00BBF9,#9B5DE5);}
+
+/* Deco */
+.deco{position:absolute;pointer-events:none;user-select:none;z-index:0;}
+.deco.sway{animation:sway 4s ease-in-out infinite;}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+
+/* Finish */
+.finish{text-align:center;padding:10px 0 30px;position:relative;z-index:2;}
+.finish-icon{font-size:60px;animation:bob 1.4s ease-in-out infinite;}
+.finish-badge{display:inline-block;margin-top:14px;padding:12px 28px;background:linear-gradient(135deg,#FF6B35,#FF6B9D);color:#fff;border-radius:40px;font-size:1rem;font-weight:900;box-shadow:0 6px 0 rgba(0,0,0,.15);}
+
+/* ── STATE MODAL ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;justify-content:center;align-items:flex-start;padding:20px;overflow-y:auto;}
 .overlay.show{display:flex;}
-.modal{background:#fff;border-radius:28px;max-width:560px;width:100%;margin:auto;animation:popIn .35s cubic-bezier(.34,1.56,.64,1);overflow:hidden;}
+.modal{background:#fff;border-radius:28px;max-width:520px;width:100%;margin:auto;animation:popIn .35s cubic-bezier(.34,1.56,.64,1);overflow:hidden;}
 @keyframes popIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 
-.modal-hero{padding:28px 24px 20px;text-align:center;position:relative;}
-.modal-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.3);border:none;border-radius:50%;width:34px;height:34px;font-size:1rem;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;}
-.modal-state-emoji{font-size:64px;display:block;margin-bottom:6px;}
-.modal-state-name{font-size:1.8rem;font-weight:900;color:#fff;text-shadow:1px 2px 0 rgba(0,0,0,.15);}
+.modal-hero{padding:24px 20px 18px;text-align:center;position:relative;}
+.modal-close{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.3);border:none;border-radius:50%;width:34px;height:34px;font-size:1rem;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;}
+.modal-emoji{font-size:60px;display:block;margin-bottom:6px;}
+.modal-name{font-size:1.8rem;font-weight:900;color:#fff;text-shadow:1px 2px 0 rgba(0,0,0,.15);}
+.modal-capital{font-size:.9rem;color:rgba(255,255,255,.9);font-weight:700;margin-top:4px;}
 
-.modal-body{padding:20px 24px;}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
-.info-card{background:#FFF9F0;border-radius:16px;padding:14px;text-align:center;}
-.info-icon{font-size:28px;display:block;margin-bottom:4px;}
-.info-label{font-size:.7rem;font-weight:900;color:#aaa;text-transform:uppercase;letter-spacing:.5px;}
-.info-value{font-size:.95rem;font-weight:900;color:#333;margin-top:2px;}
+.modal-body{padding:18px 20px 4px;}
 
-/* Story card */
-.story-card{
-  background:linear-gradient(135deg,#fff5e0,#ffe8f5);
-  border-radius:18px;padding:18px;margin-bottom:16px;
-  border-left:5px solid #FF6B35;
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.info-card{background:#FFF9F0;border-radius:14px;padding:12px;text-align:center;}
+.info-icon{font-size:26px;display:block;margin-bottom:3px;}
+.info-label{font-size:.65rem;font-weight:900;color:#aaa;text-transform:uppercase;letter-spacing:.5px;}
+.info-value{font-size:.88rem;font-weight:900;color:#333;margin-top:2px;}
+
+.story-card{background:linear-gradient(135deg,#fff8e0,#ffe8f5);border-radius:16px;padding:16px;margin-bottom:14px;border-left:5px solid #FF6B35;}
+.story-label{font-size:.75rem;font-weight:900;color:#FF6B35;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+.story-text{font-size:.9rem;font-weight:700;color:#555;line-height:1.7;}
+
+/* Voice button */
+.voice-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 12px;border:none;border-radius:12px;
+  font-size:.75rem;font-weight:900;cursor:pointer;
+  font-family:'Nunito',sans-serif;transition:all .2s;
 }
-.story-title{font-size:.85rem;font-weight:900;color:#FF6B35;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
-.story-text{font-size:.95rem;font-weight:700;color:#555;line-height:1.7;}
+.voice-btn.play{background:#FF6B35;color:#fff;}
+.voice-btn.stop{background:#eee;color:#555;}
+.voice-btn.speaking{background:#FF6B35;color:#fff;animation:voicePulse .8s ease-in-out infinite;}
+@keyframes voicePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
 
-/* Fun fact */
-.fun-fact{
-  background:linear-gradient(135deg,#e8f5ff,#f0e8ff);
-  border-radius:18px;padding:14px 18px;margin-bottom:16px;
-  display:flex;align-items:flex-start;gap:12px;
-}
-.fun-fact-icon{font-size:28px;flex-shrink:0;}
-.fun-fact-text{font-size:.9rem;font-weight:700;color:#555;line-height:1.6;}
+.fun-fact{background:linear-gradient(135deg,#e8f5ff,#f0e8ff);border-radius:14px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;}
+.fun-fact-text{font-size:.88rem;font-weight:700;color:#555;line-height:1.6;}
 
-/* Quick Quiz */
-.quick-quiz{margin-top:4px;}
-.quick-quiz h4{font-size:1rem;font-weight:900;color:#333;margin-bottom:12px;}
-.qq-option{
-  width:100%;padding:12px 18px;margin-bottom:8px;text-align:left;
-  border:2.5px solid #eee;border-radius:14px;font-size:.95rem;font-weight:700;
-  cursor:pointer;background:#fff;font-family:'Nunito',sans-serif;
-  transition:all .2s;color:#333;
-}
-.qq-option:hover{border-color:#FF6B35;background:#fff5f0;}
-.qq-option.correct{background:linear-gradient(135deg,#00F5D4,#00BBF9);border-color:#00F5D4;color:#111;}
-.qq-option.wrong{background:#ffe0e0;border-color:#ff8a8a;color:#c00;}
-.qq-fb{text-align:center;font-size:1rem;font-weight:900;min-height:28px;margin:8px 0;}
-.qq-fb.ok{color:#00b894;} .qq-fb.no{color:#e17055;}
+.quiz-section h4{font-size:.95rem;font-weight:900;color:#333;margin-bottom:10px;}
+.quiz-q{font-size:.9rem;font-weight:700;color:#444;margin-bottom:10px;line-height:1.5;}
+.qq-opt{width:100%;padding:11px 16px;margin-bottom:8px;text-align:left;border:2.5px solid #eee;border-radius:12px;font-size:.9rem;font-weight:700;cursor:pointer;background:#fff;font-family:'Nunito',sans-serif;transition:all .2s;color:#333;}
+.qq-opt:hover{border-color:#FF6B35;background:#fff5f0;}
+.qq-opt.correct{background:linear-gradient(135deg,#00F5D4,#00BBF9);border-color:#00F5D4;color:#111;}
+.qq-opt.wrong{background:#ffe0e0;border-color:#ff8a8a;color:#c00;}
+.qq-fb{text-align:center;font-size:.95rem;font-weight:900;min-height:24px;margin:8px 0 4px;}
+.qq-fb.ok{color:#00b894;}.qq-fb.no{color:#e17055;}
 
-.modal-btns{display:flex;gap:10px;justify-content:center;padding:0 24px 20px;flex-wrap:wrap;}
-.btn{padding:11px 22px;border:none;border-radius:50px;font-size:.95rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;transition:transform .15s;box-shadow:0 4px 0 rgba(0,0,0,.12);}
-.btn:hover{transform:translateY(-3px);}
+.modal-btns{display:flex;gap:10px;justify-content:center;padding:12px 20px 20px;flex-wrap:wrap;}
+.btn{padding:11px 22px;border:none;border-radius:50px;font-size:.9rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;transition:transform .15s;box-shadow:0 4px 0 rgba(0,0,0,.12);}
+.btn:hover{transform:translateY(-2px);}
 .btn-primary{background:linear-gradient(135deg,#FF6B35,#FF6B9D);color:#fff;}
 .btn-close{background:#eee;color:#555;}
-
-/* ── STAMP BOOK ── */
-.stamp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;}
-.stamp{
-  border-radius:18px;padding:16px 10px;text-align:center;
-  border:3px dashed #ddd;background:#fafafa;
-  transition:all .3s;
-}
-.stamp.earned{border-style:solid;border-color:#FFD93D;background:#fff9e0;box-shadow:0 4px 12px rgba(255,215,0,.3);}
-.stamp-emoji{font-size:36px;display:block;margin-bottom:6px;filter:grayscale(1);transition:filter .3s;}
-.stamp.earned .stamp-emoji{filter:none;}
-.stamp-name{font-size:.75rem;font-weight:900;color:#aaa;}
-.stamp.earned .stamp-name{color:#333;}
 
 /* confetti */
 .confetti-piece{position:fixed;width:10px;height:14px;border-radius:2px;animation:fall 1.2s ease-in forwards;z-index:999;pointer-events:none;}
 @keyframes fall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+footer{text-align:center;padding:20px;color:rgba(180,100,50,.7);font-size:.85rem;font-weight:700;}
+
+/* ── INDIA MAP CARD ── */
+
+
+@keyframes mapPulse{
+  0%,100%{filter:drop-shadow(0 0 4px currentColor) drop-shadow(0 0 8px currentColor);}
+  50%{filter:drop-shadow(0 0 8px currentColor) drop-shadow(0 0 16px currentColor);}
+}
+.map-node-done{animation:mapPulse 1.8s ease-in-out infinite;}
 </style>
 </head>
 <body>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-inner">
-    <div class="hero-nav">
-      <button class="back-btn" onclick="history.back()">←</button>
-      <div class="hero-title">🇮🇳 Bharat Discover</div>
-      <div class="stars-pill" id="topStars">⭐ 0</div>
-    </div>
-    <div class="hero-body">
-      <span class="mascot-big" id="mascot">🦁</span>
-      <div class="hero-speech">
-        <strong>Namaste, Explorer!</strong><br>
-        Let's travel across India — discover every state! 🗺️
-      </div>
-    </div>
+<!-- HUD -->
+<div class="hud">
+  <button class="hud-back" onclick="history.back()">←</button>
+  <span class="hud-logo">🇮🇳 Bharat Discover</span>
+  <div class="hud-stars" id="hudStars">⭐ 0</div>
+  <div class="hud-bar-wrap"><div class="hud-bar" id="hudBar" style="width:0%"></div></div>
+  <span class="hud-label" id="hudLabel">0 / 8</span>
+  <button id="muteBtn" onclick="window.toggleMute()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;padding:4px;">🔊</button>
+</div>
+
+<!-- MAP -->
+<div class="map-wrap" id="mapWrap">
+  <svg id="pathSvg"></svg>
+
+  <!-- Mascot -->
+  <div class="mascot-box">
+    <span class="mascot-emoji" id="mascotEmoji">🦁</span>
+    <div class="speech">Namaste! Let's explore India together! 🇮🇳</div>
   </div>
-  <div class="xp-bar-wrap">
-    <div class="xp-bar" id="xpBar" style="width:0%"></div>
+
+
+  <!-- Region 1 — West & South India -->
+  <div class="region-banner">
+    <span style="font-size:1.2rem">🌅</span>
+    <div class="region-pill rp1">West &amp; South India</div>
+    <span style="font-size:1.2rem">🌅</span>
+  </div>
+  <div id="region1Nodes"></div>
+
+  <!-- Region 2 — North India -->
+  <div class="region-banner">
+    <span style="font-size:1.2rem">🏔️</span>
+    <div class="region-pill rp2">North India</div>
+    <span style="font-size:1.2rem">🏔️</span>
+  </div>
+  <div id="region2Nodes"></div>
+
+  <!-- Region 3 — East India -->
+  <div class="region-banner">
+    <span style="font-size:1.2rem">🌿</span>
+    <div class="region-pill rp3">East India</div>
+    <span style="font-size:1.2rem">🌿</span>
+  </div>
+  <div id="region3Nodes"></div>
+
+  <div class="finish">
+    <div class="finish-icon">🏆</div>
+    <div class="finish-badge">Bharat Explorer! 🇮🇳 🎉</div>
   </div>
 </div>
 
-<!-- TABS -->
-<div class="tabs-wrap">
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('explore',this)">
-      <span class="tab-icon">🗺️</span>Explore
-    </div>
-    <div class="tab" onclick="switchTab('stamps',this)">
-      <span class="tab-icon">📮</span>Stamp Book
-    </div>
-  </div>
-</div>
-
-<!-- EXPLORE TAB -->
-<div id="explore" class="screen active">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
-    <div>
-      <div style="font-size:1.1rem;font-weight:900;color:#333;">🌏 Discover India</div>
-      <div style="font-size:.8rem;color:#aaa;font-weight:700;" id="progressLabel">0 of 8 states explored</div>
-    </div>
-    <div id="completedBadge" style="display:none;background:linear-gradient(135deg,#FFD93D,#FF6B35);color:#fff;font-weight:900;padding:6px 16px;border-radius:14px;font-size:.85rem;">
-      🏆 India Explorer!
-    </div>
-  </div>
-  <div class="states-grid" id="statesGrid"></div>
-</div>
-
-<!-- STAMP BOOK TAB -->
-<div id="stamps" class="screen">
-  <div style="font-size:1.1rem;font-weight:900;color:#333;margin-bottom:6px;">📮 My Stamp Collection</div>
-  <div style="font-size:.8rem;color:#aaa;font-weight:700;margin-bottom:18px;">Complete a state's quiz to earn its stamp!</div>
-  <div class="stamp-grid" id="stampGrid"></div>
-</div>
-
-<!-- STATE DETAIL MODAL -->
-<div class="overlay" id="overlay" onclick="closeModal(event)">
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="closeOverlay(event)">
   <div class="modal" id="modal">
     <div class="modal-hero" id="modalHero">
       <button class="modal-close" onclick="closeModalBtn()">✕</button>
-      <span class="modal-state-emoji" id="mEmoji"></span>
-      <div class="modal-state-name" id="mName"></div>
+      <span class="modal-emoji" id="mEmoji"></span>
+      <div class="modal-name" id="mName"></div>
+      <div class="modal-capital" id="mCapital"></div>
     </div>
     <div class="modal-body">
       <div class="info-grid" id="mInfoGrid"></div>
       <div class="story-card">
-        <div class="story-title">📖 Story Time</div>
+        <div class="story-label">
+          <span>📖 Story Time</span>
+          <button class="voice-btn play" id="storyVoiceBtn" onclick="window.toggleStoryVoice()">🔊 Listen</button>
+        </div>
         <div class="story-text" id="mStory"></div>
       </div>
       <div class="fun-fact" id="mFunFact"></div>
-      <div class="quick-quiz" id="mQuiz"></div>
+      <div class="quiz-section" id="mQuiz"></div>
     </div>
     <div class="modal-btns">
       <button class="btn btn-primary" onclick="closeModalBtn()">✅ Got it!</button>
-      <button class="btn btn-close" onclick="closeModalBtn()">✕ Close</button>
+      <button class="btn btn-close"   onclick="closeModalBtn()">✕ Close</button>
     </div>
   </div>
 </div>
+
+<footer>Made with ♥ in India for young explorers ✨</footer>
 
 <script type="module">
 import { ensureTheme, getTheme } from './js/theme.js';
 import { load, save, addStars } from './js/progress.js';
 
 const theme = ensureTheme();
-if (theme) document.getElementById('mascot').textContent = theme.mascot;
+if (theme) document.getElementById('mascotEmoji').textContent = theme.mascot;
 
 let progress = load();
-document.getElementById('topStars').textContent = '⭐ ' + (progress.totalStars || 0);
 
 // ── STATE DATA ──
 const STATES = [
-  {
-    id: 'maharashtra', name: 'Maharashtra', emoji: '🏙️', color: 'sc1',
-    capital: 'Mumbai', food: 'Vada Pav 🥪', animal: 'Giant Squirrel 🐿️', festival: 'Ganesh Chaturthi 🐘',
-    story: 'Rohan and his family visited Mumbai — the City of Dreams! They saw the famous Gateway of India standing tall near the sea. Rohan ate a delicious Vada Pav and watched the Bollywood stars drive by. Mumbai never sleeps!',
-    funFact: '🌟 Maharashtra is home to Bollywood — the world\'s largest film industry!',
-    quiz: { q: 'What is the capital of Maharashtra?', ans: 'Mumbai', opts: ['Pune', 'Mumbai', 'Nagpur', 'Nashik'] }
+  // Region 1 — West & South
+  { id:'maharashtra', name:'Maharashtra', emoji:'🏙️', color:'n1', region:1, side:'left',
+    capital:'Mumbai', food:'Vada Pav 🥪', animal:'Giant Squirrel 🐿️', festival:'Ganesh Chaturthi 🐘',
+    story:'Rohan visited Mumbai — the City of Dreams! He saw the Gateway of India near the sparkling sea, ate a crispy Vada Pav, and watched Bollywood posters everywhere. Mumbai is the city that never sleeps!',
+    funFact:'🌟 Maharashtra is home to Bollywood — the world\'s largest film industry producing 1,000+ films every year!',
+    quiz:{ q:'What is the capital of Maharashtra?', ans:'Mumbai', opts:['Pune','Mumbai','Nagpur','Nashik'] }
   },
-  {
-    id: 'kerala', name: 'Kerala', emoji: '🌴', color: 'sc2',
-    capital: 'Thiruvananthapuram', food: 'Sadya 🍌', animal: 'Elephant 🐘', festival: 'Onam 🌸',
-    story: 'Priya floated on a houseboat through the beautiful backwaters of Kerala. Green coconut trees lined both sides. She ate a grand Sadya meal served on a banana leaf — over 20 dishes! Kerala is truly God\'s Own Country.',
-    funFact: '🌟 Kerala has 100% literacy — every single person can read and write!',
-    quiz: { q: 'Which festival is celebrated in Kerala with boat races?', ans: 'Onam', opts: ['Diwali', 'Onam', 'Holi', 'Pongal'] }
+  { id:'kerala', name:'Kerala', emoji:'🌴', color:'n2', region:1, side:'center',
+    capital:'Thiruvananthapuram', food:'Sadya 🍌', animal:'Elephant 🐘', festival:'Onam 🌸',
+    story:'Priya floated on a houseboat through Kerala\'s backwaters! Green coconut trees lined both sides. She ate Sadya — a grand feast on a banana leaf with 20 dishes. Kerala is truly God\'s Own Country!',
+    funFact:'🌟 Kerala has 100% literacy — every single person can read and write. That\'s a superpower!',
+    quiz:{ q:'Which festival features snake boat races in Kerala?', ans:'Onam', opts:['Diwali','Onam','Holi','Pongal'] }
   },
-  {
-    id: 'rajasthan', name: 'Rajasthan', emoji: '🏰', color: 'sc3',
-    capital: 'Jaipur', food: 'Dal Baati 🫓', animal: 'Camel 🐪', festival: 'Pushkar Mela 🎪',
-    story: 'Arjun rode a camel through the golden sand dunes of Rajasthan. He visited the magnificent Amber Fort in Jaipur — the Pink City! At night, he watched folk dancers perform under a sky full of stars. The desert was magical!',
-    funFact: '🌟 Rajasthan is India\'s largest state by area — bigger than many countries!',
-    quiz: { q: 'Rajasthan is known as the "Land of ___"?', ans: 'Kings', opts: ['Rivers', 'Kings', 'Elephants', 'Tigers'] }
+  { id:'tamil_nadu', name:'Tamil Nadu', emoji:'🛕', color:'n3', region:1, side:'right',
+    capital:'Chennai', food:'Idli Sambar 🍚', animal:'Nilgiri Tahr 🐐', festival:'Pongal 🌾',
+    story:'Deepa visited Meenakshi Temple in Madurai — 14 colorful towers covered in thousands of sculptures! She ate crispy dosas for breakfast and watched a Bharatanatyam dance. Tamil Nadu has 2000 years of history!',
+    funFact:'🌟 Tamil is one of the oldest living languages in the world — over 2000 years old!',
+    quiz:{ q:'What is the harvest festival of Tamil Nadu?', ans:'Pongal', opts:['Onam','Bihu','Pongal','Ugadi'] }
   },
-  {
-    id: 'tamil_nadu', name: 'Tamil Nadu', emoji: '🛕', color: 'sc4',
-    capital: 'Chennai', food: 'Idli Sambar 🍚', animal: 'Nilgiri Tahr 🐐', festival: 'Pongal 🌾',
-    story: 'Deepa visited the ancient Meenakshi Temple in Madurai — it had 14 colorful towers covered in thousands of sculptures! She ate crispy dosas for breakfast and watched a Bharatanatyam dance performance. Tamil Nadu has a history of over 2000 years!',
-    funFact: '🌟 Tamil is one of the oldest languages in the world — over 2000 years old!',
-    quiz: { q: 'What is the harvest festival of Tamil Nadu?', ans: 'Pongal', opts: ['Onam', 'Bihu', 'Pongal', 'Ugadi'] }
+  { id:'gujarat', name:'Gujarat', emoji:'🦁', color:'n4', region:1, side:'center',
+    capital:'Gandhinagar', food:'Dhokla 🫓', animal:'Asiatic Lion 🦁', festival:'Navratri 💃',
+    story:'Nila danced Garba for nine nights during Navratri! Her colourful lehenga spun as she clapped in rhythm. She visited Gir Forest where the only Asiatic Lions in the world live. Gujarat is vibrant!',
+    funFact:'🌟 Mahatma Gandhi — Father of the Nation — was born in Porbandar, Gujarat!',
+    quiz:{ q:'Where can you find Asiatic Lions in India?', ans:'Gir Forest, Gujarat', opts:['Kaziranga','Sundarbans','Gir Forest, Gujarat','Corbett'] }
   },
-  {
-    id: 'punjab', name: 'Punjab', emoji: '🌾', color: 'sc5',
-    capital: 'Chandigarh', food: 'Makki di Roti 🫓', animal: 'Blackbuck 🦌', festival: 'Baisakhi 💃',
-    story: 'Gurpreet danced the lively Bhangra at the Baisakhi festival! Golden wheat fields stretched as far as the eye could see. He visited the Golden Temple in Amritsar — its reflection shimmering in the holy lake was breathtaking. Punjab, the land of five rivers!',
-    funFact: '🌟 Punjab is called the "Breadbasket of India" — it grows wheat for the whole country!',
-    quiz: { q: 'What is the famous golden monument in Punjab?', ans: 'Golden Temple', opts: ['Taj Mahal', 'Golden Temple', 'Qutub Minar', 'Red Fort'] }
+  // Region 2 — North India
+  { id:'rajasthan', name:'Rajasthan', emoji:'🏰', color:'n5', region:2, side:'right',
+    capital:'Jaipur', food:'Dal Baati 🫓', animal:'Camel 🐪', festival:'Pushkar Mela 🎪',
+    story:'Arjun rode a camel through golden sand dunes! He visited Amber Fort in Jaipur — the Pink City. At night, folk dancers performed under a sky full of stars. The desert was magical!',
+    funFact:'🌟 Rajasthan is India\'s largest state by area — it\'s bigger than many countries in the world!',
+    quiz:{ q:'Rajasthan is called "Land of ___"?', ans:'Kings', opts:['Rivers','Kings','Elephants','Tigers'] }
   },
-  {
-    id: 'west_bengal', name: 'West Bengal', emoji: '🐯', color: 'sc6',
-    capital: 'Kolkata', food: 'Rasgulla 🍬', animal: 'Royal Bengal Tiger 🐯', festival: 'Durga Puja 🙏',
-    story: 'Mitu celebrated Durga Puja in Kolkata — the city was alive with giant decorated pandals everywhere! She ate the sweetest Rasgulla and rode a yellow taxi through the bustling streets. Kolkata is the cultural capital of India!',
-    funFact: '🌟 The Sundarbans in West Bengal is the world\'s largest mangrove forest and home to Royal Bengal Tigers!',
-    quiz: { q: 'Which sweet is West Bengal famous for?', ans: 'Rasgulla', opts: ['Jalebi', 'Rasgulla', 'Ladoo', 'Barfi'] }
+  { id:'punjab', name:'Punjab', emoji:'🌾', color:'n6', region:2, side:'center',
+    capital:'Chandigarh', food:'Makki di Roti 🫓', animal:'Blackbuck 🦌', festival:'Baisakhi 💃',
+    story:'Gurpreet danced lively Bhangra at the Baisakhi festival! Golden wheat fields stretched to the horizon. He visited the Golden Temple in Amritsar — its reflection shimmered in the holy lake. Punjab, land of five rivers!',
+    funFact:'🌟 Punjab is called the "Breadbasket of India" — it grows wheat that feeds the whole country!',
+    quiz:{ q:'What is the famous golden monument in Amritsar?', ans:'Golden Temple', opts:['Taj Mahal','Golden Temple','Qutub Minar','Red Fort'] }
   },
-  {
-    id: 'gujarat', name: 'Gujarat', emoji: '🦁', color: 'sc7',
-    capital: 'Gandhinagar', food: 'Dhokla 🫓', animal: 'Asiatic Lion 🦁', festival: 'Navratri 💃',
-    story: 'Nila danced Garba for nine nights during Navratri — colourful lehenga spinning, clapping in rhythm! She visited the Gir Forest where the only Asiatic Lions in the world live. And she ate fluffy Dhokla for breakfast every day. Gujarat is vibrant!',
-    funFact: '🌟 Mahatma Gandhi — the Father of the Nation — was born in Gujarat!',
-    quiz: { q: 'Where in India can you find Asiatic Lions?', ans: 'Gir Forest, Gujarat', opts: ['Kaziranga', 'Gir Forest, Gujarat', 'Sundarbans', 'Corbett'] }
+  // Region 3 — East India
+  { id:'west_bengal', name:'West Bengal', emoji:'🐯', color:'n7', region:3, side:'left',
+    capital:'Kolkata', food:'Rasgulla 🍬', animal:'Royal Bengal Tiger 🐯', festival:'Durga Puja 🙏',
+    story:'Mitu celebrated Durga Puja in Kolkata! The city glowed with giant decorated pandals. She ate the sweetest Rasgulla and rode a yellow taxi. Kolkata is the cultural capital of India!',
+    funFact:'🌟 The Sundarbans in West Bengal is the world\'s largest mangrove forest, home to Royal Bengal Tigers!',
+    quiz:{ q:'Which sweet is West Bengal most famous for?', ans:'Rasgulla', opts:['Jalebi','Rasgulla','Ladoo','Barfi'] }
   },
-  {
-    id: 'assam', name: 'Assam', emoji: '🍵', color: 'sc8',
-    capital: 'Dispur', food: 'Masor Tenga 🐟', animal: 'One-horned Rhino 🦏', festival: 'Bihu 🥁',
-    story: 'Bimal walked through miles of green tea gardens in Assam — the tea that people drink all over the world comes from here! He spotted a one-horned rhinoceros in Kaziranga National Park. The Bihu dance was energetic and joyful!',
-    funFact: '🌟 Assam produces more than 50% of India\'s total tea!',
-    quiz: { q: 'Which animal is Assam famous for protecting?', ans: 'One-horned Rhino', opts: ['Tiger', 'Elephant', 'One-horned Rhino', 'Snow Leopard'] }
+  { id:'assam', name:'Assam', emoji:'🍵', color:'n8', region:3, side:'center',
+    capital:'Dispur', food:'Masor Tenga 🐟', animal:'One-horned Rhino 🦏', festival:'Bihu 🥁',
+    story:'Bimal walked through miles of green tea gardens — the tea that people drink across the world comes from here! He spotted a one-horned rhinoceros in Kaziranga. The Bihu dance was energetic and joyful!',
+    funFact:'🌟 Assam produces over 50% of India\'s total tea — every morning cup might be from Assam!',
+    quiz:{ q:'Which rare animal is Assam famous for protecting?', ans:'One-horned Rhino', opts:['Tiger','Elephant','One-horned Rhino','Snow Leopard'] }
   }
 ];
 
+const HERO_COLORS = {
+  n1:'linear-gradient(135deg,#FF6B35,#FFD93D)', n2:'linear-gradient(135deg,#00BBF9,#9B5DE5)',
+  n3:'linear-gradient(135deg,#F15BB5,#FF6B35)', n4:'linear-gradient(135deg,#00F5D4,#00BBF9)',
+  n5:'linear-gradient(135deg,#9B5DE5,#F15BB5)', n6:'linear-gradient(135deg,#FFD93D,#00F5D4)',
+  n7:'linear-gradient(135deg,#FF6B35,#F15BB5)', n8:'linear-gradient(135deg,#00BBF9,#9B5DE5)',
+};
+
 // ── PROGRESS ──
-function getGkProgress() {
-  return progress.gk || (progress.gk = { completed: [], stars: 0 });
+function gkProgress() {
+  return progress.gk || (progress.gk = { completed:[], storyRead:[], quizDone:[] });
+}
+function isCompleted(id) { return gkProgress().quizDone.includes(id); }
+function isUnlocked(idx)  {
+  if (idx === 0) return true; // first always unlocked
+  return gkProgress().quizDone.includes(STATES[idx-1].id);
 }
 
-function isCompleted(stateId) {
-  return getGkProgress().completed.includes(stateId);
+function markStoryRead(id) {
+  const g = gkProgress();
+  if (!g.storyRead.includes(id)) { g.storyRead.push(id); save(progress); }
 }
 
-function markCompleted(stateId) {
-  const gk = getGkProgress();
-  if (!gk.completed.includes(stateId)) {
-    gk.completed.push(stateId);
+function markQuizDone(id) {
+  const g = gkProgress();
+  if (!g.quizDone.includes(id)) {
+    g.quizDone.push(id);
     addStars(progress, 3);
     save(progress);
-    document.getElementById('topStars').textContent = '⭐ ' + (progress.totalStars || 0);
+    document.getElementById('hudStars').textContent = '⭐ ' + (progress.totalStars || 0);
+    renderMap();
   }
-  updateProgressUI();
 }
 
-function updateProgressUI() {
-  const done = getGkProgress().completed.length;
-  const total = STATES.length;
-  document.getElementById('progressLabel').textContent = `${done} of ${total} states explored`;
-  document.getElementById('xpBar').style.width = (done / total * 100) + '%';
-  if (done === total) document.getElementById('completedBadge').style.display = 'inline-block';
-}
+// ── RENDER MAP ──
+function renderMap() {
+  for (const region of [1,2,3]) {
+    const container = document.getElementById(`region${region}Nodes`);
+    container.innerHTML = '';
+    STATES.filter(s => s.region === region).forEach((s, i) => {
+      const globalIdx = STATES.findIndex(x => x.id === s.id);
+      const unlocked  = isUnlocked(globalIdx);
+      const done      = isCompleted(s.id);
+      const g         = gkProgress();
+      const storyDone = g.storyRead.includes(s.id);
+      const quizDone  = g.quizDone.includes(s.id);
 
-// ── RENDER STATES GRID ──
-function renderStates() {
-  const grid = document.getElementById('statesGrid');
-  grid.innerHTML = '';
-  STATES.forEach(s => {
-    const done = isCompleted(s.id);
-    const card = document.createElement('div');
-    card.className = `state-card ${s.color}${done ? ' completed' : ''}`;
-    card.innerHTML = `
-      <span class="state-emoji">${s.emoji}</span>
-      <div class="state-name">${s.name}</div>
-      <div class="state-capital-badge">🏛️ ${s.capital}</div>
-    `;
-    card.onclick = () => openState(s);
-    grid.appendChild(card);
-  });
-  updateProgressUI();
-}
+      const s1 = storyDone ? '⭐' : '☆';
+      const s2 = quizDone  ? '⭐' : '☆';
+      const stars = unlocked ? `<div class="node-stars"><span style="opacity:${storyDone?1:.25};filter:${storyDone?'drop-shadow(0 0 4px #FFD93D)':'grayscale(1)'}">⭐</span><span style="opacity:${quizDone?1:.25};filter:${quizDone?'drop-shadow(0 0 4px #FFD93D)':'grayscale(1)'}">⭐</span></div>` : '';
 
-// ── RENDER STAMP BOOK ──
-function renderStamps() {
-  const grid = document.getElementById('stampGrid');
-  grid.innerHTML = '';
-  STATES.forEach(s => {
-    const done = isCompleted(s.id);
-    const stamp = document.createElement('div');
-    stamp.className = `stamp${done ? ' earned' : ''}`;
-    stamp.innerHTML = `
-      <span class="stamp-emoji">${s.emoji}</span>
-      <div class="stamp-name">${s.name}</div>
-      ${done ? '<div style="font-size:.65rem;color:#FF6B35;font-weight:900;margin-top:4px;">✅ Collected!</div>' : ''}
-    `;
-    grid.appendChild(stamp);
-  });
-}
+      const hint = !unlocked ? `<div class="unlock-hint">Complete ${STATES[globalIdx-1]?.name} first!</div>` : '';
 
-// ── OPEN STATE MODAL ──
-let currentState = null, quizAnswered = false;
-
-function openState(s) {
-  currentState = s; quizAnswered = false;
-  confettiBurst(15);
-
-  // Hero
-  const hero = document.getElementById('modalHero');
-  hero.style.background = '';
-  const colors = {
-    sc1:'linear-gradient(135deg,#FF6B35,#FFD93D)', sc2:'linear-gradient(135deg,#00BBF9,#9B5DE5)',
-    sc3:'linear-gradient(135deg,#F15BB5,#FF6B35)', sc4:'linear-gradient(135deg,#00F5D4,#00BBF9)',
-    sc5:'linear-gradient(135deg,#9B5DE5,#F15BB5)', sc6:'linear-gradient(135deg,#FFD93D,#00F5D4)',
-    sc7:'linear-gradient(135deg,#FF6B35,#F15BB5)', sc8:'linear-gradient(135deg,#00BBF9,#00F5D4)',
-  };
-  hero.style.background = colors[s.color] || 'linear-gradient(135deg,#FF6B35,#FF6B9D)';
-  document.getElementById('mEmoji').textContent = s.emoji;
-  document.getElementById('mName').textContent = s.name;
-
-  // Info grid
-  document.getElementById('mInfoGrid').innerHTML = `
-    <div class="info-card"><span class="info-icon">🏛️</span><div class="info-label">Capital</div><div class="info-value">${s.capital}</div></div>
-    <div class="info-card"><span class="info-icon">${s.food.split(' ')[1] || '🍽️'}</span><div class="info-label">Famous Food</div><div class="info-value">${s.food.split(' ')[0]}</div></div>
-    <div class="info-card"><span class="info-icon">${s.animal.split(' ')[s.animal.split(' ').length-1]}</span><div class="info-label">State Animal</div><div class="info-value">${s.animal.split(' ').slice(0,-1).join(' ')}</div></div>
-    <div class="info-card"><span class="info-icon">${s.festival.split(' ')[s.festival.split(' ').length-1]}</span><div class="info-label">Festival</div><div class="info-value">${s.festival.split(' ').slice(0,-1).join(' ')}</div></div>
-  `;
-
-  // Story
-  document.getElementById('mStory').textContent = s.story;
-
-  // Fun fact
-  document.getElementById('mFunFact').innerHTML = `
-    <span class="fun-fact-icon">💡</span>
-    <div class="fun-fact-text">${s.funFact}</div>
-  `;
-
-  // Quiz
-  const shuffled = [...s.quiz.opts].sort(() => Math.random() - .5);
-  document.getElementById('mQuiz').innerHTML = `
-    <h4>🎯 Quick Quiz!</h4>
-    <div style="font-size:.95rem;font-weight:700;color:#444;margin-bottom:12px;">${s.quiz.q}</div>
-    ${shuffled.map(o => `<button class="qq-option" onclick="window.checkGkAns(this,'${o.replace(/'/g,"\\'")}','${s.quiz.ans.replace(/'/g,"\\'")}','${s.id}')">${o}</button>`).join('')}
-    <div class="qq-fb" id="qqFb"></div>
-  `;
-
-  document.getElementById('overlay').classList.add('show');
-}
-
-window.checkGkAns = function(btn, chosen, correct, stateId) {
-  if (quizAnswered) return;
-  quizAnswered = true;
-  const fb = document.getElementById('qqFb');
-  document.querySelectorAll('.qq-option').forEach(b => b.disabled = true);
-
-  if (chosen === correct) {
-    btn.classList.add('correct');
-    fb.textContent = '🎉 Correct! You earned a stamp!'; fb.className = 'qq-fb ok';
-    confettiBurst(30);
-    markCompleted(stateId);
-    renderStates();
-    renderStamps();
-  } else {
-    btn.classList.add('wrong');
-    fb.innerHTML = `😅 Not quite! Answer: <strong>${correct}</strong>`; fb.className = 'qq-fb no';
-    document.querySelectorAll('.qq-option').forEach(b => {
-      if (b.textContent === correct) b.classList.add('correct');
+      const step = document.createElement('div');
+      step.className = `step ${s.side}`;
+      step.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <div class="node ${s.color}${done?' done':''}${!unlocked?' locked':''}"
+               ${unlocked ? `onclick="openState('${s.id}')"` : ''}>
+            <span class="node-emoji">${!unlocked ? '🔒' : s.emoji}</span>
+            <span class="node-label">${s.name}</span>
+            ${done ? '<div class="star-badge">🏆</div>' : ''}
+          </div>
+          ${stars}
+          ${hint}
+        </div>`;
+      container.appendChild(step);
     });
   }
+
+  // HUD
+  const done  = gkProgress().quizDone.length;
+  document.getElementById('hudBar').style.width   = (done / STATES.length * 100) + '%';
+  document.getElementById('hudLabel').textContent = `${done} / ${STATES.length}`;
+
+  setTimeout(() => { drawPath(); addDecos(); }, 60);
+  renderIndiaMap();
+}
+
+// ── OPEN STATE ──
+let quizAnswered = false;
+window.openState = function(id) {
+  const s = STATES.find(x => x.id === id);
+  if (!s) return;
+  quizAnswered = false;
+  markStoryRead(id);
+  confettiBurst(12);
+
+  document.getElementById('modalHero').style.background = HERO_COLORS[s.color];
+  document.getElementById('mEmoji').textContent   = s.emoji;
+  document.getElementById('mName').textContent    = s.name;
+  document.getElementById('mCapital').textContent = '🏛️ Capital: ' + s.capital;
+
+  const food    = s.food.split(' '); const foodEmoji = food[food.length-1]; const foodName = food.slice(0,-1).join(' ');
+  const animal  = s.animal.split(' '); const anEmoji = animal[animal.length-1]; const anName = animal.slice(0,-1).join(' ');
+  const festArr = s.festival.split(' '); const fEmoji = festArr[festArr.length-1]; const fName = festArr.slice(0,-1).join(' ');
+
+  document.getElementById('mInfoGrid').innerHTML = `
+    <div class="info-card"><span class="info-icon">${foodEmoji}</span><div class="info-label">Famous Food</div><div class="info-value">${foodName}</div></div>
+    <div class="info-card"><span class="info-icon">${anEmoji}</span><div class="info-label">State Animal</div><div class="info-value">${anName}</div></div>
+    <div class="info-card"><span class="info-icon">${fEmoji}</span><div class="info-label">Festival</div><div class="info-value">${fName}</div></div>
+    <div class="info-card"><span class="info-icon">🌍</span><div class="info-label">Region</div><div class="info-value">${s.region===1?'West/South':s.region===2?'North':'East'} India</div></div>`;
+
+  document.getElementById('mStory').textContent = s.story;
+  document.getElementById('mFunFact').innerHTML = `<span style="font-size:26px;flex-shrink:0;">💡</span><div class="fun-fact-text">${s.funFact}</div>`;
+
+  const alreadyDone = gkProgress().quizDone.includes(id);
+  const opts = [...s.quiz.opts].sort(() => Math.random() - .5);
+  document.getElementById('mQuiz').innerHTML = alreadyDone
+    ? `<div style="text-align:center;padding:16px;background:#d4edda;border-radius:14px;font-weight:900;color:#155724;">✅ Quiz completed! You earned a stamp!</div>`
+    : `<h4>🎯 Quick Quiz!</h4>
+       <div class="quiz-q">${s.quiz.q}</div>
+       ${opts.map(o => `<button class="qq-opt" onclick="window.checkGk(this,'${o.replace(/'/g,"\\'")}','${s.quiz.ans.replace(/'/g,"\\'")}','${id}')">${o}</button>`).join('')}
+       <div class="qq-fb" id="qqFb"></div>`;
+
+  document.getElementById('overlay').classList.add('show');
+  updateVoiceBtn(false);
+  setTimeout(() => autoGreet(s), 400);
 };
 
-function closeModal(e) { if (e.target.id === 'overlay') closeModalBtn(); }
-window.closeModalBtn = () => document.getElementById('overlay').classList.remove('show');
-
-// ── TAB SWITCH ──
-window.switchTab = function(id, el) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  el.classList.add('active');
-  if (id === 'stamps') renderStamps();
+window.checkGk = function(btn, chosen, correct, id) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  document.querySelectorAll('.qq-opt').forEach(b => b.disabled = true);
+  const fb = document.getElementById('qqFb');
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    fb.textContent = '🎉 Correct! +3 stars earned!'; fb.className = 'qq-fb ok';
+    confettiBurst(35);
+    markQuizDone(id);
+  } else {
+    btn.classList.add('wrong');
+    fb.innerHTML = `😅 Answer: <strong>${correct}</strong>`; fb.className = 'qq-fb no';
+    document.querySelectorAll('.qq-opt').forEach(b => { if (b.textContent === correct) b.classList.add('correct'); });
+  }
 };
 
-function confettiBurst(count = 30) {
-  const cols = ['#FFD93D','#FF6B35','#9B5DE5','#00BBF9','#F15BB5','#00F5D4'];
-  for (let i = 0; i < count; i++) {
-    const c = document.createElement('div'); c.className = 'confetti-piece';
-    c.style.cssText = `left:${20+Math.random()*60}vw;top:30vh;background:${cols[i%cols.length]};animation-delay:${Math.random()*.4}s;animation-duration:${.9+Math.random()*.5}s;`;
-    document.body.appendChild(c); setTimeout(() => c.remove(), 1600);
+function closeOverlay(e) { if (e.target.id === 'overlay') closeModalBtn(); }
+window.closeModalBtn = () => {
+  stopSpeaking();
+  document.getElementById('overlay').classList.remove('show');
+  renderMap();
+};
+
+// ── PATH ──
+function drawPath() {
+  const wrap = document.getElementById('mapWrap');
+  const svg  = document.getElementById('pathSvg');
+  const nodes = Array.from(wrap.querySelectorAll('.node'));
+  if (nodes.length < 2) return;
+  const wrapRect = wrap.getBoundingClientRect();
+  const pts = nodes.map(n => {
+    const r = n.getBoundingClientRect();
+    return { x: r.left - wrapRect.left + r.width/2, y: r.top - wrapRect.top + r.height/2 };
+  });
+  const maxY = Math.max(...pts.map(p=>p.y)) + 60;
+  svg.setAttribute('viewBox', `0 0 ${wrapRect.width} ${maxY}`);
+  svg.style.height = maxY + 'px';
+  svg.innerHTML = '';
+
+  let d = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i-1], b = pts[i], midY = (a.y+b.y)/2;
+    d += ` C ${a.x} ${midY}, ${b.x} ${midY}, ${b.x} ${b.y}`;
+  }
+  const mk = (stroke,w,dash) => {
+    const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',d); p.setAttribute('fill','none');
+    p.setAttribute('stroke',stroke); p.setAttribute('stroke-width',w);
+    p.setAttribute('stroke-linecap','round');
+    if (dash) p.setAttribute('stroke-dasharray',dash);
+    return p;
+  };
+  svg.appendChild(mk('rgba(255,165,80,.35)',24));
+  svg.appendChild(mk('rgba(0,0,0,.06)',14));
+  svg.appendChild(mk('rgba(255,255,255,.85)',9,'18 13'));
+}
+
+function addDecos() {
+  const wrap = document.getElementById('mapWrap');
+  wrap.querySelectorAll('.deco').forEach(e => e.remove());
+  const decos = ['🏛️','🌺','🐘','🦚','🌸','🪔','🐅','🌴','🎭','⭐','🫁','🥭'];
+  const h = wrap.offsetHeight;
+  for (let i = 0; i < 12; i++) {
+    const el = document.createElement('span');
+    el.className = 'deco sway';
+    const left = Math.random() < .5;
+    el.style.cssText = `left:${left?1+Math.random()*8:88+Math.random()*8}%;top:${80+(i/12)*(h-160)}px;font-size:${24+Math.random()*16}px;animation-duration:${3+Math.random()*3}s;animation-delay:${Math.random()*3}s;`;
+    el.textContent = decos[i % decos.length];
+    wrap.appendChild(el);
   }
 }
 
-// ── INIT ──
-renderStates();
-renderStamps();
+function confettiBurst(n=20) {
+  const cols=['#FFD93D','#FF6B35','#9B5DE5','#00BBF9','#F15BB5','#00F5D4'];
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div'); c.className='confetti-piece';
+    c.style.cssText=`left:${20+Math.random()*60}vw;top:30vh;background:${cols[i%cols.length]};animation-delay:${Math.random()*.4}s;animation-duration:${.9+Math.random()*.5}s;`;
+    document.body.appendChild(c); setTimeout(()=>c.remove(),1600);
+  }
+}
 
+// ── VOICE ENGINE (ResponsiveVoice) ──
+let isMuted    = false;
+let isSpeaking = false;
+const RV_VOICE = 'UK English Female'; // clear, friendly female voice
+
+const voiceParams = { rate: 0.9, pitch: 1.1, volume: 1,
+  onstart:  () => { isSpeaking = true;  updateVoiceBtn(true);  },
+  onend:    () => { isSpeaking = false; updateVoiceBtn(false); },
+  onerror:  () => { isSpeaking = false; updateVoiceBtn(false); }
+};
+
+function speak(text) {
+  if (isMuted) return;
+  if (typeof responsiveVoice === 'undefined') return;
+  responsiveVoice.cancel();
+  responsiveVoice.speak(text, RV_VOICE, voiceParams);
+}
+
+function stopSpeaking() {
+  if (typeof responsiveVoice !== 'undefined') responsiveVoice.cancel();
+  isSpeaking = false;
+  updateVoiceBtn(false);
+}
+
+function updateVoiceBtn(speaking) {
+  const btn = document.getElementById('storyVoiceBtn');
+  if (!btn) return;
+  btn.textContent = speaking ? '⏹ Stop'   : '🔊 Listen';
+  btn.className   = speaking ? 'voice-btn stop' : 'voice-btn play';
+}
+
+window.toggleStoryVoice = function() {
+  if (isSpeaking) { stopSpeaking(); return; }
+  const text = document.getElementById('mStory')?.textContent || '';
+  if (text) speak(text);
+};
+
+window.toggleMute = function() {
+  isMuted = !isMuted;
+  document.getElementById('muteBtn').textContent = isMuted ? '🔇' : '🔊';
+  if (isMuted) stopSpeaking();
+};
+
+// Auto-greet when modal opens
+function autoGreet(s) {
+  speak(`Welcome to ${s.name}! The capital city is ${s.capital}.`);
+}
+
+// ── INDIA MAP ──
+function renderIndiaMap() {}
+  // Refresh state colours based on new progress
+  if (geoLayer) {
+    geoLayer.setStyle(feature =>
+      getStateStyle(feature.properties.NAME_1 || '')
+    );
+  }
+}
+
+// Init
+renderMap();
+window.addEventListener('resize', drawPath);
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js').catch(()=>{});
 </script>
 </body>
